@@ -13,5 +13,6 @@
 - [x] Generate exact-overlap/core reports and 20-sample review sets.
 - [x] Strengthen evaluation metrics, invalid-output handling, and confusion matrix.
 - [x] Run fixture-based regression tests.
-- [ ] Next stage: run one Hugging Face LVLM on the 20-sample sets and inspect output/QA behavior.
+- [x] Add a Google Colab Qwen3-VL notebook for reproducible 20-sample zero/one/structured inference and result export.
+- [ ] Execute the Colab notebook on a rented GPU and review the saved prediction/metric ZIP.
 - [ ] Only after the smoke test: decide whether to run full 6,481 / 6,417 inference.
