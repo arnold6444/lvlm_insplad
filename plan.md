@@ -13,9 +13,17 @@
 - [x] Generate exact-overlap/core reports and 20-sample review sets.
 - [x] Strengthen evaluation metrics, invalid-output handling, and confusion matrix.
 - [x] Run fixture-based regression tests.
-- [x] Replace the single-Qwen Colab prototype with a multi-model LVLM baseline runner.
 - [x] Add initial open-source baseline families: Qwen, InternVL, MiniCPM, and LLaVA.
-- [x] Run every model on the identical Zero-shot 20 / One-shot 20 / Structured 20 QA and aggregate a leaderboard.
-- [ ] Execute the multi-model Colab smoke test on a rented GPU and review prediction/metric outputs.
-- [ ] After smoke-test review, expand the same model registry to full 6,481 / 6,417 inference.
-- [ ] Optional later stage: add proprietary/API baselines (e.g. GPT/Gemini) under the same QA and metric contract.
+- [x] Replace the GPU-only Colab runner with a hybrid baseline runner.
+- [x] Route closed baselines through official APIs: OpenAI GPT and Google Gemini.
+- [x] Keep open-source baselines on direct Hugging Face GPU inference.
+- [x] Use `main` in Colab and support private-repo checkout through a read-only `GITHUB_TOKEN` secret.
+- [x] Add OpenAI/Gemini secret handling, retries, incremental predictions, unified evaluation, leaderboard, review CSV, and run metadata.
+- [x] Skip direct HF models below 20 GB VRAM instead of silently changing the research condition with 4-bit quantization.
+- [x] Extend notebook static tests for API/HF separation, secrets, model registry, and low-VRAM behavior.
+- [ ] Add `GITHUB_TOKEN`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` to Colab Secrets.
+- [ ] Execute GPT/Gemini smoke baselines: Zero-shot 20 / One-shot 20 / Structured 20.
+- [ ] Execute Qwen/InternVL/MiniCPM/LLaVA smoke baselines on an L4/A100-class rented GPU.
+- [ ] Review prediction validity, metrics, latency, and model-specific failures.
+- [ ] After smoke-test review, expand the same registry/contract to full 6,481 / 6,417 inference.
+- [ ] Analyze failure modes and design the first performance-improvement method.
