@@ -13,6 +13,9 @@
 - [x] Generate exact-overlap/core reports and 20-sample review sets.
 - [x] Strengthen evaluation metrics, invalid-output handling, and confusion matrix.
 - [x] Run fixture-based regression tests.
-- [x] Add a Google Colab Qwen3-VL notebook for reproducible 20-sample zero/one/structured inference and result export.
-- [ ] Execute the Colab notebook on a rented GPU and review the saved prediction/metric ZIP.
-- [ ] Only after the smoke test: decide whether to run full 6,481 / 6,417 inference.
+- [x] Replace the single-Qwen Colab prototype with a multi-model LVLM baseline runner.
+- [x] Add initial open-source baseline families: Qwen, InternVL, MiniCPM, and LLaVA.
+- [x] Run every model on the identical Zero-shot 20 / One-shot 20 / Structured 20 QA and aggregate a leaderboard.
+- [ ] Execute the multi-model Colab smoke test on a rented GPU and review prediction/metric outputs.
+- [ ] After smoke-test review, expand the same model registry to full 6,481 / 6,417 inference.
+- [ ] Optional later stage: add proprietary/API baselines (e.g. GPT/Gemini) under the same QA and metric contract.
