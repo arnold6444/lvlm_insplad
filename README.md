@@ -51,32 +51,49 @@ python -m pytest -v
 - `samples/defect_20.jsonl`
 - `samples/aligned_core_20.jsonl`
 
-## Google Colab — multi-model LVLM baseline smoke test
+## Baseline policy — API for closed models, GPU for open-source models
 
-Open `notebooks/lvlm_baselines_colab.ipynb` in Google Colab and select a rented GPU runtime, preferably **24 GB+ VRAM** for the 7B–8B models.
+`notebooks/lvlm_baselines_colab.ipynb` now follows an MMAD-style mixed execution policy while preserving one common QA/prompt/evaluation contract.
 
-The initial open-source baseline registry contains:
+### Closed/API baselines
+
+These run through the official provider APIs and do **not** need a GPU:
+
+- OpenAI `gpt-5.6-sol` via the Responses API
+- Google `gemini-3.6-flash` via the Gemini API
+
+### Open-source/GPU baselines
+
+These run directly with Hugging Face on a rented GPU, one model at a time:
 
 - `Qwen/Qwen3-VL-8B-Instruct`
 - `OpenGVLab/InternVL3_5-8B`
 - `openbmb/MiniCPM-V-4_5`
 - `llava-hf/llava-onevision-qwen2-7b-ov-hf`
 
-The notebook intentionally runs **one model at a time**:
+The notebook intentionally does **not** switch these models to 4-bit quantization just because a T4 is available. If VRAM is below 20 GB, direct HF baselines are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime for the paper baseline instead.
+
+## Colab smoke test
+
+Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab.
+
+Because this repository is private, add the following values in **Colab → Secrets** before running:
+
+- `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
+- `OPENAI_API_KEY`: required only for the OpenAI baseline
+- `GEMINI_API_KEY`: required only for the Gemini baseline
+
+The notebook never prints the secret values. Missing API keys cause only that provider to be skipped.
+
+Every requested model receives the identical smoke set:
 
 ```text
-model A load
-  → Zero-shot 20
-  → One-shot 20
-  → Structured 20
-  → predictions + metrics 저장
-  → GPU unload
-model B load
-  → same 60 QA
-  → ...
+Zero-shot 20
+→ One-shot 20
+→ Structured 20
 ```
 
-This keeps the comparison fair: every LVLM sees the same sampled images, same reference images, same prompts, same deterministic decoding policy, and the same `evaluate.py` metrics.
+The API phase runs independently from the GPU phase. This means GPT/Gemini can be evaluated even on a CPU/T4 runtime; the open-source models can then be run on an L4/A100-class runtime under the same benchmark commit and QA contract.
 
 Outputs are saved to Google Drive under `MyDrive/lvlm_insplad_results/` and include:
 
@@ -86,11 +103,11 @@ Outputs are saved to Google Drive under `MyDrive/lvlm_insplad_results/` and incl
 - `prediction_review.csv`
 - `run_status.json`
 - `run_metadata.json`
-- final upload-ready result ZIP
+- final review ZIP
 
-`MODELS_TO_RUN` in the notebook can be edited to run only part of the registry first. More Hugging Face LVLMs can be added by extending `MODEL_REGISTRY`. Proprietary GPT/Gemini API baselines can be added later using the same QA/output contract.
+`run_metadata.json` records the benchmark commit, requested model IDs, backend/provider, GPU/VRAM, QA counts, and low-VRAM policy so the experiment is auditable.
 
-Do **not** start full 6,481 / 6,417 inference until the 20-sample multi-model smoke test is reviewed.
+> API calls can incur OpenAI/Google usage charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
 
 ## Evaluation CLI
 
