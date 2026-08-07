@@ -1,21 +1,17 @@
-# Data access status
+# Source data access status
 
-The authoritative Google Drive files were resolved through `insplad_google_drive` on repository `main`:
+The authoritative Google Drive files are confirmed:
 
 - `unsupervised_anomaly_detection.zip` — 1,170,967,719 bytes
 - `supervised_fault_classification.zip` — 874,753,167 bytes
 
-The connected Google Drive raw-download action currently rejects files larger than 100 MB. Because neither archive can be opened in this environment, their internal folder structure, category names, split names, labels, annotation files, class counts, image overlap, and hashes are **not yet verified**.
+The connected Drive interface cannot download these >100 MB archives directly, but their **locally generated ZIP manifests were supplied and analyzed**. Therefore folder structure, asset categories, splits, image counts, directory-derived labels, annotation-file existence, Benchmark Core, QA counts, and ZIP CRC32 overlap candidates are now verified from the actual archives.
 
-Per the benchmark specification, no dataset-specific category/split/defect assumptions are encoded in the implementation.
+## Still requires local ZIP byte access
 
-## Local manifest extraction
+Two checks cannot be completed from central-directory manifests alone:
 
-Run these commands against the exact downloaded ZIP files; they read the ZIP central directory and do not extract images:
+1. SHA256 confirmation of the 8,990 cross-dataset overlap candidates and JPEG dimensions.
+2. The text contents/schema of the five `annotations/image_list_val.txt` files.
 
-```bash
-python scripts/inspect_zip_manifest.py "D:/datasets/unsupervised_anomaly_detection.zip" --out-csv reports/unsupervised_zip_manifest.csv --out-json reports/unsupervised_zip_summary.json
-python scripts/inspect_zip_manifest.py "D:/datasets/supervised_fault_classification.zip" --out-csv reports/supervised_zip_manifest.csv --out-json reports/supervised_zip_summary.json
-```
-
-Once these small manifest files are available in the repository or chat, the dataset adapters and QA generation can be completed against the real structure without uploading the 2 GB of image data.
+Run the provided `scripts/hash_overlap.py` and the `--text-preview-json` option of `scripts/inspect_zip_manifest.py` against the local ZIPs to complete those two source-level checks. No raw ZIP or image data should be committed to GitHub.
