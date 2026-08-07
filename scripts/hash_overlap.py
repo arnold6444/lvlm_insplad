@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import io
+import json
 import sys
+from collections import Counter
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -47,7 +49,9 @@ def main() -> int:
     p = argparse.ArgumentParser(description='Confirm overlap candidates with SHA256 and JPEG dimensions without extracting ZIPs.')
     p.add_argument('--anomaly-zip', type=Path, required=True); p.add_argument('--fault-zip', type=Path, required=True)
     p.add_argument('--anomaly-manifest', type=Path, required=True); p.add_argument('--fault-manifest', type=Path, required=True)
-    p.add_argument('--out', type=Path, default=Path('reports/image_overlap.csv')); args = p.parse_args()
+    p.add_argument('--out', type=Path, default=Path('reports/image_overlap.csv'))
+    p.add_argument('--summary', type=Path, default=Path('reports/image_overlap_summary.json'))
+    args = p.parse_args()
     unsup = parse_unsupervised_manifest(args.anomaly_manifest); sup, _ = parse_supervised_manifest(args.fault_manifest)
     candidates = exact_overlap_candidates(sup, unsup); rows = []
     with ZipFile(args.anomaly_zip) as uz, ZipFile(args.fault_zip) as sz:
@@ -63,7 +67,17 @@ def main() -> int:
     if rows:
         with args.out.open('w', newline='', encoding='utf-8') as f:
             w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
-    print(f"confirmed SHA256 overlap: {sum(bool(r['sha256_match']) for r in rows)}/{len(rows)}")
+    by_asset = Counter(str(r['asset_category']) for r in rows if r['sha256_match'])
+    summary = {
+        'candidate_count': len(rows),
+        'sha256_match_count': sum(bool(r['sha256_match']) for r in rows),
+        'sha256_mismatch_count': sum(not bool(r['sha256_match']) for r in rows),
+        'dimension_match_count': sum(bool(r['dimension_match']) for r in rows),
+        'sha256_matches_by_asset': dict(sorted(by_asset.items())),
+        'csv': str(args.out),
+    }
+    args.summary.parent.mkdir(parents=True, exist_ok=True); args.summary.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding='utf-8')
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
     return 0
 
 if __name__ == '__main__': raise SystemExit(main())
