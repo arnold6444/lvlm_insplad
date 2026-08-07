@@ -1,14 +1,15 @@
-# Implementation Plan
+# Plan
 
-- [x] Confirm GitHub repository/main branch and Drive source file identities.
-- [x] Record Drive access limitation without guessing archive structure.
-- [x] Implement schema-independent ZIP manifest extraction.
-- [x] Implement benchmark metrics and malformed-output parsing.
-- [x] Implement QA validation primitives against a standardized image index.
-- [x] Add fixture-based unit tests.
-- [ ] Inspect exact ZIP member manifests and derive real asset/split/class structure.
-- [ ] Implement dataset adapters and structure reports from verified manifests.
-- [ ] Generate category/defect mappings from verified data.
-- [ ] Generate full QA + stratified 20-sample review files.
-- [ ] Run full QA validation on real data.
-- [ ] Produce final counts, overlap hashes, Joint Accuracy eligibility, and final reports.
+- [x] Verify Google Drive ZIP identities and sizes.
+- [x] Parse actual ZIP manifests and discover categories/splits/classes.
+- [x] Fix Benchmark Core to the five shared asset categories.
+- [x] Implement manifest-driven QA generation.
+- [x] Implement deterministic leakage-safe one-shot references.
+- [x] Generate/validate 20-sample review sets from the real manifests.
+- [x] Strengthen validation and evaluation metrics.
+- [x] Add confusion matrix and invalid-output handling.
+- [x] Add SHA256 + JPEG-dimension overlap confirmation tool.
+- [x] Produce structure/count/mapping/data-issue reports from the real manifests.
+- [ ] Run local SHA256 overlap confirmation against the two large source ZIPs.
+- [ ] Read `annotations/image_list_val.txt` contents with the text-preview option and document the exact line schema.
+- [ ] Next stage only: run one LVLM on the 20-sample QA set before any large inference.
