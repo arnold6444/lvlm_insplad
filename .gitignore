@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Raw/large datasets
+*.zip
+raw/
+data/raw/
+datasets/
+images/
+
+# Generated benchmark QA/results/reports
+# Keep code/config tracked; generated files can be selectively committed later.
