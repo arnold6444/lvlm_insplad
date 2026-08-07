@@ -59,6 +59,19 @@ def structure_report(unsup: list[dict], sup: list[dict], annotations: list[dict]
     return '\n'.join(lines)
 
 
+def sample_review(sections: list[tuple[str, list[dict]]], seed: int) -> str:
+    lines = ['# QA sample review', '', f'Deterministic stratified review sample (`seed={seed}`).', '', 'Inspect the listed local source image and compare it with the recorded GT. One-shot rows also list the fixed normal reference.', '']
+    for title, rows in sections:
+        lines += [f'## {title}', '']
+        for i, row in enumerate(rows, 1):
+            lines.append(f"{i}. `{row['id']}` — **{row['asset_category']}**")
+            lines.append(f"   - image: `{row['image']}`")
+            if row.get('reference_image'): lines.append(f"   - reference: `{row['reference_image']}`")
+            lines.append(f"   - GT: `{json.dumps(row['answer'], ensure_ascii=False)}`")
+        lines.append('')
+    return '\n'.join(lines)
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument('--anomaly-manifest', type=Path, required=True)
@@ -89,6 +102,7 @@ def main() -> int:
     write_csv(root/'reports/common_categories.csv', [{'asset_category': a, 'in_unsupervised': True, 'in_supervised': True} for a in common])
     write_csv(root/'reports/image_overlap.csv', overlap)
     (root/'reports/dataset_structure.md').write_text(structure_report(unsup, sup, annotations, common, eval_split, reason), encoding='utf-8')
+    (root/'reports/sample_review.md').write_text(sample_review([('Anomaly zero-shot', zero_sample), ('Anomaly one-shot', one_sample), ('Structured explainability', defect_sample)], args.seed), encoding='utf-8')
 
     u_leak = cross_split_duplicate_candidates(unsup); s_leak = cross_split_duplicate_candidates(sup)
     issues = ['# Data issues and benchmark decisions', '', f'- Supervised has no test split; structured evaluation uses `{eval_split}`.', '- Source normal labels `good` and `normal` are both normalized to benchmark `normal`.', '- `corrosão` is mechanically normalized to `corrosao` and is NOT merged with `rust`.', f'- Cross-dataset overlap candidates: **{len(overlap)}** by filename+size+ZIP CRC32; confirm with `scripts/hash_overlap.py` for SHA256.', f'- Unsupervised cross-split duplicate candidates: **{len(u_leak)}**.', f'- Supervised cross-split duplicate candidates: **{len(s_leak)}**.', f'- Annotation-like files: **{len(annotations)}**; manifest does not include their contents.', '', 'One-shot references use one same-asset train normal per asset, seed 42, excluding train candidates whose size+CRC32 fingerprint occurs in test.']
