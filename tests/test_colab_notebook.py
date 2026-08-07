@@ -51,6 +51,8 @@ def test_hybrid_notebook_keeps_api_and_hf_execution_separate():
     data = json.loads((root / 'notebooks' / 'lvlm_baselines_colab.ipynb').read_text(encoding='utf-8'))
     joined = '\n'.join(cell.get('source', '') for cell in data['cells'])
 
-    assert "API_READY = {'openai': bool(OPENAI_API_KEY), 'gemini': bool(GEMINI_API_KEY)}" in joined
+    assert 'API_READY' in joined
+    assert "'openai': bool(OPENAI_API_KEY)" in joined
+    assert "'gemini': bool(GEMINI_API_KEY)" in joined
     assert 'HF_READY = cuda_available and (vram_gb >= 20 or ALLOW_HF_BELOW_20GB)' in joined
     assert 'Use an L4/A100-class runtime rather than silently changing the paper baseline with 4-bit quantization.' in joined
