@@ -1,0 +1,28 @@
+{
+  "raw_to_normalized": {
+    "damper-preformed": "damper-preformed",
+    "damper-stockbridge": "damper-stockbridge",
+    "glass-insulator": "glass-insulator",
+    "glass-insulator-big-shackle": "glass-insulator-big-shackle",
+    "glass-insulator-small-shackle": "glass-insulator-small-shackle",
+    "glass-insulator-tower-shackle": "glass-insulator-tower-shackle",
+    "lightning-rod-shackle": "lightning-rod-shackle",
+    "lightning-rod-suspension": "lightning-rod-suspension",
+    "plate": "plate",
+    "polymer-insulator": "polymer-insulator",
+    "polymer-insulator-lower-shackle": "polymer-insulator-lower-shackle",
+    "polymer-insulator-tower-shackle": "polymer-insulator-tower-shackle",
+    "polymer-insulator-upper-shackle": "polymer-insulator-upper-shackle",
+    "spacer": "spacer",
+    "vari-grip": "vari-grip",
+    "yoke": "yoke",
+    "yoke-suspension": "yoke-suspension"
+  },
+  "benchmark_core": [
+    "glass-insulator",
+    "lightning-rod-suspension",
+    "polymer-insulator-upper-shackle",
+    "vari-grip",
+    "yoke-suspension"
+  ]
+}
