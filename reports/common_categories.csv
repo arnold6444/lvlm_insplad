@@ -1,0 +1,6 @@
+asset_category,in_unsupervised,in_supervised
+glass-insulator,True,True
+lightning-rod-suspension,True,True
+polymer-insulator-upper-shackle,True,True
+vari-grip,True,True
+yoke-suspension,True,True
