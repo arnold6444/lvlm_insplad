@@ -1,18 +1,8 @@
 {
-  "raw_to_normalized": {
-    "bird-nest": "bird-nest",
-    "corrosão": "corrosao",
-    "good": "normal",
-    "missing-cap": "missing-cap",
-    "normal": "normal",
-    "rust": "rust"
-  },
-  "valid_by_asset": {
-    "glass-insulator": ["normal", "missing-cap"],
-    "lightning-rod-suspension": ["normal", "rust"],
-    "polymer-insulator-upper-shackle": ["normal", "corrosao", "rust"],
-    "vari-grip": ["normal", "bird-nest", "rust"],
-    "yoke-suspension": ["normal", "rust"]
-  },
-  "normal_source_labels": ["good", "normal"]
+  "raw_to_normalized": {"bird-nest":"bird-nest","corrosão":"corrosao","good":"normal","missing-cap":"missing-cap","normal":"normal","rust":"rust"},
+  "valid_by_asset": {"glass-insulator":["normal","missing-cap"],"lightning-rod-suspension":["normal","rust"],"polymer-insulator-upper-shackle":["normal","corrosao","rust"],"vari-grip":["normal","bird-nest","rust"],"yoke-suspension":["normal","rust"]},
+  "normal_source_labels": ["good","normal"],
+  "annotation_line_schema": "<relative_image_path> <integer_class_id>",
+  "annotation_class_ids_by_asset_preview": {"yoke-suspension":{"good":[0]},"glass-insulator":{"good":[0],"missing-cap":[1]},"polymer-insulator-upper-shackle":{"good":[0],"rust":[1]},"lightning-rod-suspension":{"good":[0],"rust":[1]},"vari-grip":{"bird-nest":[0],"good":[1],"rust":[2]}},
+  "annotation_class_id_policy": "Use defect folder names for defect/anomaly GT; do not interpret annotation class IDs as binary anomaly labels."
 }

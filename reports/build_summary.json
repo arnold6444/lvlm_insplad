@@ -1,13 +1,1 @@
-{
-  "unsupervised_assets": ["damper-preformed", "damper-stockbridge", "glass-insulator", "glass-insulator-big-shackle", "glass-insulator-small-shackle", "glass-insulator-tower-shackle", "lightning-rod-shackle", "lightning-rod-suspension", "plate", "polymer-insulator", "polymer-insulator-lower-shackle", "polymer-insulator-tower-shackle", "polymer-insulator-upper-shackle", "spacer", "vari-grip", "yoke", "yoke-suspension"],
-  "supervised_assets": ["glass-insulator", "lightning-rod-suspension", "polymer-insulator-upper-shackle", "vari-grip", "yoke-suspension"],
-  "common_assets": ["glass-insulator", "lightning-rod-suspension", "polymer-insulator-upper-shackle", "vari-grip", "yoke-suspension"],
-  "anomaly_qa_count": 2656,
-  "anomaly_one_shot_count": 2656,
-  "defect_qa_count": 6417,
-  "structured_eval_split": "val",
-  "structured_eval_split_reason": "no test split present; using official validation split",
-  "overlap_candidate_count": 8990,
-  "overlap_match_basis": "filename+size+zip_crc32; SHA256 confirmation pending local ZIP run",
-  "joint_accuracy_enabled": true
-}
+{"track_a":{"dataset":"unsupervised_anomaly_detection","assets":["damper-preformed","damper-stockbridge","glass-insulator","glass-insulator-big-shackle","glass-insulator-small-shackle","glass-insulator-tower-shackle","lightning-rod-shackle","lightning-rod-suspension","plate","polymer-insulator","polymer-insulator-lower-shackle","polymer-insulator-tower-shackle","polymer-insulator-upper-shackle","spacer","vari-grip","yoke","yoke-suspension"],"evaluation_split":"test","zero_shot_qa_count":6481,"one_shot_qa_count":6481,"assets_with_both_classes":["damper-stockbridge","glass-insulator","glass-insulator-big-shackle","glass-insulator-small-shackle","glass-insulator-tower-shackle","lightning-rod-shackle","lightning-rod-suspension","plate","polymer-insulator","polymer-insulator-lower-shackle","polymer-insulator-tower-shackle","polymer-insulator-upper-shackle","vari-grip","yoke-suspension"],"normal_only_assets":["damper-preformed","spacer","yoke"]},"track_b":{"dataset":"supervised_fault_classification","assets":["glass-insulator","lightning-rod-suspension","polymer-insulator-upper-shackle","vari-grip","yoke-suspension"],"evaluation_split":"val","structured_qa_count":6417},"shared_assets":["glass-insulator","lightning-rod-suspension","polymer-insulator-upper-shackle","vari-grip","yoke-suspension"],"exact_overlap_count":8990,"aligned_test_val_exact_count":1384,"aligned_binary_gt_conflict_count":6,"aligned_core_count":1378}

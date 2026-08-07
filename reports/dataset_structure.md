@@ -1,70 +1,52 @@
-# InsPLAD fault dataset structure (manifest-verified)
+# InsPLAD fault dataset structure (verified)
 
-## unsupervised_anomaly_detection.zip
-
-```text
-unsupervised_anomaly_detection/
-├─ damper-preformed/                 train[good], test[good]
-├─ damper-stockbridge/               train[good], test[good,rust]
-├─ glass-insulator/                  train[good], test[good,missingcap]
-├─ glass-insulator-big-shackle/      train[good], test[good,rust]
-├─ glass-insulator-small-shackle/    train[good], test[good,nest]
-├─ glass-insulator-tower-shackle/    train[good], test[good,rust]
-├─ lightning-rod-shackle/            train[good], test[good,rust]
-├─ lightning-rod-suspension/         train[good], test[good,rust]
-├─ plate/                            train[good], test[good,peeling-paint]
-├─ polymer-insulator/                train[good], test[good,torned-up]
-├─ polymer-insulator-lower-shackle/  train[good], test[good,rust]
-├─ polymer-insulator-tower-shackle/  train[good], test[good,rust]
-├─ polymer-insulator-upper-shackle/  train[good], test[good,rust]
-├─ spacer/                           train[good], test[good]
-├─ vari-grip/                        train[good], test[good,nest,rust]
-├─ yoke/                             train[good], test[good]
-└─ yoke-suspension/                  train[good], test[good,rust]
-```
+## Track A — `unsupervised_anomaly_detection.zip`
 
 - Asset categories: **17**
+- Train images: **21,139**
+- Test images: **6,481**
 - Splits: `train`, `test`
-- JPG images: **27,620**
+- Train contains normal (`good`) reference candidates.
+- Track A evaluates all 17 assets on official `test`.
 
-## supervised_fault_classification.zip
+Test defect folders observed across assets include `rust`, `missingcap`, `nest`, `peeling-paint`, and `torned-up`; three assets (`damper-preformed`, `spacer`, `yoke`) have normal-only test data.
 
-```text
-defect_supervised/
-├─ glass-insulator/
-│  ├─ train/[good, missing-cap]
-│  ├─ val/[good, missing-cap]
-│  └─ annotations/image_list_val.txt
-├─ lightning-rod-suspension/
-│  ├─ train/[good, rust]
-│  ├─ val/[good, rust]
-│  └─ annotations/image_list_val.txt
-├─ polymer-insulator-upper-shackle/
-│  ├─ train/[normal, corrosão]
-│  ├─ val/[good, rust]
-│  └─ annotations/image_list_val.txt
-├─ vari-grip/
-│  ├─ train/[good, bird-nest, rust]
-│  ├─ val/[good, bird-nest, rust]
-│  └─ annotations/image_list_val.txt
-└─ yoke-suspension/
-   ├─ train/[good, rust]
-   ├─ val/[good, rust]
-   └─ annotations/image_list_val.txt
-```
+## Track B — `supervised_fault_classification.zip`
 
 - Asset categories: **5**
-- Splits: `train`, `val`; **no test split observed**
-- JPG images: **11,525**
-- Annotation-like files: **5** `.txt` files named `image_list_val.txt`
-- Their contents were not captured by the manifest, so their line schema is not inferred here.
+- Train images: **5,108**
+- Val images: **6,417**
+- Splits: `train`, `val`; no test split observed.
+- Structured evaluation uses official `val`.
+- Five `annotations/image_list_val.txt` files are present.
 
-## Benchmark Core intersection
+### Shared assets
 
-1. `glass-insulator`
-2. `lightning-rod-suspension`
-3. `polymer-insulator-upper-shackle`
-4. `vari-grip`
-5. `yoke-suspension`
+- `glass-insulator`
+- `lightning-rod-suspension`
+- `polymer-insulator-upper-shackle`
+- `vari-grip`
+- `yoke-suspension`
 
-Anomaly detection uses the official unsupervised `test` split restricted to these five assets (**2,656 images**). Structured explainability uses supervised `val` (**6,417 images**) because the actual supervised archive has no `test` split.
+### Supervised defect folders
+
+- `glass-insulator`: `good`, `missing-cap`
+- `lightning-rod-suspension`: `good`, `rust`
+- `polymer-insulator-upper-shackle`: train has `normal`, `corrosão`; val has `good`, `rust`
+- `vari-grip`: `good`, `bird-nest`, `rust`
+- `yoke-suspension`: `good`, `rust`
+
+## Annotation schema
+
+Verified line schema: `<relative_image_path> <integer_class_id>`.
+
+The integer is an asset-local class ID, not a universal binary anomaly label. `vari-grip` proves this: `bird-nest→0`, `good→1`, `rust→2`. Semantic benchmark GT therefore comes from folder defect names.
+
+## Exact overlap and Aligned Core
+
+- Exact SHA256-identical images across ZIPs: **8,990 / 8,990 candidates**.
+- Exact `unsupervised test ↔ supervised val` pairs: **1,384**.
+- Binary GT conflicts among those exact pairs: **6**.
+- Clean Aligned Core: **1,378**.
+
+Aligned Core definition: `unsupervised test ∩ supervised val ∩ exact SHA256 match ∩ binary GT agreement`.

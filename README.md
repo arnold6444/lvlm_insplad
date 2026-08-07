@@ -1,42 +1,115 @@
 # InsPLAD LVLM Benchmark v1
 
-InsPLAD-based baseline benchmark for **Anomaly Detection** (zero-shot / one-shot) and **Structured Explainability** (`anomaly` + `defect_class`). Benchmark v1 excludes LVLM training, large-scale inference, free-form descriptions, localization, and LVLM Judge.
+InsPLAD-based baseline benchmark for **Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style QA evaluation. v1 builds the benchmark, validation, and evaluation tooling; it does **not** fine-tune an LVLM or run large-scale inference.
 
-## Verified source structure
+## Verified benchmark design
 
-Derived from manifests of the two authoritative Google Drive ZIPs:
+### Track A — General Anomaly Detection
 
-- `unsupervised_anomaly_detection.zip`: 17 assets, `train/test`, 27,620 JPGs.
-- `supervised_fault_classification.zip`: 5 assets, `train/val`, 11,525 JPGs + five `annotations/image_list_val.txt` files.
-- Benchmark Core: the five shared assets.
-- Core unsupervised test QA: **2,656** images.
-- Structured QA: supervised has no test split, so official **val** is used: **6,417** images.
+Source: `unsupervised_anomaly_detection.zip`
+
+- 17 asset categories
+- `train/test`
+- 27,620 JPGs total
+- official **test**: **6,481** images
+- zero-shot: test image only
+- one-shot: the same 6,481 test images + one fixed same-asset normal image from train (`seed=42`)
+- 14 assets contain both normal and anomalous test GT
+- 3 assets are normal-only in test: `damper-preformed`, `spacer`, `yoke`
+
+### Track B — Structured Fault Understanding
+
+Source: `supervised_fault_classification.zip`
+
+- 5 asset categories
+- `train/val` (no test split)
+- 11,525 JPGs
+- official **val**: **6,417** images
+- output: `{"anomaly": "...", "defect_class": "..."}`
+- Joint Accuracy is computed inside this supervised track only.
+
+### Aligned Core — same-image cross-track analysis
+
+The two ZIPs share **8,990 exact SHA256-identical images**. Of these, **1,384** are simultaneously:
+
+- unsupervised `test`, and
+- supervised `val`.
+
+Six exact same images have conflicting binary GT between dataset variants, so the clean Aligned Core is:
+
+**1,378 images = unsupervised test ∩ supervised val ∩ exact SHA256 match ∩ binary GT agreement**
+
+`reports/aligned_core.csv` links the Track A anomaly ID, Track B structured ID, reference image, and GT for each clean same-image row.
+
+## Verified supervised annotation schema
+
+Each `annotations/image_list_val.txt` line is:
+
+```text
+<relative_image_path> <integer_class_id>
+```
+
+The integer is an **asset-local classification class ID**, not a universal normal/anomalous flag. For example, `vari-grip` uses `bird-nest→0`, `good→1`, `rust→2`. Benchmark semantic GT therefore comes from the defect folder name.
 
 ## Setup
 
-Run from the repository root (not `C:\Windows\System32`).
+Run from the repository root, not `C:\Windows\System32`.
 
 ```powershell
 python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-## Build manifests without extracting ZIPs
+To see every automatic test name:
 
 ```powershell
-python scripts/inspect_zip_manifest.py "D:/datasets/unsupervised_anomaly_detection.zip" --out-csv reports/unsupervised_zip_manifest.csv --out-json reports/unsupervised_zip_summary.json
-python scripts/inspect_zip_manifest.py "D:/datasets/supervised_fault_classification.zip" --out-csv reports/supervised_zip_manifest.csv --out-json reports/supervised_zip_summary.json --text-preview-json reports/supervised_annotation_previews.json
+python -m pytest -v
 ```
 
-## Build QA + reports
+## Build source manifests without extracting ZIPs
+
+```powershell
+python scripts/inspect_zip_manifest.py `
+  "C:\path\unsupervised_anomaly_detection.zip" `
+  --out-csv reports/unsupervised_zip_manifest.csv `
+  --out-json reports/unsupervised_zip_summary.json
+
+python scripts/inspect_zip_manifest.py `
+  "C:\path\supervised_fault_classification.zip" `
+  --out-csv reports/supervised_zip_manifest.csv `
+  --out-json reports/supervised_zip_summary.json `
+  --text-preview-json reports/supervised_annotation_previews.json
+```
+
+## Confirm exact overlap
+
+```powershell
+python scripts/hash_overlap.py `
+  --anomaly-zip "C:\path\unsupervised_anomaly_detection.zip" `
+  --fault-zip "C:\path\supervised_fault_classification.zip" `
+  --anomaly-manifest reports/unsupervised_zip_manifest.csv `
+  --fault-manifest reports/supervised_zip_manifest.csv `
+  --out reports/image_overlap.csv `
+  --summary reports/image_overlap_summary.json
+```
+
+## Build QA, reports, and Aligned Core
 
 ```powershell
 python scripts/build_benchmark.py `
   --anomaly-manifest reports/unsupervised_zip_manifest.csv `
-  --fault-manifest reports/supervised_zip_manifest.csv
+  --fault-manifest reports/supervised_zip_manifest.csv `
+  --overlap-summary reports/image_overlap_summary.json `
+  --annotation-previews reports/supervised_annotation_previews.json
 ```
 
-This creates `data/qa/anomaly_zero_shot.jsonl`, `data/qa/anomaly_one_shot.jsonl`, `data/qa/defect_qa.jsonl`, mappings, reports, and 20-sample review files.
+Main outputs:
+
+- `data/qa/anomaly_zero_shot.jsonl` — 6,481
+- `data/qa/anomaly_one_shot.jsonl` — 6,481
+- `data/qa/defect_qa.jsonl` — 6,417
+- `reports/aligned_core.csv` — 1,378 same-image links
+- `samples/*_20.jsonl` — deterministic smoke-test samples
 
 ## Validate QA
 
@@ -46,20 +119,7 @@ python scripts/validate_qa.py `
   --fault-manifest reports/supervised_zip_manifest.csv
 ```
 
-## Confirm exact image overlap with SHA256
-
-Manifest comparison finds 8,990 strong overlap candidates via filename + uncompressed size + ZIP CRC32. Confirm exact overlap and JPEG dimensions without extracting:
-
-```powershell
-python scripts/hash_overlap.py `
-  --anomaly-zip "D:/datasets/unsupervised_anomaly_detection.zip" `
-  --fault-zip "D:/datasets/supervised_fault_classification.zip" `
-  --anomaly-manifest reports/unsupervised_zip_manifest.csv `
-  --fault-manifest reports/supervised_zip_manifest.csv `
-  --out reports/image_overlap.csv
-```
-
-## Evaluate model outputs later
+## Evaluate LVLM outputs later
 
 ```powershell
 python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_zero_shot.jsonl --predictions predictions/anomaly_zero_shot.jsonl --regime zero_shot
@@ -67,4 +127,4 @@ python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_one_shot.jsonl --
 python scripts/evaluate.py --task explainability --qa data/qa/defect_qa.jsonl --predictions predictions/defect.jsonl
 ```
 
-No LVLM inference is executed in this stage.
+The next stage is a **20-QA LVLM smoke test**, not full-dataset inference.

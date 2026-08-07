@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import json
 import random
 import re
 import unicodedata
@@ -88,6 +89,10 @@ def category_intersection(left: Iterable[Mapping[str, object]], right: Iterable[
     return sorted({str(r['asset_category']) for r in left} & {str(r['asset_category']) for r in right})
 
 
+def all_assets(rows: Iterable[Mapping[str, object]]) -> list[str]:
+    return sorted({str(r['asset_category']) for r in rows})
+
+
 def choose_evaluation_split(rows: Sequence[Mapping[str, object]]) -> tuple[str, str]:
     splits = {str(r.get('split', '')).lower() for r in rows}
     if 'test' in splits:
@@ -121,11 +126,113 @@ def exact_overlap_candidates(supervised: Sequence[Mapping[str, object]], unsuper
                 'supervised_path': s['relative_path'], 'unsupervised_path': u['relative_path'],
                 'asset_category': s['asset_category'], 'supervised_split': s['split'],
                 'supervised_defect_raw': s['source_defect_raw'], 'supervised_defect': s['defect_class'],
+                'supervised_anomaly': s['anomaly'],
                 'unsupervised_split': u['split'], 'unsupervised_label_raw': u['source_label_raw'],
                 'unsupervised_anomaly': u['label'], 'filename': s['filename'], 'size': s['size'],
                 'crc32': s['crc32'], 'match_basis': 'filename+size+zip_crc32',
             })
     return out
+
+
+def load_overlap_confirmation(path: Path, candidate_count: int) -> dict:
+    data = json.loads(path.read_text(encoding='utf-8'))
+    required = {'candidate_count', 'sha256_match_count', 'sha256_mismatch_count'}
+    missing = required - set(data)
+    if missing:
+        raise ValueError(f'overlap summary missing fields: {sorted(missing)}')
+    if int(data['candidate_count']) != candidate_count:
+        raise ValueError(f"overlap summary candidate_count={data['candidate_count']} does not match manifest candidates={candidate_count}")
+    if int(data['sha256_match_count']) + int(data['sha256_mismatch_count']) != candidate_count:
+        raise ValueError('overlap summary SHA256 counts do not add up to candidate_count')
+    data['all_candidates_sha256_confirmed'] = (
+        int(data['sha256_match_count']) == candidate_count and int(data['sha256_mismatch_count']) == 0
+    )
+    return data
+
+
+def aligned_core_rows(overlap: Sequence[Mapping[str, object]], *, exact_sha256_confirmed: bool) -> tuple[list[dict], list[dict]]:
+    if not exact_sha256_confirmed:
+        return [], []
+    aligned = [
+        dict(r) for r in overlap
+        if str(r.get('unsupervised_split')) == 'test' and str(r.get('supervised_split')) == 'val'
+    ]
+    clean, conflicts = [], []
+    for row in aligned:
+        row['exact_sha256_match'] = True
+        if row.get('unsupervised_anomaly') == row.get('supervised_anomaly'):
+            row['binary_gt_agreement'] = True
+            row['core_anomaly'] = row['unsupervised_anomaly']
+            clean.append(row)
+        else:
+            row['binary_gt_agreement'] = False
+            conflicts.append(row)
+    return clean, conflicts
+
+
+def core_link_rows(clean_overlap: Sequence[Mapping[str, object]], references: Mapping[str, Mapping[str, object]]) -> list[dict]:
+    rows = []
+    for row in sorted(clean_overlap, key=lambda r: (str(r['asset_category']), str(r['unsupervised_path']))):
+        asset = str(row['asset_category'])
+        unsup_path = str(row['unsupervised_path'])
+        sup_path = str(row['supervised_path'])
+        rows.append({
+            'core_id': stable_id('core', unsup_path),
+            'asset_category': asset,
+            'unsupervised_image': unsup_path,
+            'supervised_image': sup_path,
+            'anomaly_id': stable_id('anomaly', unsup_path),
+            'structured_id': stable_id('defect', sup_path),
+            'reference_image': references[asset]['relative_path'],
+            'anomaly_answer': row['core_anomaly'],
+            'defect_class': row['supervised_defect'],
+            'unsupervised_source_label_raw': row['unsupervised_label_raw'],
+            'supervised_source_defect_raw': row['supervised_defect_raw'],
+            'exact_sha256_match': True,
+            'binary_gt_agreement': True,
+        })
+    return rows
+
+
+def parse_annotation_previews(path: Path) -> dict:
+    values = json.loads(path.read_text(encoding='utf-8'))
+    if not isinstance(values, list):
+        raise ValueError('annotation preview JSON must be a list')
+    by_asset: dict[str, dict] = {}
+    for item in values:
+        rel = str(item.get('path', ''))
+        parts = PurePosixPath(rel).parts
+        if len(parts) < 4:
+            continue
+        asset = normalize_key(parts[-3])
+        class_ids: dict[str, set[int]] = defaultdict(set)
+        parsed_lines = 0
+        for line in str(item.get('preview', '')).splitlines():
+            match = re.match(r'^(.*?)\s+(-?\d+)\s*$', line)
+            if not match:
+                continue
+            image_rel, class_id = match.group(1), int(match.group(2))
+            defect_raw = PurePosixPath(image_rel).parts[0] if PurePosixPath(image_rel).parts else ''
+            if defect_raw:
+                class_ids[defect_raw].add(class_id)
+                parsed_lines += 1
+        by_asset[asset] = {
+            'annotation_path': rel,
+            'truncated': bool(item.get('truncated')),
+            'preview_lines_parsed': parsed_lines,
+            'raw_defect_to_class_ids': {k: sorted(v) for k, v in sorted(class_ids.items())},
+        }
+
+    vari = by_asset.get('vari-grip', {}).get('raw_defect_to_class_ids', {})
+    numeric_ids_are_binary_anomaly = not (
+        1 in vari.get('good', []) and 0 in vari.get('bird-nest', [])
+    )
+    return {
+        'line_schema': '<relative_image_path> <integer_class_id>',
+        'by_asset': by_asset,
+        'numeric_class_id_is_binary_anomaly': numeric_ids_are_binary_anomaly,
+        'gt_policy': 'Use defect folder names for defect/anomaly GT; do not interpret annotation class IDs as binary anomaly labels.',
+    }
 
 
 def cross_split_duplicate_candidates(rows: Sequence[Mapping[str, object]]) -> list[dict]:
@@ -160,9 +267,9 @@ def stable_id(prefix: str, relative_path: str) -> str:
     return f"{prefix}-{hashlib.sha256(relative_path.encode('utf-8')).hexdigest()[:16]}"
 
 
-def build_anomaly_qa(unsupervised_rows: Sequence[Mapping[str, object]], common_assets: Iterable[str], *, references: Mapping[str, Mapping[str, object]] | None = None) -> list[dict]:
-    assets = set(common_assets)
-    rows = sorted((r for r in unsupervised_rows if r['asset_category'] in assets and r['split'] == 'test'), key=lambda r: str(r['relative_path']))
+def build_anomaly_qa(unsupervised_rows: Sequence[Mapping[str, object]], assets: Iterable[str], *, references: Mapping[str, Mapping[str, object]] | None = None) -> list[dict]:
+    selected_assets = set(assets)
+    rows = sorted((r for r in unsupervised_rows if r['asset_category'] in selected_assets and r['split'] == 'test'), key=lambda r: str(r['relative_path']))
     qa = []
     for row in rows:
         item = {
@@ -212,7 +319,7 @@ def stratified_sample(rows: Sequence[Mapping[str, object]], n: int = 20, *, seed
             label = str(answer.get('defect_class')) if isinstance(answer, dict) else str(answer)
             label_groups[label].append(row)
         for values in label_groups.values():
-            values.sort(key=lambda r: str(r['id']))
+            values.sort(key=lambda r: str(r.get('id') or r.get('core_id') or r))
             rng.shuffle(values)
         labels, cursor, pool = sorted(label_groups), 0, []
         while len(pool) < take and labels:
@@ -225,3 +332,17 @@ def stratified_sample(rows: Sequence[Mapping[str, object]], n: int = 20, *, seed
             labels = [label for label in labels if cursor < len(label_groups[label])]
         selected.extend(dict(r) for r in pool[:take])
     return selected[:n]
+
+
+def stratified_core_sample(rows: Sequence[Mapping[str, object]], n: int = 20, *, seed: int = 42) -> list[dict]:
+    decorated = []
+    for row in rows:
+        item = dict(row)
+        item['id'] = item['core_id']
+        item['answer'] = {'anomaly': item['anomaly_answer'], 'defect_class': item['defect_class']}
+        decorated.append(item)
+    sampled = stratified_sample(decorated, n=n, seed=seed)
+    for row in sampled:
+        row.pop('id', None)
+        row.pop('answer', None)
+    return sampled
