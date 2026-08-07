@@ -119,6 +119,23 @@ python scripts/validate_qa.py `
   --fault-manifest reports/supervised_zip_manifest.csv
 ```
 
+## Google Colab Qwen3-VL 20-sample baseline
+
+Open `notebooks/qwen3_vl_baseline.ipynb` in Google Colab and select a GPU runtime. The notebook is designed to run top-to-bottom and will:
+
+1. clone this branch and run the benchmark unit tests,
+2. mount Google Drive,
+3. find `unsupervised_anomaly_detection.zip` and `supervised_fault_classification.zip`,
+4. copy the ZIPs to `/content` for faster repeated reads,
+5. select `Qwen/Qwen3-VL-8B-Instruct` when VRAM is at least 22 GB, otherwise `Qwen/Qwen3-VL-4B-Instruct`,
+6. run Zero-shot 20 / One-shot 20 / Structured 20 with deterministic greedy decoding,
+7. save prediction JSONL files and invoke the existing `scripts/evaluate.py`,
+8. write `smoke_review.csv`, metrics CSVs, run metadata, and a final upload-ready ZIP under `MyDrive/lvlm_insplad_results/`.
+
+The notebook reads only the images needed for the smoke test from the source ZIPs; it does not extract the full datasets. If an 8B run runs out of GPU memory, set `MODEL_ID_OVERRIDE = 'Qwen/Qwen3-VL-4B-Instruct'` and rerun from the model-selection/load cells.
+
+Do **not** start full 6,481 / 6,417 inference until the 20-sample outputs and invalid-output behavior have been reviewed.
+
 ## Evaluate LVLM outputs later
 
 ```powershell
@@ -127,4 +144,4 @@ python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_one_shot.jsonl --
 python scripts/evaluate.py --task explainability --qa data/qa/defect_qa.jsonl --predictions predictions/defect.jsonl
 ```
 
-The next stage is a **20-QA LVLM smoke test**, not full-dataset inference.
+The next stage is to **execute the Colab 20-sample smoke test and inspect its saved result ZIP**, not full-dataset inference.
