@@ -1,0 +1,18 @@
+{
+  "raw_to_normalized": {
+    "bird-nest": "bird-nest",
+    "corrosão": "corrosao",
+    "good": "normal",
+    "missing-cap": "missing-cap",
+    "normal": "normal",
+    "rust": "rust"
+  },
+  "valid_by_asset": {
+    "glass-insulator": ["normal", "missing-cap"],
+    "lightning-rod-suspension": ["normal", "rust"],
+    "polymer-insulator-upper-shackle": ["normal", "corrosao", "rust"],
+    "vari-grip": ["normal", "bird-nest", "rust"],
+    "yoke-suspension": ["normal", "rust"]
+  },
+  "normal_source_labels": ["good", "normal"]
+}
