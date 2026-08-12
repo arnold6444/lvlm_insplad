@@ -2,16 +2,14 @@ import json
 from pathlib import Path
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
-
 def _joined_notebook_source() -> str:
-    notebook = _repo_root() / 'notebooks' / 'lvlm_baselines_colab.ipynb'
+    root = Path(__file__).resolve().parents[1]
+    notebook = root / 'notebooks' / 'lvlm_baselines_colab.ipynb'
     data = json.loads(notebook.read_text(encoding='utf-8'))
 
     assert data['nbformat'] == 4
     assert data['metadata']['accelerator'] == 'GPU'
+    assert len(data['cells']) >= 10
 
     sources = []
     for index, cell in enumerate(data['cells']):
@@ -22,69 +20,56 @@ def _joined_notebook_source() -> str:
     return '\n'.join(sources)
 
 
-def _runner_source() -> str:
-    source = (_repo_root() / 'scripts' / 'run_luxia_colab.py').read_text(encoding='utf-8')
-    compile(source, 'run_luxia_colab.py', 'exec')
-    return source
-
-
-def test_colab_notebook_bootstraps_main_and_luxia_runner():
+def test_colab_contains_full_benchmark_flow_inline():
     joined = _joined_notebook_source()
     for expected in (
         "BRANCH = 'main'",
         'GITHUB_TOKEN',
         'LUXIA_API_KEY',
-        'scripts/run_luxia_colab.py',
-        "Path('/content')",
-    ):
-        assert expected in joined
-
-    assert 'OPENAI_API_KEY' not in joined
-    assert 'GEMINI_API_KEY' not in joined
-    assert 'drive.mount' not in joined
-    assert '/content/drive' not in joined
-    assert 'MyDrive' not in joined
-
-
-def test_luxia_runner_keeps_common_benchmark_and_hf_adapters():
-    runner = _runner_source()
-    for expected in (
         'gpt-5.3-chat-latest',
         'gemini-3-flash-preview',
-        'luxia_external',
-        'LUXIA_API_KEY',
-        'LUXIA_EXTERNAL_CHAT_URL',
         'infer_luxia_external',
-        'api_probe_status',
+        'API_PROBE_STATUS',
         'skipped_api_probe_failed',
         'Qwen/Qwen3-VL-8B-Instruct',
         'OpenGVLab/InternVL3_5-8B',
         'openbmb/MiniCPM-V-4_5',
         'llava-hf/llava-onevision-qwen2-7b-ov-hf',
-        'internvl_chat',
-        'minicpm_chat',
+        "'adapter': 'internvl_chat'",
+        "'adapter': 'minicpm_chat'",
         'load_hf_adapter',
         'infer_hf',
         'samples/anomaly_zero_shot_20.jsonl',
         'samples/anomaly_one_shot_20.jsonl',
         'samples/defect_20.jsonl',
+        'scripts/evaluate.py',
         'leaderboard.csv',
         'prediction_review.csv',
         'run_metadata.json',
-        'skipped_insufficient_gpu',
-        'torch.cuda.empty_cache',
+        'files.download(str(zip_path))',
     ):
-        assert expected in runner
+        assert expected in joined
+
+    assert 'run_luxia_colab.py' not in joined
+    assert 'OPENAI_API_KEY' not in joined
+    assert 'GEMINI_API_KEY' not in joined
 
 
-def test_luxia_runner_uses_runtime_uploads_not_google_drive():
-    runner = _runner_source()
-    assert 'Path("/content")' in runner
-    assert 'unsupervised_anomaly_detection.zip' in runner
-    assert 'supervised_fault_classification.zip' in runner
-    assert 'Path("/content/lvlm_insplad_results")' in runner
-    assert 'files.download(str(zip_path))' in runner
+def test_colab_uses_runtime_uploads_instead_of_google_drive():
+    joined = _joined_notebook_source()
+    assert "Path('/content')" in joined
+    assert 'unsupervised_anomaly_detection.zip' in joined
+    assert 'supervised_fault_classification.zip' in joined
+    assert "Path('/content/lvlm_insplad_results')" in joined
+    assert 'drive.mount' not in joined
+    assert '/content/drive' not in joined
+    assert 'MyDrive' not in joined
 
-    assert 'drive.mount' not in runner
-    assert '/content/drive' not in runner
-    assert 'MyDrive' not in runner
+
+def test_colab_preserves_model_specific_hf_adapters():
+    joined = _joined_notebook_source()
+    assert "'adapter': 'pipeline'" in joined
+    assert "'adapter': 'internvl_chat'" in joined
+    assert "'adapter': 'minicpm_chat'" in joined
+    assert 'load_hf_adapter(spec)' in joined
+    assert 'torch.cuda.empty_cache()' in joined
