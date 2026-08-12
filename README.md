@@ -53,7 +53,7 @@ python -m pytest -v
 
 ## Baseline policy — Luxia API for closed models, GPU for open-source models
 
-`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing closed models through LuxiaCloud and open-source models through direct Hugging Face inference.
+`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing closed models through LuxiaCloud and open-source models through direct Hugging Face inference. The complete smoke-run orchestration is kept directly in the notebook as step-by-step cells so the notebook can be run top-to-bottom in Colab without a separate runner script.
 
 ### Closed/API baselines through LuxiaCloud
 
@@ -70,7 +70,7 @@ https://bridge.luxiacloud.com/luxia/v1/chat
 
 If Saltlux provides a dedicated external-model route later, set the optional environment variable `LUXIA_EXTERNAL_CHAT_URL` without changing benchmark code.
 
-Because the public Luxia chat documentation does not currently spell out the external-model multimodal request schema, the runner performs a **single-image probe for each external model before the smoke benchmark**. If the bridge rejects the model ID or multimodal content, that model is marked `skipped_api_probe_failed` and the remaining 60 calls are not attempted.
+Because the public Luxia chat documentation does not currently spell out the external-model multimodal request schema, the notebook performs a **single-image probe for each external model before the smoke benchmark**. If the bridge rejects the model ID or multimodal content, that model is marked `skipped_api_probe_failed` and the remaining 60 calls are not attempted.
 
 ### Open-source/GPU baselines
 
@@ -87,7 +87,7 @@ The notebook intentionally does **not** switch these models to 4-bit quantizatio
 
 ## Colab smoke test
 
-Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab.
+Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run the cells from top to bottom.
 
 Because this repository is private, add the following values in **Colab → Secrets** before running:
 
@@ -103,7 +103,7 @@ Do **not** mount Google Drive. In the Colab left sidebar, open **Files** and upl
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-The runner checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
+The notebook checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
 
 Every requested model receives the identical smoke set:
 
