@@ -35,7 +35,7 @@ def test_colab_notebook_bootstraps_main_and_luxia_runner():
         'GITHUB_TOKEN',
         'LUXIA_API_KEY',
         'scripts/run_luxia_colab.py',
-        "COLAB_ROOT" if False else "Path('/content')",
+        "Path('/content')",
     ):
         assert expected in joined
 
@@ -61,7 +61,7 @@ def test_luxia_runner_keeps_common_benchmark_and_hf_adapters():
         'OpenGVLab/InternVL3_5-8B',
         'openbmb/MiniCPM-V-4_5',
         'llava-hf/llava-onevision-qwen2-7b-ov-hf',
-        "'adapter': 'internvl_chat'" if False else 'internvl_chat',
+        'internvl_chat',
         'minicpm_chat',
         'load_hf_adapter',
         'infer_hf',
