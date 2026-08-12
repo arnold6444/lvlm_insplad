@@ -21,7 +21,9 @@
 - [x] Add OpenAI/Gemini secret handling, retries, incremental predictions, unified evaluation, leaderboard, review CSV, and run metadata.
 - [x] Skip direct HF models below 20 GB VRAM instead of silently changing the research condition with 4-bit quantization.
 - [x] Extend notebook static tests for API/HF separation, secrets, model registry, and low-VRAM behavior.
+- [x] Remove Google Drive mounting from the Colab experiment path; read source ZIPs directly from `/content` and download the final result ZIP locally.
 - [ ] Add `GITHUB_TOKEN`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` to Colab Secrets.
+- [ ] Upload `unsupervised_anomaly_detection.zip` and `supervised_fault_classification.zip` to the Colab Files panel (`/content`).
 - [ ] Execute GPT/Gemini smoke baselines: Zero-shot 20 / One-shot 20 / Structured 20.
 - [ ] Execute Qwen/InternVL/MiniCPM/LLaVA smoke baselines on an L4/A100-class rented GPU.
 - [ ] Review prediction validity, metrics, latency, and model-specific failures.

@@ -53,7 +53,7 @@ python -m pytest -v
 
 ## Baseline policy — API for closed models, GPU for open-source models
 
-`notebooks/lvlm_baselines_colab.ipynb` now follows an MMAD-style mixed execution policy while preserving one common QA/prompt/evaluation contract.
+`notebooks/lvlm_baselines_colab.ipynb` follows an MMAD-style mixed execution policy while preserving one common QA/prompt/evaluation contract.
 
 ### Closed/API baselines
 
@@ -85,6 +85,15 @@ Because this repository is private, add the following values in **Colab → Secr
 
 The notebook never prints the secret values. Missing API keys cause only that provider to be skipped.
 
+### Source ZIP upload
+
+Do **not** mount Google Drive. In the Colab left sidebar, open **Files** and upload these two files directly into the runtime root `/content`:
+
+- `unsupervised_anomaly_detection.zip`
+- `supervised_fault_classification.zip`
+
+The notebook checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
+
 Every requested model receives the identical smoke set:
 
 ```text
@@ -93,9 +102,9 @@ Zero-shot 20
 → Structured 20
 ```
 
-The API phase runs independently from the GPU phase. This means GPT/Gemini can be evaluated even on a CPU/T4 runtime; the open-source models can then be run on an L4/A100-class runtime under the same benchmark commit and QA contract.
+The API phase runs independently from the GPU phase. This means GPT/Gemini can be evaluated even without a suitable local GPU; the open-source models can then be run on an L4/A100-class runtime under the same benchmark commit and QA contract.
 
-Outputs are saved to Google Drive under `MyDrive/lvlm_insplad_results/` and include:
+Outputs are written to the Colab runtime under `/content/lvlm_insplad_results/` and include:
 
 - per-model prediction JSONL
 - per-model metric CSVs
@@ -105,7 +114,9 @@ Outputs are saved to Google Drive under `MyDrive/lvlm_insplad_results/` and incl
 - `run_metadata.json`
 - final review ZIP
 
-`run_metadata.json` records the benchmark commit, requested model IDs, backend/provider, GPU/VRAM, QA counts, and low-VRAM policy so the experiment is auditable.
+The final notebook cell packages the run directory and downloads the result ZIP to your computer. Because `/content` is ephemeral, download the ZIP before the Colab runtime is reset.
+
+`run_metadata.json` records the benchmark commit, requested model IDs, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy so the experiment is auditable.
 
 > API calls can incur OpenAI/Google usage charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
 
