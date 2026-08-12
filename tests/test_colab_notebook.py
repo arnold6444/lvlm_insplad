@@ -36,6 +36,10 @@ def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
         'OpenGVLab/InternVL3_5-8B',
         'openbmb/MiniCPM-V-4_5',
         'llava-hf/llava-onevision-qwen2-7b-ov-hf',
+        "'adapter': 'internvl_chat'",
+        "'adapter': 'minicpm_chat'",
+        'load_hf_adapter',
+        'infer_hf',
         'samples/anomaly_zero_shot_20.jsonl',
         'samples/anomaly_one_shot_20.jsonl',
         'samples/defect_20.jsonl',
@@ -47,6 +51,8 @@ def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
         'torch.cuda.empty_cache',
     ):
         assert expected in joined
+
+    assert 'load_hf_pipe' not in joined
 
 
 def test_hybrid_notebook_keeps_api_and_hf_execution_separate():
