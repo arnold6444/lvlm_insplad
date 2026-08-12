@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
+def _joined_notebook_source() -> str:
     root = Path(__file__).resolve().parents[1]
     notebook = root / 'notebooks' / 'lvlm_baselines_colab.ipynb'
     data = json.loads(notebook.read_text(encoding='utf-8'))
@@ -16,8 +16,11 @@ def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
         sources.append(source)
         if cell.get('cell_type') == 'code':
             compile(source, f'lvlm_baselines_cell_{index}', 'exec')
+    return '\n'.join(sources)
 
-    joined = '\n'.join(sources)
+
+def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
+    joined = _joined_notebook_source()
     for expected in (
         "BRANCH = 'main'",
         'GITHUB_TOKEN',
@@ -47,12 +50,23 @@ def test_hybrid_colab_notebook_is_valid_and_wired_to_benchmark():
 
 
 def test_hybrid_notebook_keeps_api_and_hf_execution_separate():
-    root = Path(__file__).resolve().parents[1]
-    data = json.loads((root / 'notebooks' / 'lvlm_baselines_colab.ipynb').read_text(encoding='utf-8'))
-    joined = '\n'.join(cell.get('source', '') for cell in data['cells'])
-
+    joined = _joined_notebook_source()
     assert 'API_READY' in joined
     assert "'openai': bool(OPENAI_API_KEY)" in joined
     assert "'gemini': bool(GEMINI_API_KEY)" in joined
     assert 'HF_READY = cuda_available and (vram_gb >= 20 or ALLOW_HF_BELOW_20GB)' in joined
     assert 'Use an L4/A100-class runtime rather than silently changing the paper baseline with 4-bit quantization.' in joined
+
+
+def test_colab_uses_runtime_uploads_instead_of_google_drive():
+    joined = _joined_notebook_source()
+
+    assert "COLAB_ROOT = Path('/content')" in joined
+    assert "unsup_zip = COLAB_ROOT / UNSUP_NAME" in joined
+    assert "sup_zip = COLAB_ROOT / SUP_NAME" in joined
+    assert "RUN_BASE = Path('/content/lvlm_insplad_results')" in joined
+    assert 'files.download(str(zip_path))' in joined
+
+    assert 'drive.mount' not in joined
+    assert '/content/drive' not in joined
+    assert 'MyDrive' not in joined
