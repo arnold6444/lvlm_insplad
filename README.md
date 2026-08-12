@@ -51,16 +51,26 @@ python -m pytest -v
 - `samples/defect_20.jsonl`
 - `samples/aligned_core_20.jsonl`
 
-## Baseline policy — API for closed models, GPU for open-source models
+## Baseline policy — Luxia API for closed models, GPU for open-source models
 
-`notebooks/lvlm_baselines_colab.ipynb` follows an MMAD-style mixed execution policy while preserving one common QA/prompt/evaluation contract.
+`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing closed models through LuxiaCloud and open-source models through direct Hugging Face inference.
 
-### Closed/API baselines
+### Closed/API baselines through LuxiaCloud
 
-These run through the official provider APIs and do **not** need a GPU:
+These use one LuxiaCloud API key and do **not** need a GPU:
 
-- OpenAI `gpt-5.6-sol` via the Responses API
-- Google `gemini-3.6-flash` via the Gemini API
+- OpenAI `gpt-5.3-chat-latest`
+- Google `gemini-3-flash-preview`
+
+The benchmark sends external models to LuxiaCloud's chat bridge with the `apikey` header. The default endpoint is:
+
+```text
+https://bridge.luxiacloud.com/luxia/v1/chat
+```
+
+If Saltlux provides a dedicated external-model route later, set the optional environment variable `LUXIA_EXTERNAL_CHAT_URL` without changing benchmark code.
+
+Because the public Luxia chat documentation does not currently spell out the external-model multimodal request schema, the runner performs a **single-image probe for each external model before the smoke benchmark**. If the bridge rejects the model ID or multimodal content, that model is marked `skipped_api_probe_failed` and the remaining 60 calls are not attempted.
 
 ### Open-source/GPU baselines
 
@@ -71,6 +81,8 @@ These run directly with Hugging Face on a rented GPU, one model at a time:
 - `openbmb/MiniCPM-V-4_5`
 - `llava-hf/llava-onevision-qwen2-7b-ov-hf`
 
+Qwen3-VL and LLaVA use the generic Transformers image-text pipeline. InternVL3.5 and MiniCPM-V use their model-specific `AutoModel + chat()` adapters because their remote-code configs are not reliably compatible with `AutoModelForImageTextToText`.
+
 The notebook intentionally does **not** switch these models to 4-bit quantization just because a T4 is available. If VRAM is below 20 GB, direct HF baselines are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime for the paper baseline instead.
 
 ## Colab smoke test
@@ -80,10 +92,9 @@ Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab.
 Because this repository is private, add the following values in **Colab → Secrets** before running:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
-- `OPENAI_API_KEY`: required only for the OpenAI baseline
-- `GEMINI_API_KEY`: required only for the Gemini baseline
+- `LUXIA_API_KEY`: LuxiaCloud key used for both GPT and Gemini external-model baselines
 
-The notebook never prints the secret values. Missing API keys cause only that provider to be skipped.
+The notebook never prints the secret value. Missing `LUXIA_API_KEY` skips only the API baselines.
 
 ### Source ZIP upload
 
@@ -92,7 +103,7 @@ Do **not** mount Google Drive. In the Colab left sidebar, open **Files** and upl
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-The notebook checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
+The runner checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
 
 Every requested model receives the identical smoke set:
 
@@ -102,9 +113,9 @@ Zero-shot 20
 → Structured 20
 ```
 
-The API phase runs independently from the GPU phase. This means GPT/Gemini can be evaluated even without a suitable local GPU; the open-source models can then be run on an L4/A100-class runtime under the same benchmark commit and QA contract.
+The API phase runs independently from the GPU phase. GPT/Gemini can therefore be evaluated without a suitable local GPU; the open-source models can then run on an L4/A100-class runtime under the same benchmark commit and QA contract.
 
-Outputs are written to the Colab runtime under `/content/lvlm_insplad_results/` and include:
+Outputs are written under `/content/lvlm_insplad_results/` and include:
 
 - per-model prediction JSONL
 - per-model metric CSVs
@@ -114,11 +125,9 @@ Outputs are written to the Colab runtime under `/content/lvlm_insplad_results/` 
 - `run_metadata.json`
 - final review ZIP
 
-The final notebook cell packages the run directory and downloads the result ZIP to your computer. Because `/content` is ephemeral, download the ZIP before the Colab runtime is reset.
+`run_metadata.json` records the benchmark commit, requested model IDs, Luxia endpoint, API probe result, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy.
 
-`run_metadata.json` records the benchmark commit, requested model IDs, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy so the experiment is auditable.
-
-> API calls can incur OpenAI/Google usage charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
+> External-model API calls can incur LuxiaCloud charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
 
 ## Evaluation CLI
 
