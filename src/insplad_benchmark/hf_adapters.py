@@ -181,8 +181,19 @@ def _ensure_transformers5_custom_model_compat(model_base_cls: Any | None = None)
 
 
 _INTERNVL25_MODEL_ID = "OpenGVLab/InternVL2_5-8B"
-_INTERNVL25_BASE_TOKENIZER_ID = "internlm/internlm2_5-7b-chat"
-_INTERNVL25_BASE_TOKENIZER_REVISION = "f9afffb71ebc971d9a4e3d387b131d88442f38c1"
+_INTERNVL25_BASE_TOKENIZER_ID = "internlm/internlm2_5-7b"
+_INTERNVL25_BASE_TOKENIZER_REVISION = "2d2bdab"
+_INTERNVL25_CHAT_TOKENS = (
+    "<|plugin|>",
+    "<|interpreter|>",
+    "<|action_end|>",
+    "<|action_start|>",
+    "<|im_end|>",
+    "<|im_start|>",
+)
+_INTERNVL25_EXPECTED_CHAT_TOKEN_IDS = {
+    token: 92538 + index for index, token in enumerate(_INTERNVL25_CHAT_TOKENS)
+}
 _INTERNVL25_EXTRA_TOKENS = (
     "<img>",
     "</img>",
@@ -199,30 +210,37 @@ _INTERNVL25_EXPECTED_TOKEN_IDS = {
 }
 
 
+def _token_ids(tokenizer: Any, tokens: Sequence[str]) -> dict[str, int]:
+    return {token: int(tokenizer.convert_tokens_to_ids(token)) for token in tokens}
+
+
 def _prepare_internvl25_compat_tokenizer(tokenizer: Any) -> Any:
-    """Append InternVL2.5 image tokens to a converted InternLM2.5 tokenizer."""
+    """Extend a fast InternLM2.5 tokenizer without changing checkpoint token IDs."""
+    chat_ids = _token_ids(tokenizer, _INTERNVL25_CHAT_TOKENS)
+    if chat_ids != _INTERNVL25_EXPECTED_CHAT_TOKEN_IDS:
+        raise RuntimeError(
+            "InternVL2.5 base tokenizer chat-token IDs do not match checkpoint vocabulary: "
+            f"expected {_INTERNVL25_EXPECTED_CHAT_TOKEN_IDS}, got {chat_ids}"
+        )
+
     tokenizer.add_tokens(list(_INTERNVL25_EXTRA_TOKENS), special_tokens=True)
-    actual = {
-        token: int(tokenizer.convert_tokens_to_ids(token))
-        for token in _INTERNVL25_EXTRA_TOKENS
-    }
-    if actual != _INTERNVL25_EXPECTED_TOKEN_IDS:
+    image_ids = _token_ids(tokenizer, _INTERNVL25_EXTRA_TOKENS)
+    if image_ids != _INTERNVL25_EXPECTED_TOKEN_IDS:
         raise RuntimeError(
             "InternVL2.5 tokenizer IDs do not match checkpoint vocabulary: "
-            f"expected {_INTERNVL25_EXPECTED_TOKEN_IDS}, got {actual}"
+            f"expected {_INTERNVL25_EXPECTED_TOKEN_IDS}, got {image_ids}"
         )
     tokenizer.model_max_length = 16384
+    tokenizer.padding_side = "left"
     return tokenizer
 
 
 def _load_internvl25_compat_tokenizer() -> Any:
-    from transformers import AutoTokenizer
+    from transformers import PreTrainedTokenizerFast
 
-    tokenizer = AutoTokenizer.from_pretrained(
+    tokenizer = PreTrainedTokenizerFast.from_pretrained(
         _INTERNVL25_BASE_TOKENIZER_ID,
         revision=_INTERNVL25_BASE_TOKENIZER_REVISION,
-        trust_remote_code=False,
-        use_fast=True,
     )
     return _prepare_internvl25_compat_tokenizer(tokenizer)
 
