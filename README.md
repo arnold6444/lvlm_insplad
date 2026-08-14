@@ -10,9 +10,11 @@ Source: `unsupervised_anomaly_detection.zip`
 - 17 asset categories
 - official `test`: **6,481** images
 - Zero-shot: target test image only
-- One-shot: same target test image + one fixed same-asset normal image from `train`
+- One-shot: same target test image + one fixed same-asset **normal/good** image from `train`
 - 14 assets contain both normal and anomalous test GT
 - 3 assets are normal-only in test: `damper-preformed`, `spacer`, `yoke`
+
+The benchmark's 1-shot regime is intentionally the MMAD-style **normal-reference** setting. It does not provide an anomalous/positive example.
 
 ### Track B — Structured Fault Understanding
 Source: `supervised_fault_classification.zip`
@@ -55,40 +57,32 @@ python -m pytest -v
 
 `notebooks/lvlm_baselines_colab.ipynb` is the single Colab execution entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same smoke set.
 
-OpenAI/Gemini API baselines have been removed.
+OpenAI/Gemini API baselines have been removed. Luxia is deferred because its public Vision API is Document AI for document images, not a general-image VLM suitable for InsPLAD power-line photographs.
 
-### Why Luxia is not in the image benchmark yet
+### 7-model GPU benchmark
 
-LuxiaCloud publicly documents:
+Models are grouped so the final analysis can compare **MMAD-era anchors vs current/latest open VLMs**:
 
-- text chat: `POST https://bridge.luxiacloud.com/luxia/v1/chat`
-- vision: `POST https://bridge.luxiacloud.com/luxia/v1/document-ai`
+- `Qwen/Qwen2.5-VL-7B-Instruct` — MMAD-era anchor
+- `Qwen/Qwen3-VL-8B-Instruct` — current Qwen
+- `Qwen/Qwen3.5-4B` — newest L4-friendly Qwen baseline
+- `OpenGVLab/InternVL2_5-8B` — MMAD-era anchor
+- `OpenGVLab/InternVL3_5-8B` — current InternVL
+- `openbmb/MiniCPM-V-4_5` — current compact VLM
+- `llava-hf/llava-onevision-qwen2-7b-ov-hf` — MMAD-family baseline
 
-The public Vision documentation explicitly states that Document AI is specialized for **document images** and is **not intended for general image processing**. InsPLAD contains power-line asset photographs, so using Document AI as a competing anomaly-detection VLM would not be a fair or meaningful comparison.
+`Qwen3.5-4B` is deliberately used instead of the 9B/27B variants because the paper smoke environment is an NVIDIA L4 with about 22 GB VRAM. The benchmark does not mix in 4-bit quantization only for one model, because that would add a separate quantization variable to the model comparison.
 
-Therefore Luxia is **deferred, not silently substituted**. If Luxia later exposes a general-image VLM endpoint/model suitable for arbitrary photographs, it can be added as a separate baseline under the same QA contract.
+Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins `transformers==5.14.0` for reproducibility.
 
-### Open-source/GPU baselines
+### GPU-aware adapter policy
 
-Current models:
+- Qwen2.5/Qwen3/Qwen3.5 use the generic Transformers image-text pipeline.
+- MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
+- LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path instead of the previously failing generic runner.
+- InternVL2.5/3.5 keep their official `chat()` path, but use one fixed **total visual tile budget of 6 per sample**. For a 1-shot pair, that budget is split across the normal reference and target instead of allocating 12 tiles independently to each image. This follows InternVL's multi-image `n_max` design and is sized for L4 memory.
 
-- `Qwen/Qwen3-VL-8B-Instruct`
-- `Qwen/Qwen2.5-VL-7B-Instruct`
-- `OpenGVLab/InternVL3_5-8B`
-- `OpenGVLab/InternVL2_5-8B`
-- `openbmb/MiniCPM-V-4_5`
-- `llava-hf/llava-onevision-qwen2-7b-ov-hf`
-
-Why these models:
-
-- MMAD's official evaluation code directly supports Qwen, InternVL, MiniCPM, and LLaVA families.
-- MMAD later added a dedicated `qwen2_5_vl_query.py`, so Qwen2.5-VL is included as a direct MMAD-era comparison anchor.
-- Qwen3-VL, InternVL3.5, and MiniCPM-V-4.5 keep a current-generation view of the same major open-source families.
-- InternVL2.5 provides an additional MMAD-era anchor while reusing the same InternVL chat adapter.
-
-Qwen3-VL, Qwen2.5-VL, and LLaVA use the generic Transformers image-text pipeline. InternVL3.5/2.5 and MiniCPM-V use model-specific `AutoModel + chat()` adapters.
-
-The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime for the paper baseline.
+The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
 
 ## Colab smoke test
 
@@ -98,7 +92,7 @@ Because this repository is private, add only:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
 
-No OpenAI, Gemini, or Luxia API secret is required for the current benchmark.
+No OpenAI, Gemini, or Luxia API secret is required.
 
 ### Source ZIP upload
 
@@ -107,13 +101,22 @@ Do **not** mount Google Drive. In the Colab left sidebar, upload these files dir
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-Every requested model receives the identical smoke set:
+Every requested model receives the identical evaluation regimes:
 
 ```text
 Zero-shot 20
-→ One-shot 20
+→ 1-shot normal reference 20
 → Structured 20
 ```
+
+Before the 60-row smoke starts, each model must first pass:
+
+```text
+Zero-shot probe 1
++ 1-shot probe 1
+```
+
+This prevents a broken adapter from repeating the same failure across all 60 rows.
 
 Outputs are written under `/content/lvlm_insplad_results/` and include:
 
@@ -125,11 +128,18 @@ Outputs are written under `/content/lvlm_insplad_results/` and include:
 - `run_metadata.json`
 - final review ZIP
 
-Only models with **zero row-level inference errors** are included in the scored leaderboard. A model that partially fails is marked `completed_with_row_errors` and excluded from scoring instead of being treated as a valid completed run.
+Only models with **zero row-level inference errors** are included in the scored leaderboard. Partial models are excluded.
 
-If no model completes, `leaderboard.csv` and `prediction_review.csv` still contain stable headers and the notebook prints every skip/failure reason.
+`prediction_review.csv` now includes **all requested models**, including probe/load/row failures, so the actual exception text is preserved for the next debugging pass. `run_status.json` also stores up to five row-error examples and peak VRAM per model.
 
-`run_metadata.json` records the benchmark commit, requested HF model IDs, GPU/VRAM, QA counts, model registry, source ZIP paths, and the fact that Luxia general-vision evaluation is deferred because the public API is document-only.
+`run_metadata.json` records the benchmark commit, Transformers version, requested model IDs, GPU/VRAM, model probe results, QA counts, model registry, and source ZIP paths.
+
+## Next evaluation step
+
+1. Get all seven models through the 20/20/20 smoke with zero row errors.
+2. Compare zero-shot vs 1-shot gains and current vs MMAD-era model generations.
+3. Inspect class/category bias from `prediction_review.csv`.
+4. Only after smoke stability, scale the same contract to the full 6,481 / 6,417 evaluation sets.
 
 ## Evaluation CLI
 
