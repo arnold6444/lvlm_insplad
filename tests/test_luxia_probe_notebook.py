@@ -19,10 +19,16 @@ def test_luxia_probe_notebook_structure():
         "GITHUB_TOKEN",
         "unsupervised_anomaly_detection.zip",
         "samples/anomaly_zero_shot_20.jsonl",
-        "normal + anomalous",
+        "r.get('answer') == 'normal'",
+        "r.get('answer') == 'anomalous'",
+        "SRC_DIR = REPO_DIR / 'src'",
+        "sys.path.insert(0, str(SRC_DIR))",
+        "import insplad_benchmark",
         "call_luxia_document_ai",
         "luxia_probe.json",
         "document_ai_single_image",
         "comparable_to_prompted_vlm",
     ):
         assert expected in joined
+
+    assert "r.get('answer', {}).get('anomaly')" not in joined
