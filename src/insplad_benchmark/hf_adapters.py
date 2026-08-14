@@ -26,6 +26,8 @@ def infer_hf(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: st
     kind = str(adapter["kind"])
     if kind == "pipeline":
         return _infer_pipeline(adapter, image_paths, prompt)
+    if kind == "qwen35_processor":
+        return _infer_qwen35(adapter, image_paths, prompt)
     if kind == "internvl_chat":
         return _infer_internvl(adapter, image_paths, prompt)
     if kind == "minicpm_chat":
@@ -80,16 +82,20 @@ def _extract_generated_text(out: Any) -> str:
 
 
 def _load_pipeline_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
+    model_id = str(spec["model_id"])
+    if model_id.startswith("Qwen/Qwen3.5-"):
+        return _load_qwen35_adapter(spec)
+
     from transformers import pipeline
 
     pipe = pipeline(
         "image-text-to-text",
-        model=spec["model_id"],
+        model=model_id,
         device_map="auto",
         dtype="auto",
         trust_remote_code=bool(spec.get("trust_remote_code", False)),
     )
-    return {"kind": "pipeline", "runner": pipe}
+    return {"kind": "pipeline", "runner": pipe, "model_id": model_id}
 
 
 def _infer_pipeline(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: str) -> str:
@@ -99,6 +105,86 @@ def _infer_pipeline(adapter: Mapping[str, Any], image_paths: Sequence[Path], pro
         do_sample=False,
     )
     return _extract_generated_text(out)
+
+
+def _load_qwen35_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
+    import torch
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    if not torch.cuda.is_available():
+        raise RuntimeError("Qwen3.5 direct inference requires CUDA for this benchmark.")
+
+    dtype = torch.bfloat16
+    processor = AutoProcessor.from_pretrained(spec["model_id"])
+    model = AutoModelForMultimodalLM.from_pretrained(
+        spec["model_id"],
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
+        device_map="auto",
+    ).eval()
+    return {
+        "kind": "qwen35_processor",
+        "model": model,
+        "processor": processor,
+        "dtype": dtype,
+    }
+
+
+def _move_batch_to_model(inputs: Mapping[str, Any], model: Any, dtype: Any) -> dict[str, Any]:
+    device = model.device
+    moved: dict[str, Any] = {}
+    for key, value in inputs.items():
+        if not hasattr(value, "to"):
+            moved[key] = value
+            continue
+        is_float = getattr(value, "is_floating_point", lambda: False)()
+        moved[key] = value.to(device=device, dtype=dtype) if is_float else value.to(device=device)
+    return moved
+
+
+def _infer_qwen35(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: str) -> str:
+    if not image_paths:
+        raise ValueError("Qwen3.5 inference requires at least one image.")
+
+    processor = adapter["processor"]
+    model = adapter["model"]
+    messages = _make_chat(image_paths, prompt)
+    inputs = processor.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        enable_thinking=False,
+        tokenize=True,
+        return_dict=True,
+        return_tensors="pt",
+    )
+    moved = _move_batch_to_model(inputs, model, adapter["dtype"])
+    input_len = moved["input_ids"].shape[-1]
+    outputs = model.generate(
+        **moved,
+        max_new_tokens=80,
+        do_sample=False,
+    )
+    generated = outputs[0][input_len:]
+    return processor.decode(generated, skip_special_tokens=True).strip()
+
+
+def _ensure_transformers5_custom_model_compat(model_base_cls: Any | None = None) -> None:
+    """Provide the v5 tied-weight default missing from older remote-code VLMs.
+
+    Transformers 5.x accesses ``all_tied_weights_keys`` while loading weights.
+    Some 4.x-era custom model classes (including InternVLChatModel/MiniCPMV)
+    never ran the newer ``post_init()`` path, so the instance has no attribute.
+    A class-level empty dict is the minimal inference-only compatibility default;
+    native models that initialize their own value still override it.
+    """
+    if model_base_cls is None:
+        from transformers.modeling_utils import PreTrainedModel
+
+        model_base_cls = PreTrainedModel
+
+    existing = model_base_cls.__dict__.get("all_tied_weights_keys")
+    if not isinstance(existing, dict):
+        model_base_cls.all_tied_weights_keys = {}
 
 
 _IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -201,6 +287,7 @@ def _load_internvl_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
     if not torch.cuda.is_available():
         raise RuntimeError("InternVL direct inference requires CUDA for this benchmark.")
 
+    _ensure_transformers5_custom_model_compat()
     dtype = torch.bfloat16
     model = AutoModel.from_pretrained(
         spec["model_id"],
@@ -269,6 +356,7 @@ def _load_minicpm_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
     import torch
     from transformers import AutoModel, AutoTokenizer
 
+    _ensure_transformers5_custom_model_compat()
     dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
     model = AutoModel.from_pretrained(
         spec["model_id"],
@@ -350,17 +438,7 @@ def _infer_llava(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt
         text=formatted_prompt,
         return_tensors="pt",
     )
-
-    device = model.device
-    moved = {}
-    for key, value in inputs.items():
-        if hasattr(value, "to"):
-            if getattr(value, "is_floating_point", lambda: False)():
-                moved[key] = value.to(device=device, dtype=adapter["dtype"])
-            else:
-                moved[key] = value.to(device=device)
-        else:
-            moved[key] = value
+    moved = _move_batch_to_model(inputs, model, adapter["dtype"])
 
     input_len = moved["input_ids"].shape[-1]
     outputs = model.generate(
