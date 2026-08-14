@@ -22,14 +22,44 @@ def test_load_hf_adapter_rejects_unknown_adapter():
 
 def test_infer_hf_dispatches_loaded_adapter(monkeypatch):
     monkeypatch.setattr(hf_adapters, '_infer_pipeline', lambda adapter, images, prompt: 'pipeline')
+    monkeypatch.setattr(hf_adapters, '_infer_qwen35', lambda adapter, images, prompt: 'qwen35')
     monkeypatch.setattr(hf_adapters, '_infer_internvl', lambda adapter, images, prompt: 'internvl')
     monkeypatch.setattr(hf_adapters, '_infer_minicpm', lambda adapter, images, prompt: 'minicpm')
     monkeypatch.setattr(hf_adapters, '_infer_llava', lambda adapter, images, prompt: 'llava')
 
     assert hf_adapters.infer_hf({'kind': 'pipeline'}, [], 'x') == 'pipeline'
+    assert hf_adapters.infer_hf({'kind': 'qwen35_processor'}, [], 'x') == 'qwen35'
     assert hf_adapters.infer_hf({'kind': 'internvl_chat'}, [], 'x') == 'internvl'
     assert hf_adapters.infer_hf({'kind': 'minicpm_chat'}, [], 'x') == 'minicpm'
     assert hf_adapters.infer_hf({'kind': 'llava_processor'}, [], 'x') == 'llava'
+
+
+def test_qwen35_pipeline_spec_uses_non_thinking_direct_adapter(monkeypatch):
+    monkeypatch.setattr(
+        hf_adapters,
+        '_load_qwen35_adapter',
+        lambda spec: {'kind': 'qwen35_processor', 'model_id': spec['model_id']},
+    )
+    loaded = hf_adapters._load_pipeline_adapter({'model_id': 'Qwen/Qwen3.5-4B'})
+    assert loaded == {'kind': 'qwen35_processor', 'model_id': 'Qwen/Qwen3.5-4B'}
+
+
+def test_transformers5_custom_model_compat_adds_missing_default():
+    class LegacyRemoteModelBase:
+        pass
+
+    hf_adapters._ensure_transformers5_custom_model_compat(LegacyRemoteModelBase)
+    assert LegacyRemoteModelBase.all_tied_weights_keys == {}
+
+
+def test_transformers5_custom_model_compat_preserves_existing_mapping():
+    existing = {'lm_head.weight': 'embed_tokens.weight'}
+
+    class CurrentModelBase:
+        all_tied_weights_keys = existing
+
+    hf_adapters._ensure_transformers5_custom_model_compat(CurrentModelBase)
+    assert CurrentModelBase.all_tied_weights_keys is existing
 
 
 @pytest.mark.parametrize(
