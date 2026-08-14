@@ -20,19 +20,23 @@ def _joined_notebook_source() -> str:
     return '\n'.join(sources)
 
 
-def test_colab_contains_hf_only_benchmark_flow_inline():
+def test_colab_contains_seven_model_hf_flow():
     joined = _joined_notebook_source()
     for expected in (
         "BRANCH = 'main'",
         'GITHUB_TOKEN',
-        'Qwen/Qwen3-VL-8B-Instruct',
+        'transformers==5.14.0',
         'Qwen/Qwen2.5-VL-7B-Instruct',
-        'OpenGVLab/InternVL3_5-8B',
+        'Qwen/Qwen3-VL-8B-Instruct',
+        'Qwen/Qwen3.5-4B',
         'OpenGVLab/InternVL2_5-8B',
+        'OpenGVLab/InternVL3_5-8B',
         'openbmb/MiniCPM-V-4_5',
         'llava-hf/llava-onevision-qwen2-7b-ov-hf',
         "'adapter': 'internvl_chat'",
         "'adapter': 'minicpm_chat'",
+        "'adapter': 'llava_processor'",
+        "'max_total_tiles': 6",
         'load_hf_adapter',
         'infer_hf',
         'samples/anomaly_zero_shot_20.jsonl',
@@ -54,10 +58,21 @@ def test_colab_contains_hf_only_benchmark_flow_inline():
         'gpt-5.3-chat-latest',
         'gemini-3-flash-preview',
         'infer_luxia_external',
-        'API_PROBE_STATUS',
-        'run_luxia_colab.py',
     ):
         assert removed not in joined
+
+
+def test_colab_uses_mmad_style_normal_reference_not_positive_reference():
+    joined = _joined_notebook_source()
+    assert 'Image 1 is a NORMAL reference' in joined
+    assert "PATH_CACHE[row['reference_image']]" in joined
+
+
+def test_colab_probes_models_before_full_smoke():
+    joined = _joined_notebook_source()
+    assert "for task in ('zero_shot', 'one_shot')" in joined
+    assert "status': 'probe_failed'" in joined
+    assert 'MODEL_PROBE_STATUS' in joined
 
 
 def test_colab_repairs_live_kernel_import_path():
@@ -78,19 +93,19 @@ def test_colab_uses_runtime_uploads_instead_of_google_drive():
     assert 'MyDrive' not in joined
 
 
-def test_colab_preserves_model_specific_hf_adapters():
-    joined = _joined_notebook_source()
-    assert "'adapter': 'pipeline'" in joined
-    assert joined.count("'adapter': 'internvl_chat'") >= 2
-    assert "'adapter': 'minicpm_chat'" in joined
-    assert 'load_hf_adapter(spec)' in joined
-    assert 'torch.cuda.empty_cache()' in joined
-
-
-def test_colab_requires_clean_model_completion_before_scoring():
+def test_colab_requires_clean_completion_before_scoring():
     joined = _joined_notebook_source()
     assert "status = 'completed' if row_error_count == 0 else 'completed_with_row_errors'" in joined
     assert "completed = [row for row in RUN_STATUS if row['status'] == 'completed']" in joined
+
+
+def test_colab_preserves_failure_details_for_all_models():
+    joined = _joined_notebook_source()
+    assert "for model_key in HF_MODELS_TO_RUN:" in joined
+    assert "'run_status': status.get('status', 'not_run')" in joined
+    assert "'error': pred.get('error') or status.get('error')" in joined
+    assert "'error_examples': error_examples" in joined
+    assert "'peak_vram_gb': round(peak_vram_gb, 2)" in joined
 
 
 def test_colab_writes_diagnostic_csv_headers_when_nothing_completed():
