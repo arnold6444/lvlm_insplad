@@ -1,6 +1,6 @@
 # InsPLAD LVLM Benchmark v1
 
-InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple LVLMs under the same QA, prompt, and scoring contract.
+InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple VLMs under the same QA, prompt, and scoring contract.
 
 ## Benchmark design
 
@@ -51,72 +51,61 @@ python -m pytest -v
 - `samples/defect_20.jsonl`
 - `samples/aligned_core_20.jsonl`
 
-## Baseline policy — Luxia API for closed models, GPU for open-source models
+## Baseline policy — Hugging Face VLMs only
 
-`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing open-source models through direct Hugging Face inference and keeping the closed-model path ready for LuxiaCloud's external-model gateway. The complete smoke-run orchestration is kept directly in the notebook as step-by-step cells so the notebook can be run top-to-bottom in Colab without a separate runner script.
+`notebooks/lvlm_baselines_colab.ipynb` is the single Colab execution entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same smoke set.
 
-### Closed/API baselines intended through LuxiaCloud
+OpenAI/Gemini API baselines have been removed.
 
-Target closed models:
+### Why Luxia is not in the image benchmark yet
 
-- OpenAI `gpt-5.3-chat-latest`
-- Google `gemini-3-flash-preview`
+LuxiaCloud publicly documents:
 
-The Luxia API key is sent with the documented `apikey` header.
+- text chat: `POST https://bridge.luxiacloud.com/luxia/v1/chat`
+- vision: `POST https://bridge.luxiacloud.com/luxia/v1/document-ai`
 
-**Important routing limitation:** Luxia's public Chat Completion documentation currently lists only Luxia-owned model IDs for:
+The public Vision documentation explicitly states that Document AI is specialized for **document images** and is **not intended for general image processing**. InsPLAD contains power-line asset photographs, so using Document AI as a competing anomaly-detection VLM would not be a fair or meaningful comparison.
 
-```text
-POST https://bridge.luxiacloud.com/luxia/v1/chat
-```
-
-That route must therefore **not** be used as a default gateway for GPT/Gemini. The earlier benchmark assumption that arbitrary external model IDs could be sent to `/luxia/v1/chat` was disproven by live smoke probes returning `HTTP 400 invalid_parameter:modelname:dynamic_luxia_model`.
-
-Luxia's public docs do show provider-specific bridge routes for some external services, such as OpenAI STT and Google Cloud TTS, but they do not currently publish a GPT/Gemini external text/VLM endpoint or multimodal request schema. The benchmark therefore refuses to guess an endpoint.
-
-If Luxia provides an official external GPT/Gemini endpoint or cURL example through the dashboard/support channel, add that exact route in Colab Secrets as:
-
-```text
-LUXIA_EXTERNAL_CHAT_URL
-```
-
-Only then will the notebook run the GPT/Gemini probe and smoke calls. Without that route, the two API baselines are marked `skipped_external_route_missing` instead of incorrectly calling `/luxia/v1/chat`.
+Therefore Luxia is **deferred, not silently substituted**. If Luxia later exposes a general-image VLM endpoint/model suitable for arbitrary photographs, it can be added as a separate baseline under the same QA contract.
 
 ### Open-source/GPU baselines
 
-These run directly with Hugging Face on a rented GPU, one model at a time:
+Current models:
 
 - `Qwen/Qwen3-VL-8B-Instruct`
+- `Qwen/Qwen2.5-VL-7B-Instruct`
 - `OpenGVLab/InternVL3_5-8B`
+- `OpenGVLab/InternVL2_5-8B`
 - `openbmb/MiniCPM-V-4_5`
 - `llava-hf/llava-onevision-qwen2-7b-ov-hf`
 
-Qwen3-VL and LLaVA use the generic Transformers image-text pipeline. InternVL3.5 and MiniCPM-V use their model-specific `AutoModel + chat()` adapters because their remote-code configs are not reliably compatible with `AutoModelForImageTextToText`.
+Why these models:
 
-The notebook intentionally does **not** switch these models to 4-bit quantization just because a T4 is available. If VRAM is below 20 GB, direct HF baselines are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime for the paper baseline instead.
+- MMAD's official evaluation code directly supports Qwen, InternVL, MiniCPM, and LLaVA families.
+- MMAD later added a dedicated `qwen2_5_vl_query.py`, so Qwen2.5-VL is included as a direct MMAD-era comparison anchor.
+- Qwen3-VL, InternVL3.5, and MiniCPM-V-4.5 keep a current-generation view of the same major open-source families.
+- InternVL2.5 provides an additional MMAD-era anchor while reusing the same InternVL chat adapter.
+
+Qwen3-VL, Qwen2.5-VL, and LLaVA use the generic Transformers image-text pipeline. InternVL3.5/2.5 and MiniCPM-V use model-specific `AutoModel + chat()` adapters.
+
+The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime for the paper baseline.
 
 ## Colab smoke test
 
-Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run the cells from top to bottom.
+Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run cells from top to bottom.
 
-Because this repository is private, add the following values in **Colab → Secrets** before running:
+Because this repository is private, add only:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
-- `LUXIA_API_KEY`: LuxiaCloud API key
-- `LUXIA_EXTERNAL_CHAT_URL`: optional; add only if Luxia supplies an official GPT/Gemini external chat/VLM endpoint
 
-The notebook never prints secret values. Missing `LUXIA_API_KEY` skips only the API baselines. Missing `LUXIA_EXTERNAL_CHAT_URL` now produces a clear routing status instead of making a known-invalid request.
-
-The first cell also adds `/content/lvlm_insplad/src` to the current Colab kernel's `sys.path` after editable installation. This avoids the same-session `ModuleNotFoundError: No module named 'insplad_benchmark'` that can occur when `pip install -e` is executed through a subprocess after the kernel has initialized site-packages.
+No OpenAI, Gemini, or Luxia API secret is required for the current benchmark.
 
 ### Source ZIP upload
 
-Do **not** mount Google Drive. In the Colab left sidebar, open **Files** and upload these two files directly into the runtime root `/content`:
+Do **not** mount Google Drive. In the Colab left sidebar, upload these files directly into `/content`:
 
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
-
-The notebook checks `/content` for those exact filenames and fails early with a clear message if either file is missing.
 
 Every requested model receives the identical smoke set:
 
@@ -125,8 +114,6 @@ Zero-shot 20
 → One-shot 20
 → Structured 20
 ```
-
-The API phase runs independently from the GPU phase. The open-source models require an L4/A100-class runtime under the current >=20 GB VRAM policy. GPT/Gemini can run without a local GPU once Luxia provides and configures the external-model route.
 
 Outputs are written under `/content/lvlm_insplad_results/` and include:
 
@@ -138,11 +125,11 @@ Outputs are written under `/content/lvlm_insplad_results/` and include:
 - `run_metadata.json`
 - final review ZIP
 
-If no model completes, `leaderboard.csv` and `prediction_review.csv` still contain stable headers and the notebook prints every skip/failure reason. The diagnostic ZIP remains downloadable.
+Only models with **zero row-level inference errors** are included in the scored leaderboard. A model that partially fails is marked `completed_with_row_errors` and excluded from scoring instead of being treated as a valid completed run.
 
-`run_metadata.json` records the benchmark commit, requested model IDs, whether the Luxia external route was configured, API probe result, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy.
+If no model completes, `leaderboard.csv` and `prediction_review.csv` still contain stable headers and the notebook prints every skip/failure reason.
 
-> External-model API calls can incur LuxiaCloud charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
+`run_metadata.json` records the benchmark commit, requested HF model IDs, GPU/VRAM, QA counts, model registry, source ZIP paths, and the fact that Luxia general-vision evaluation is deferred because the public API is document-only.
 
 ## Evaluation CLI
 
