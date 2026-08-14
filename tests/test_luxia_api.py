@@ -23,10 +23,22 @@ def test_build_multimodal_chat_payload_uses_image_data_urls(tmp_path):
     assert content[-1] == {'type': 'text', 'text': 'classify this image'}
 
 
+def test_resolve_external_endpoint_requires_explicit_luxia_route(monkeypatch):
+    monkeypatch.delenv('LUXIA_EXTERNAL_CHAT_URL', raising=False)
+    with pytest.raises(RuntimeError, match='do not document a GPT/Gemini'):
+        luxia_api.resolve_luxia_external_endpoint()
+
+
+def test_resolve_external_endpoint_rejects_luxia_native_chat():
+    with pytest.raises(RuntimeError, match='Refusing'):
+        luxia_api.resolve_luxia_external_endpoint(luxia_api.LUXIA_NATIVE_CHAT_URL)
+
+
 def test_infer_luxia_external_sends_apikey_and_parses_chat_response(monkeypatch, tmp_path):
     image = tmp_path / 'sample.jpg'
     image.write_bytes(b'jpeg-bytes')
     captured = {}
+    endpoint = 'https://bridge.luxiacloud.com/external-model-route-from-luxia'
 
     class FakeResponse:
         def __enter__(self):
@@ -54,10 +66,11 @@ def test_infer_luxia_external_sends_apikey_and_parses_chat_response(monkeypatch,
         model_id='gemini-3-flash-preview',
         image_paths=[image],
         prompt='inspect',
+        endpoint=endpoint,
     )
 
     assert result == '{"anomaly":"normal"}'
-    assert captured['url'] == luxia_api.DEFAULT_LUXIA_CHAT_URL
+    assert captured['url'] == endpoint
     assert captured['headers']['Apikey'] == 'secret-key'
     assert captured['headers']['Content-type'] == 'application/json'
     assert captured['body']['model'] == 'gemini-3-flash-preview'
@@ -74,4 +87,5 @@ def test_infer_luxia_external_requires_key(tmp_path):
             model_id='gpt-5.3-chat-latest',
             image_paths=[image],
             prompt='inspect',
+            endpoint='https://bridge.luxiacloud.com/external',
         )
