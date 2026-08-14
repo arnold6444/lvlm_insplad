@@ -62,6 +62,41 @@ def test_transformers5_custom_model_compat_preserves_existing_mapping():
     assert CurrentModelBase.all_tied_weights_keys is existing
 
 
+class _FakeInternVL25Tokenizer:
+    def __init__(self, base_size=92544):
+        self.ids = {f'base-{i}': i for i in range(base_size)}
+        self.model_max_length = None
+
+    def add_tokens(self, tokens, special_tokens=False):
+        assert special_tokens is True
+        added = 0
+        for token in tokens:
+            if token not in self.ids:
+                self.ids[token] = len(self.ids)
+                added += 1
+        return added
+
+    def convert_tokens_to_ids(self, token):
+        return self.ids[token]
+
+
+def test_internvl25_compat_tokenizer_restores_checkpoint_token_ids():
+    tokenizer = _FakeInternVL25Tokenizer()
+    result = hf_adapters._prepare_internvl25_compat_tokenizer(tokenizer)
+    assert result is tokenizer
+    assert tokenizer.model_max_length == 16384
+    assert {
+        token: tokenizer.convert_tokens_to_ids(token)
+        for token in hf_adapters._INTERNVL25_EXTRA_TOKENS
+    } == hf_adapters._INTERNVL25_EXPECTED_TOKEN_IDS
+
+
+def test_internvl25_compat_tokenizer_fails_on_wrong_base_vocab():
+    tokenizer = _FakeInternVL25Tokenizer(base_size=92545)
+    with pytest.raises(RuntimeError, match='tokenizer IDs do not match'):
+        hf_adapters._prepare_internvl25_compat_tokenizer(tokenizer)
+
+
 @pytest.mark.parametrize(
     ('total', 'count', 'expected'),
     [
