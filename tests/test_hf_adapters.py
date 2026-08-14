@@ -63,16 +63,24 @@ def test_transformers5_custom_model_compat_preserves_existing_mapping():
 
 
 class _FakeInternVL25Tokenizer:
-    def __init__(self, base_size=92544):
-        self.ids = {f'base-{i}': i for i in range(base_size)}
+    def __init__(self, chat_shift=0):
+        self.ids = {f'base-{i}': i for i in range(92538)}
+        for index, token in enumerate(hf_adapters._INTERNVL25_CHAT_TOKENS):
+            self.ids[token] = 92538 + chat_shift + index
+        if chat_shift:
+            for i in range(92538, 92538 + chat_shift):
+                self.ids[f'extra-{i}'] = i
         self.model_max_length = None
+        self.padding_side = 'right'
 
     def add_tokens(self, tokens, special_tokens=False):
         assert special_tokens is True
+        next_id = max(self.ids.values()) + 1
         added = 0
         for token in tokens:
             if token not in self.ids:
-                self.ids[token] = len(self.ids)
+                self.ids[token] = next_id
+                next_id += 1
                 added += 1
         return added
 
@@ -85,15 +93,20 @@ def test_internvl25_compat_tokenizer_restores_checkpoint_token_ids():
     result = hf_adapters._prepare_internvl25_compat_tokenizer(tokenizer)
     assert result is tokenizer
     assert tokenizer.model_max_length == 16384
+    assert tokenizer.padding_side == 'left'
+    assert {
+        token: tokenizer.convert_tokens_to_ids(token)
+        for token in hf_adapters._INTERNVL25_CHAT_TOKENS
+    } == hf_adapters._INTERNVL25_EXPECTED_CHAT_TOKEN_IDS
     assert {
         token: tokenizer.convert_tokens_to_ids(token)
         for token in hf_adapters._INTERNVL25_EXTRA_TOKENS
     } == hf_adapters._INTERNVL25_EXPECTED_TOKEN_IDS
 
 
-def test_internvl25_compat_tokenizer_fails_on_wrong_base_vocab():
-    tokenizer = _FakeInternVL25Tokenizer(base_size=92545)
-    with pytest.raises(RuntimeError, match='tokenizer IDs do not match'):
+def test_internvl25_compat_tokenizer_fails_on_shifted_chat_tokens():
+    tokenizer = _FakeInternVL25Tokenizer(chat_shift=6)
+    with pytest.raises(RuntimeError, match='chat-token IDs do not match'):
         hf_adapters._prepare_internvl25_compat_tokenizer(tokenizer)
 
 
