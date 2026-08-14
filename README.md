@@ -77,10 +77,12 @@ Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins
 
 ### GPU-aware adapter policy
 
-- Qwen2.5/Qwen3/Qwen3.5 use the generic Transformers image-text pipeline.
+- Qwen2.5/Qwen3 use the generic Transformers image-text pipeline.
+- Qwen3.5 uses `AutoProcessor + AutoModelForMultimodalLM` with `enable_thinking=False`, so the benchmark receives the requested compact JSON answer instead of spending the output budget on default thinking text.
 - MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
 - LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path instead of the previously failing generic runner.
 - InternVL2.5/3.5 keep their official `chat()` path, but use one fixed **total visual tile budget of 6 per sample**. For a 1-shot pair, that budget is split across the normal reference and target instead of allocating 12 tiles independently to each image. This follows InternVL's multi-image `n_max` design and is sized for L4 memory.
+- InternVL and MiniCPM are 4.x-era remote-code models. Under Transformers 5.x the adapter supplies the missing `all_tied_weights_keys` default before loading, matching the newer `post_init()` expectation without changing the model weights or quantization.
 
 The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
 
