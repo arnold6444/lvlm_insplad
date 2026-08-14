@@ -53,11 +53,11 @@ python -m pytest -v
 - `samples/defect_20.jsonl`
 - `samples/aligned_core_20.jsonl`
 
-## Baseline policy — Hugging Face VLMs only
+## Baseline policy — 7 Hugging Face VLMs + Luxia capability probe
 
-`notebooks/lvlm_baselines_colab.ipynb` is the Colab smoke entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same 20/20/20 smoke set.
+`notebooks/lvlm_baselines_colab.ipynb` is the main Colab smoke entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same 20/20/20 smoke set.
 
-OpenAI/Gemini API baselines have been removed. Luxia is deferred because its public Vision API is Document AI for document images, not a general-image VLM suitable for InsPLAD power-line photographs.
+Luxia is now represented by a **separate capability probe** in `notebooks/luxia_vision_probe_colab.ipynb`. The public Luxia Vision endpoint is currently `/luxia/v1/document-ai`, a single-image API documented as specialized for document images and not intended for general image processing. Therefore Luxia is **not yet scored in the same leaderboard**. The probe sends real InsPLAD normal/anomalous photographs and saves the raw API responses. If those responses demonstrate useful general-image understanding, Luxia will be promoted into the same balanced100/full benchmark contract; otherwise it remains an exploratory API result rather than a misleading apples-to-oranges score.
 
 ### 7-model GPU benchmark
 
@@ -83,11 +83,11 @@ Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins
 - LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path instead of the previously failing generic runner.
 - InternVL2.5/3.5 keep their official `chat()` path, with one fixed **total visual tile budget of 6 per sample**. For a 1-shot pair, that budget is split across the normal reference and target.
 - InternVL and MiniCPM are 4.x-era remote-code models. Under Transformers 5.x the adapter supplies the missing `all_tied_weights_keys` default before loading.
-- InternVL2.5 additionally bypasses its old SentencePiece wrapper by loading the converted `internlm/internlm2_5-7b-chat` tokenizer at a pinned revision, then appending the exact nine InternVL image/grounding tokens at checkpoint IDs **92544–92552**. The adapter fails closed if those IDs do not match.
+- InternVL2.5 bypasses its legacy SentencePiece wrapper with the fast `internlm/internlm2_5-7b` tokenizer, verifies InternLM chat token IDs **92538–92543**, appends the nine InternVL image/grounding tokens at **92544–92552**, and restores `GenerationMixin` only when Transformers 5 removes the legacy inner LM's `generate()` method.
 
 The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
 
-## Colab smoke test
+## Colab HF smoke test
 
 Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run cells from top to bottom.
 
@@ -95,7 +95,7 @@ Because this repository is private, add only:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
 
-No OpenAI, Gemini, or Luxia API secret is required.
+No API secret is required for the Hugging Face smoke notebook.
 
 ### Source ZIP upload
 
@@ -104,7 +104,7 @@ Do **not** mount Google Drive. In the Colab left sidebar, upload these files dir
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-Every requested model receives the identical smoke regimes:
+Every requested HF model receives the identical smoke regimes:
 
 ```text
 Zero-shot 20
@@ -121,9 +121,20 @@ Zero-shot probe 1
 
 Only models with **zero row-level inference errors** are included in the scored leaderboard. `prediction_review.csv` preserves failure details and `run_status.json` records error examples plus peak VRAM.
 
+## Luxia Vision capability probe
+
+Open `notebooks/luxia_vision_probe_colab.ipynb` and add these Colab Secrets:
+
+- `GITHUB_TOKEN`
+- `LUXIA_API_KEY`
+
+Upload only `unsupervised_anomaly_detection.zip`. GPU is not required. The notebook selects **2 normal + 2 anomalous** rows from the existing smoke set, calls the Luxia Document AI endpoint with each real InsPLAD photograph, and downloads `luxia_probe.json` containing HTTP status, latency, extracted content, and the raw response.
+
+This probe is intentionally not converted into anomaly/defect scores yet because the public endpoint accepts a single image and no benchmark prompt. Promotion to a scored Luxia baseline requires evidence that the API can interpret these non-document power-line photographs meaningfully.
+
 ## Balanced 100 stage
 
-After all seven models pass smoke, build a deterministic intermediate comparison set before spending GPU time on the full benchmark:
+After all seven HF models pass smoke and the Luxia capability decision is made, build a deterministic intermediate comparison set before spending GPU/API time on the full benchmark:
 
 ```powershell
 python scripts/build_balanced_samples.py --count 100 --seed 42
