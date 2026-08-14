@@ -180,6 +180,41 @@ def _ensure_transformers5_custom_model_compat(model_base_cls: Any | None = None)
         model_base_cls.all_tied_weights_keys = {}
 
 
+def _ensure_generation_mixin_compat(
+    model: Any,
+    generation_mixin_cls: Any | None = None,
+    generation_config_cls: Any | None = None,
+) -> Any:
+    """Restore ``generate()`` for a legacy causal LM loaded under Transformers 5.x."""
+    if hasattr(model, "generate"):
+        return model
+    if not hasattr(model, "prepare_inputs_for_generation"):
+        raise RuntimeError(
+            f"{model.__class__.__name__} has no generate() or prepare_inputs_for_generation()."
+        )
+
+    if generation_mixin_cls is None:
+        from transformers.generation.utils import GenerationMixin
+
+        generation_mixin_cls = GenerationMixin
+    if generation_config_cls is None:
+        from transformers import GenerationConfig
+
+        generation_config_cls = GenerationConfig
+
+    compat_cls = type(
+        f"{model.__class__.__name__}GenerationCompat",
+        (model.__class__, generation_mixin_cls),
+        {},
+    )
+    model.__class__ = compat_cls
+    if getattr(model, "generation_config", None) is None:
+        model.generation_config = generation_config_cls.from_model_config(model.config)
+    if not hasattr(model, "generate"):
+        raise RuntimeError(f"Failed to restore generate() for {model.__class__.__name__}.")
+    return model
+
+
 _INTERNVL25_MODEL_ID = "OpenGVLab/InternVL2_5-8B"
 _INTERNVL25_BASE_TOKENIZER_ID = "internlm/internlm2_5-7b"
 _INTERNVL25_BASE_TOKENIZER_REVISION = "2d2bdab"
@@ -361,6 +396,9 @@ def _load_internvl_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
         trust_remote_code=True,
     ).eval().cuda()
 
+    if model_id == _INTERNVL25_MODEL_ID:
+        _ensure_generation_mixin_compat(model.language_model)
+
     if tokenizer is None:
         tokenizer = AutoTokenizer.from_pretrained(
             model_id, trust_remote_code=True, use_fast=False
@@ -483,7 +521,7 @@ def _infer_llava(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt
     from PIL import Image
 
     if not image_paths:
-        raise ValueError("LLaVA inference requires at least one image.")
+        raise ValueError("LLaVA-OneVision inference requires at least one image.")
 
     images = [Image.open(path).convert("RGB") for path in image_paths]
     conversation = [
