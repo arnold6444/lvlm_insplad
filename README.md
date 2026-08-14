@@ -55,7 +55,7 @@ python -m pytest -v
 
 ## Baseline policy — Hugging Face VLMs only
 
-`notebooks/lvlm_baselines_colab.ipynb` is the single Colab execution entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same smoke set.
+`notebooks/lvlm_baselines_colab.ipynb` is the Colab smoke entrypoint. It keeps one QA/prompt/evaluation contract and runs every Hugging Face VLM sequentially on the same 20/20/20 smoke set.
 
 OpenAI/Gemini API baselines have been removed. Luxia is deferred because its public Vision API is Document AI for document images, not a general-image VLM suitable for InsPLAD power-line photographs.
 
@@ -81,8 +81,9 @@ Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins
 - Qwen3.5 uses `AutoProcessor + AutoModelForMultimodalLM` with `enable_thinking=False`, so the benchmark receives the requested compact JSON answer instead of spending the output budget on default thinking text.
 - MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
 - LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path instead of the previously failing generic runner.
-- InternVL2.5/3.5 keep their official `chat()` path, but use one fixed **total visual tile budget of 6 per sample**. For a 1-shot pair, that budget is split across the normal reference and target instead of allocating 12 tiles independently to each image. This follows InternVL's multi-image `n_max` design and is sized for L4 memory.
-- InternVL and MiniCPM are 4.x-era remote-code models. Under Transformers 5.x the adapter supplies the missing `all_tied_weights_keys` default before loading, matching the newer `post_init()` expectation without changing the model weights or quantization.
+- InternVL2.5/3.5 keep their official `chat()` path, with one fixed **total visual tile budget of 6 per sample**. For a 1-shot pair, that budget is split across the normal reference and target.
+- InternVL and MiniCPM are 4.x-era remote-code models. Under Transformers 5.x the adapter supplies the missing `all_tied_weights_keys` default before loading.
+- InternVL2.5 additionally bypasses its old SentencePiece wrapper by loading the converted `internlm/internlm2_5-7b-chat` tokenizer at a pinned revision, then appending the exact nine InternVL image/grounding tokens at checkpoint IDs **92544–92552**. The adapter fails closed if those IDs do not match.
 
 The notebook intentionally does **not** force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
 
@@ -103,7 +104,7 @@ Do **not** mount Google Drive. In the Colab left sidebar, upload these files dir
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-Every requested model receives the identical evaluation regimes:
+Every requested model receives the identical smoke regimes:
 
 ```text
 Zero-shot 20
@@ -118,30 +119,24 @@ Zero-shot probe 1
 + 1-shot probe 1
 ```
 
-This prevents a broken adapter from repeating the same failure across all 60 rows.
+Only models with **zero row-level inference errors** are included in the scored leaderboard. `prediction_review.csv` preserves failure details and `run_status.json` records error examples plus peak VRAM.
 
-Outputs are written under `/content/lvlm_insplad_results/` and include:
+## Balanced 100 stage
 
-- per-model prediction JSONL
-- per-model metric CSVs
-- `leaderboard.csv`
-- `prediction_review.csv`
-- `run_status.json`
-- `run_metadata.json`
-- final review ZIP
+After all seven models pass smoke, build a deterministic intermediate comparison set before spending GPU time on the full benchmark:
 
-Only models with **zero row-level inference errors** are included in the scored leaderboard. Partial models are excluded.
+```powershell
+python scripts/build_balanced_samples.py --count 100 --seed 42
+```
 
-`prediction_review.csv` now includes **all requested models**, including probe/load/row failures, so the actual exception text is preserved for the next debugging pass. `run_status.json` also stores up to five row-error examples and peak VRAM per model.
+This writes `samples/balanced100/` with:
 
-`run_metadata.json` records the benchmark commit, Transformers version, requested model IDs, GPU/VRAM, model probe results, QA counts, model registry, and source ZIP paths.
+- anomaly zero-shot: **50 normal / 50 anomalous**, spread round-robin across asset categories
+- anomaly one-shot: the **same 100 target/query IDs** as zero-shot, with their normal references
+- structured: 100 rows distributed across assets first, then defect classes within each asset
+- `sample_summary.json` so the exact sampling composition is auditable
 
-## Next evaluation step
-
-1. Get all seven models through the 20/20/20 smoke with zero row errors.
-2. Compare zero-shot vs 1-shot gains and current vs MMAD-era model generations.
-3. Inspect class/category bias from `prediction_review.csv`.
-4. Only after smoke stability, scale the same contract to the full 6,481 / 6,417 evaluation sets.
+The 20-row smoke remains the execution-stability gate. The balanced100 subset is the next model-comparison stage; full 6,481 / 6,417 evaluation comes only after that comparison is stable.
 
 ## Evaluation CLI
 
