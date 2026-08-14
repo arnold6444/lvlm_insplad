@@ -62,6 +62,69 @@ def test_transformers5_custom_model_compat_preserves_existing_mapping():
     assert CurrentModelBase.all_tied_weights_keys is existing
 
 
+def test_generation_mixin_compat_restores_generate_and_generation_config():
+    class LegacyCausalLM:
+        def __init__(self):
+            self.config = {'model_type': 'legacy'}
+
+        def prepare_inputs_for_generation(self, input_ids, **kwargs):
+            return {'input_ids': input_ids}
+
+    class FakeGenerationMixin:
+        def generate(self):
+            return 'generated'
+
+    class FakeGenerationConfig:
+        @classmethod
+        def from_model_config(cls, config):
+            return {'from': config}
+
+    model = LegacyCausalLM()
+    original_id = id(model)
+    result = hf_adapters._ensure_generation_mixin_compat(
+        model,
+        generation_mixin_cls=FakeGenerationMixin,
+        generation_config_cls=FakeGenerationConfig,
+    )
+    assert result is model
+    assert id(result) == original_id
+    assert result.generate() == 'generated'
+    assert result.generation_config == {'from': {'model_type': 'legacy'}}
+
+
+def test_generation_mixin_compat_preserves_existing_generate():
+    class CurrentCausalLM:
+        def generate(self):
+            return 'native'
+
+    class UnexpectedMixin:
+        def generate(self):
+            return 'patched'
+
+    model = CurrentCausalLM()
+    original_cls = model.__class__
+    result = hf_adapters._ensure_generation_mixin_compat(
+        model,
+        generation_mixin_cls=UnexpectedMixin,
+        generation_config_cls=object,
+    )
+    assert result is model
+    assert model.__class__ is original_cls
+    assert model.generate() == 'native'
+
+
+def test_generation_mixin_compat_requires_generation_inputs_hook():
+    class NonGenerativeModel:
+        pass
+
+    with pytest.raises(RuntimeError, match='prepare_inputs_for_generation'):
+        hf_adapters._ensure_generation_mixin_compat(
+            NonGenerativeModel(),
+            generation_mixin_cls=object,
+            generation_config_cls=object,
+        )
+
+
 class _FakeInternVL25Tokenizer:
     def __init__(self, chat_shift=0):
         self.ids = {f'base-{i}': i for i in range(92538)}
