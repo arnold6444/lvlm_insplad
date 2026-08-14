@@ -3,12 +3,15 @@ from __future__ import annotations
 import base64
 import json
 import mimetypes
+import os
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-DEFAULT_LUXIA_CHAT_URL = "https://bridge.luxiacloud.com/luxia/v1/chat"
+# Public Luxia docs list only Luxia-owned model IDs for this route.
+# It must not be used as the default gateway for OpenAI/Gemini external models.
+LUXIA_NATIVE_CHAT_URL = "https://bridge.luxiacloud.com/luxia/v1/chat"
 
 
 def _mime_type(path: Path) -> str:
@@ -28,13 +31,12 @@ def build_multimodal_chat_payload(
     *,
     max_completion_tokens: int = 80,
 ) -> dict[str, Any]:
-    """Build the OpenAI-compatible multimodal chat body used for Luxia external models.
+    """Build an OpenAI-compatible multimodal chat body.
 
-    Luxia documents the shared chat endpoint and `apikey` authentication. External
-    model pricing exposes OpenAI/Gemini model IDs through the same platform. The
-    bridge request is intentionally kept provider-neutral and can be pointed at a
-    different Luxia external-chat URL through configuration if Saltlux publishes
-    a dedicated route later.
+    This body is only sent when an explicit Luxia external-model endpoint is
+    configured. Luxia's public docs currently do not document the GPT/Gemini
+    external text/VLM endpoint or request schema, so callers must not silently
+    fall back to the Luxia-native /luxia/v1/chat route.
     """
     content: list[dict[str, Any]] = []
     for path in image_paths:
@@ -52,6 +54,24 @@ def build_multimodal_chat_payload(
         "temperature": 0,
         "max_completion_tokens": max_completion_tokens,
     }
+
+
+def resolve_luxia_external_endpoint(endpoint: str | None = None) -> str:
+    """Resolve a Luxia endpoint that was explicitly provided for external models."""
+    resolved = (endpoint or os.environ.get("LUXIA_EXTERNAL_CHAT_URL") or "").strip()
+    if not resolved:
+        raise RuntimeError(
+            "Luxia public docs do not document a GPT/Gemini external chat/VLM endpoint. "
+            "The documented https://bridge.luxiacloud.com/luxia/v1/chat route accepts "
+            "Luxia model IDs only. Set LUXIA_EXTERNAL_CHAT_URL only to the official "
+            "external-model route/cURL provided by Luxia."
+        )
+    if resolved.rstrip("/") == LUXIA_NATIVE_CHAT_URL.rstrip("/"):
+        raise RuntimeError(
+            "Refusing to send external GPT/Gemini model IDs to Luxia's native "
+            "/luxia/v1/chat endpoint; public docs list only Luxia model IDs there."
+        )
+    return resolved
 
 
 def _extract_content(payload: Mapping[str, Any]) -> str:
@@ -89,13 +109,14 @@ def infer_luxia_external(
     model_id: str,
     image_paths: Sequence[Path],
     prompt: str,
-    endpoint: str = DEFAULT_LUXIA_CHAT_URL,
+    endpoint: str | None = None,
     timeout_s: float = 120.0,
     max_completion_tokens: int = 80,
 ) -> str:
     if not api_key:
         raise RuntimeError("LUXIA_API_KEY is not configured.")
 
+    resolved_endpoint = resolve_luxia_external_endpoint(endpoint)
     body = build_multimodal_chat_payload(
         model_id,
         image_paths,
@@ -103,7 +124,7 @@ def infer_luxia_external(
         max_completion_tokens=max_completion_tokens,
     )
     request = urllib.request.Request(
-        endpoint,
+        resolved_endpoint,
         data=json.dumps(body).encode("utf-8"),
         headers={
             "apikey": api_key,

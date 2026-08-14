@@ -53,24 +53,34 @@ python -m pytest -v
 
 ## Baseline policy — Luxia API for closed models, GPU for open-source models
 
-`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing closed models through LuxiaCloud and open-source models through direct Hugging Face inference. The complete smoke-run orchestration is kept directly in the notebook as step-by-step cells so the notebook can be run top-to-bottom in Colab without a separate runner script.
+`notebooks/lvlm_baselines_colab.ipynb` preserves one common QA/prompt/evaluation contract while routing open-source models through direct Hugging Face inference and keeping the closed-model path ready for LuxiaCloud's external-model gateway. The complete smoke-run orchestration is kept directly in the notebook as step-by-step cells so the notebook can be run top-to-bottom in Colab without a separate runner script.
 
-### Closed/API baselines through LuxiaCloud
+### Closed/API baselines intended through LuxiaCloud
 
-These use one LuxiaCloud API key and do **not** need a GPU:
+Target closed models:
 
 - OpenAI `gpt-5.3-chat-latest`
 - Google `gemini-3-flash-preview`
 
-The benchmark sends external models to LuxiaCloud's chat bridge with the `apikey` header. The default endpoint is:
+The Luxia API key is sent with the documented `apikey` header.
+
+**Important routing limitation:** Luxia's public Chat Completion documentation currently lists only Luxia-owned model IDs for:
 
 ```text
-https://bridge.luxiacloud.com/luxia/v1/chat
+POST https://bridge.luxiacloud.com/luxia/v1/chat
 ```
 
-If Saltlux provides a dedicated external-model route later, set the optional environment variable `LUXIA_EXTERNAL_CHAT_URL` without changing benchmark code.
+That route must therefore **not** be used as a default gateway for GPT/Gemini. The earlier benchmark assumption that arbitrary external model IDs could be sent to `/luxia/v1/chat` was disproven by live smoke probes returning `HTTP 400 invalid_parameter:modelname:dynamic_luxia_model`.
 
-Because the public Luxia chat documentation does not currently spell out the external-model multimodal request schema, the notebook performs a **single-image probe for each external model before the smoke benchmark**. If the bridge rejects the model ID or multimodal content, that model is marked `skipped_api_probe_failed` and the remaining 60 calls are not attempted.
+Luxia's public docs do show provider-specific bridge routes for some external services, such as OpenAI STT and Google Cloud TTS, but they do not currently publish a GPT/Gemini external text/VLM endpoint or multimodal request schema. The benchmark therefore refuses to guess an endpoint.
+
+If Luxia provides an official external GPT/Gemini endpoint or cURL example through the dashboard/support channel, add that exact route in Colab Secrets as:
+
+```text
+LUXIA_EXTERNAL_CHAT_URL
+```
+
+Only then will the notebook run the GPT/Gemini probe and smoke calls. Without that route, the two API baselines are marked `skipped_external_route_missing` instead of incorrectly calling `/luxia/v1/chat`.
 
 ### Open-source/GPU baselines
 
@@ -92,9 +102,12 @@ Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run 
 Because this repository is private, add the following values in **Colab → Secrets** before running:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
-- `LUXIA_API_KEY`: LuxiaCloud key used for both GPT and Gemini external-model baselines
+- `LUXIA_API_KEY`: LuxiaCloud API key
+- `LUXIA_EXTERNAL_CHAT_URL`: optional; add only if Luxia supplies an official GPT/Gemini external chat/VLM endpoint
 
-The notebook never prints the secret value. Missing `LUXIA_API_KEY` skips only the API baselines.
+The notebook never prints secret values. Missing `LUXIA_API_KEY` skips only the API baselines. Missing `LUXIA_EXTERNAL_CHAT_URL` now produces a clear routing status instead of making a known-invalid request.
+
+The first cell also adds `/content/lvlm_insplad/src` to the current Colab kernel's `sys.path` after editable installation. This avoids the same-session `ModuleNotFoundError: No module named 'insplad_benchmark'` that can occur when `pip install -e` is executed through a subprocess after the kernel has initialized site-packages.
 
 ### Source ZIP upload
 
@@ -113,7 +126,7 @@ Zero-shot 20
 → Structured 20
 ```
 
-The API phase runs independently from the GPU phase. GPT/Gemini can therefore be evaluated without a suitable local GPU; the open-source models can then run on an L4/A100-class runtime under the same benchmark commit and QA contract.
+The API phase runs independently from the GPU phase. The open-source models require an L4/A100-class runtime under the current >=20 GB VRAM policy. GPT/Gemini can run without a local GPU once Luxia provides and configures the external-model route.
 
 Outputs are written under `/content/lvlm_insplad_results/` and include:
 
@@ -125,7 +138,9 @@ Outputs are written under `/content/lvlm_insplad_results/` and include:
 - `run_metadata.json`
 - final review ZIP
 
-`run_metadata.json` records the benchmark commit, requested model IDs, Luxia endpoint, API probe result, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy.
+If no model completes, `leaderboard.csv` and `prediction_review.csv` still contain stable headers and the notebook prints every skip/failure reason. The diagnostic ZIP remains downloadable.
+
+`run_metadata.json` records the benchmark commit, requested model IDs, whether the Luxia external route was configured, API probe result, backend/provider, GPU/VRAM, QA counts, source ZIP paths, and low-VRAM policy.
 
 > External-model API calls can incur LuxiaCloud charges. Do not start the full 6,481 / 6,417 inference until the 20-sample smoke results have been reviewed.
 

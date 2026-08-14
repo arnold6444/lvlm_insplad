@@ -26,10 +26,12 @@ def test_colab_contains_full_benchmark_flow_inline():
         "BRANCH = 'main'",
         'GITHUB_TOKEN',
         'LUXIA_API_KEY',
+        'LUXIA_EXTERNAL_CHAT_URL',
         'gpt-5.3-chat-latest',
         'gemini-3-flash-preview',
         'infer_luxia_external',
         'API_PROBE_STATUS',
+        'skipped_external_route_missing',
         'skipped_api_probe_failed',
         'Qwen/Qwen3-VL-8B-Instruct',
         'OpenGVLab/InternVL3_5-8B',
@@ -55,6 +57,20 @@ def test_colab_contains_full_benchmark_flow_inline():
     assert 'GEMINI_API_KEY' not in joined
 
 
+def test_colab_repairs_live_kernel_import_path():
+    joined = _joined_notebook_source()
+    assert "SRC_DIR = REPO_DIR / 'src'" in joined
+    assert 'sys.path.insert(0, str(SRC_DIR))' in joined
+    assert 'import insplad_benchmark' in joined
+
+
+def test_colab_does_not_use_luxia_native_chat_for_external_models():
+    joined = _joined_notebook_source()
+    assert 'The public /luxia/v1/chat route only accepts Luxia model IDs.' in joined
+    assert "LUXIA_EXTERNAL_CHAT_URL = get_secret('LUXIA_EXTERNAL_CHAT_URL')" in joined
+    assert "status = 'skipped_external_route_missing'" in joined
+
+
 def test_colab_uses_runtime_uploads_instead_of_google_drive():
     joined = _joined_notebook_source()
     assert "Path('/content')" in joined
@@ -73,3 +89,10 @@ def test_colab_preserves_model_specific_hf_adapters():
     assert "'adapter': 'minicpm_chat'" in joined
     assert 'load_hf_adapter(spec)' in joined
     assert 'torch.cuda.empty_cache()' in joined
+
+
+def test_colab_writes_diagnostic_csv_headers_when_nothing_completed():
+    joined = _joined_notebook_source()
+    assert 'No models completed.' in joined
+    assert 'LEADERBOARD_COLUMNS' in joined
+    assert 'REVIEW_COLUMNS' in joined
