@@ -9,13 +9,7 @@ def _adapter_kind(spec: Mapping[str, Any]) -> str:
 
 
 def load_hf_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
-    """Load one Hugging Face VLM using its supported inference interface.
-
-    Qwen/LLaVA stay on the generic Transformers pipeline. InternVL and
-    MiniCPM use their model-specific AutoModel + chat() APIs because their
-    remote-code configs are not compatible with AutoModelForImageTextToText
-    in every Transformers release.
-    """
+    """Load one Hugging Face VLM using its supported inference interface."""
     kind = _adapter_kind(spec)
     if kind == "pipeline":
         return _load_pipeline_adapter(spec)
@@ -23,6 +17,8 @@ def load_hf_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
         return _load_internvl_adapter(spec)
     if kind == "minicpm_chat":
         return _load_minicpm_adapter(spec)
+    if kind == "llava_processor":
+        return _load_llava_adapter(spec)
     raise ValueError(f"Unsupported HF adapter: {kind}")
 
 
@@ -34,11 +30,13 @@ def infer_hf(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: st
         return _infer_internvl(adapter, image_paths, prompt)
     if kind == "minicpm_chat":
         return _infer_minicpm(adapter, image_paths, prompt)
+    if kind == "llava_processor":
+        return _infer_llava(adapter, image_paths, prompt)
     raise ValueError(f"Unsupported loaded HF adapter: {kind}")
 
 
 def _make_chat(image_paths: Sequence[Path], prompt: str) -> list[dict[str, Any]]:
-    content = [{"type": "image", "url": str(path)} for path in image_paths]
+    content = [{"type": "image", "url": str(Path(path))} for path in image_paths]
     content.append({"type": "text", "text": prompt})
     return [{"role": "user", "content": content}]
 
@@ -51,6 +49,21 @@ def _extract_generated_text(out: Any) -> str:
     if isinstance(value, str):
         return value.strip()
     if isinstance(value, list):
+        for entry in reversed(value):
+            if not isinstance(entry, dict) or entry.get("role") != "assistant":
+                continue
+            content = entry.get("content")
+            if isinstance(content, str):
+                return content.strip()
+            if isinstance(content, list):
+                texts = [
+                    str(part["text"])
+                    for part in content
+                    if isinstance(part, dict) and part.get("text")
+                ]
+                if texts:
+                    return "\n".join(texts).strip()
+
         texts: list[str] = []
         for entry in value:
             if not isinstance(entry, dict):
@@ -84,7 +97,6 @@ def _infer_pipeline(adapter: Mapping[str, Any], image_paths: Sequence[Path], pro
         text=_make_chat(image_paths, prompt),
         max_new_tokens=80,
         do_sample=False,
-        return_full_text=False,
     )
     return _extract_generated_text(out)
 
@@ -158,7 +170,7 @@ def _dynamic_preprocess(
     return processed_images
 
 
-def _load_internvl_image(image_file: Path, input_size: int = 448, max_num: int = 12) -> Any:
+def _load_internvl_image(image_file: Path, input_size: int = 448, max_num: int = 6) -> Any:
     import torch
     from PIL import Image
     from torchvision import transforms as T
@@ -186,14 +198,16 @@ def _load_internvl_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
     import torch
     from transformers import AutoModel, AutoTokenizer
 
-    dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
+    if not torch.cuda.is_available():
+        raise RuntimeError("InternVL direct inference requires CUDA for this benchmark.")
+
+    dtype = torch.bfloat16
     model = AutoModel.from_pretrained(
         spec["model_id"],
         torch_dtype=dtype,
         low_cpu_mem_usage=True,
         trust_remote_code=True,
-        device_map="auto",
-    ).eval()
+    ).eval().cuda()
     tokenizer = AutoTokenizer.from_pretrained(
         spec["model_id"], trust_remote_code=True, use_fast=False
     )
@@ -202,35 +216,51 @@ def _load_internvl_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
         "model": model,
         "tokenizer": tokenizer,
         "dtype": dtype,
-        "max_num_tiles": int(spec.get("max_num_tiles", 12)),
+        "max_total_tiles": int(spec.get("max_total_tiles", 6)),
     }
+
+
+def _internvl_per_image_tile_budget(max_total_tiles: int, image_count: int) -> int:
+    if image_count <= 0:
+        raise ValueError("image_count must be positive")
+    return max(1, max_total_tiles // image_count)
 
 
 def _infer_internvl(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: str) -> str:
     import torch
 
+    if not image_paths:
+        raise ValueError("InternVL inference requires at least one image.")
+
+    max_total_tiles = int(adapter["max_total_tiles"])
+    per_image_max = _internvl_per_image_tile_budget(max_total_tiles, len(image_paths))
     pixel_batches = [
-        _load_internvl_image(Path(path), max_num=int(adapter["max_num_tiles"]))
+        _load_internvl_image(Path(path), max_num=per_image_max)
         for path in image_paths
     ]
     num_patches_list = [batch.size(0) for batch in pixel_batches]
-    pixel_values = torch.cat(pixel_batches, dim=0).to(adapter["dtype"])
-    if torch.cuda.is_available():
-        pixel_values = pixel_values.cuda()
+    pixel_values = torch.cat(pixel_batches, dim=0).to(adapter["dtype"]).cuda()
 
     if len(image_paths) == 1:
         image_prefix = "<image>\n"
+        num_patches_arg = None
     else:
         image_prefix = "".join(
             f"Image-{index + 1}: <image>\n" for index in range(len(image_paths))
         )
+        num_patches_arg = num_patches_list
+
     generation_config = {"max_new_tokens": 80, "do_sample": False}
+    kwargs: dict[str, Any] = {}
+    if num_patches_arg is not None:
+        kwargs["num_patches_list"] = num_patches_arg
+
     response = adapter["model"].chat(
         adapter["tokenizer"],
         pixel_values,
         image_prefix + prompt,
         generation_config,
-        num_patches_list=num_patches_list,
+        **kwargs,
     )
     return str(response).strip()
 
@@ -268,3 +298,75 @@ def _infer_minicpm(adapter: Mapping[str, Any], image_paths: Sequence[Path], prom
     if hasattr(answer, "__iter__"):
         return "".join(str(part) for part in answer).strip()
     return str(answer).strip()
+
+
+def _load_llava_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
+    import torch
+    from transformers import AutoModelForMultimodalLM, AutoProcessor
+
+    if not torch.cuda.is_available():
+        raise RuntimeError("LLaVA-OneVision direct inference requires CUDA for this benchmark.")
+
+    dtype = torch.bfloat16
+    processor = AutoProcessor.from_pretrained(spec["model_id"])
+    model = AutoModelForMultimodalLM.from_pretrained(
+        spec["model_id"],
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
+        device_map="auto",
+    ).eval()
+    return {
+        "kind": "llava_processor",
+        "model": model,
+        "processor": processor,
+        "dtype": dtype,
+    }
+
+
+def _infer_llava(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: str) -> str:
+    from PIL import Image
+
+    if not image_paths:
+        raise ValueError("LLaVA inference requires at least one image.")
+
+    images = [Image.open(path).convert("RGB") for path in image_paths]
+    conversation = [
+        {
+            "role": "user",
+            "content": [
+                *({"type": "image"} for _ in images),
+                {"type": "text", "text": prompt},
+            ],
+        }
+    ]
+    processor = adapter["processor"]
+    model = adapter["model"]
+    formatted_prompt = processor.apply_chat_template(
+        conversation,
+        add_generation_prompt=True,
+    )
+    inputs = processor(
+        images=images,
+        text=formatted_prompt,
+        return_tensors="pt",
+    )
+
+    device = model.device
+    moved = {}
+    for key, value in inputs.items():
+        if hasattr(value, "to"):
+            if getattr(value, "is_floating_point", lambda: False)():
+                moved[key] = value.to(device=device, dtype=adapter["dtype"])
+            else:
+                moved[key] = value.to(device=device)
+        else:
+            moved[key] = value
+
+    input_len = moved["input_ids"].shape[-1]
+    outputs = model.generate(
+        **moved,
+        max_new_tokens=80,
+        do_sample=False,
+    )
+    generated = outputs[0][input_len:]
+    return processor.decode(generated, skip_special_tokens=True).strip()
