@@ -169,14 +169,7 @@ def _infer_qwen35(adapter: Mapping[str, Any], image_paths: Sequence[Path], promp
 
 
 def _ensure_transformers5_custom_model_compat(model_base_cls: Any | None = None) -> None:
-    """Provide the v5 tied-weight default missing from older remote-code VLMs.
-
-    Transformers 5.x accesses ``all_tied_weights_keys`` while loading weights.
-    Some 4.x-era custom model classes (including InternVLChatModel/MiniCPMV)
-    never ran the newer ``post_init()`` path, so the instance has no attribute.
-    A class-level empty dict is the minimal inference-only compatibility default;
-    native models that initialize their own value still override it.
-    """
+    """Provide the v5 tied-weight default missing from older remote-code VLMs."""
     if model_base_cls is None:
         from transformers.modeling_utils import PreTrainedModel
 
@@ -185,6 +178,53 @@ def _ensure_transformers5_custom_model_compat(model_base_cls: Any | None = None)
     existing = model_base_cls.__dict__.get("all_tied_weights_keys")
     if not isinstance(existing, dict):
         model_base_cls.all_tied_weights_keys = {}
+
+
+_INTERNVL25_MODEL_ID = "OpenGVLab/InternVL2_5-8B"
+_INTERNVL25_BASE_TOKENIZER_ID = "internlm/internlm2_5-7b-chat"
+_INTERNVL25_BASE_TOKENIZER_REVISION = "f9afffb71ebc971d9a4e3d387b131d88442f38c1"
+_INTERNVL25_EXTRA_TOKENS = (
+    "<img>",
+    "</img>",
+    "<IMG_CONTEXT>",
+    "<quad>",
+    "</quad>",
+    "<ref>",
+    "</ref>",
+    "<box>",
+    "</box>",
+)
+_INTERNVL25_EXPECTED_TOKEN_IDS = {
+    token: 92544 + index for index, token in enumerate(_INTERNVL25_EXTRA_TOKENS)
+}
+
+
+def _prepare_internvl25_compat_tokenizer(tokenizer: Any) -> Any:
+    """Append InternVL2.5 image tokens to a converted InternLM2.5 tokenizer."""
+    tokenizer.add_tokens(list(_INTERNVL25_EXTRA_TOKENS), special_tokens=True)
+    actual = {
+        token: int(tokenizer.convert_tokens_to_ids(token))
+        for token in _INTERNVL25_EXTRA_TOKENS
+    }
+    if actual != _INTERNVL25_EXPECTED_TOKEN_IDS:
+        raise RuntimeError(
+            "InternVL2.5 tokenizer IDs do not match checkpoint vocabulary: "
+            f"expected {_INTERNVL25_EXPECTED_TOKEN_IDS}, got {actual}"
+        )
+    tokenizer.model_max_length = 16384
+    return tokenizer
+
+
+def _load_internvl25_compat_tokenizer() -> Any:
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        _INTERNVL25_BASE_TOKENIZER_ID,
+        revision=_INTERNVL25_BASE_TOKENIZER_REVISION,
+        trust_remote_code=False,
+        use_fast=True,
+    )
+    return _prepare_internvl25_compat_tokenizer(tokenizer)
 
 
 _IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -288,16 +328,26 @@ def _load_internvl_adapter(spec: Mapping[str, Any]) -> dict[str, Any]:
         raise RuntimeError("InternVL direct inference requires CUDA for this benchmark.")
 
     _ensure_transformers5_custom_model_compat()
+    model_id = str(spec["model_id"])
+    tokenizer = (
+        _load_internvl25_compat_tokenizer()
+        if model_id == _INTERNVL25_MODEL_ID
+        else None
+    )
+
     dtype = torch.bfloat16
     model = AutoModel.from_pretrained(
-        spec["model_id"],
+        model_id,
         torch_dtype=dtype,
         low_cpu_mem_usage=True,
         trust_remote_code=True,
     ).eval().cuda()
-    tokenizer = AutoTokenizer.from_pretrained(
-        spec["model_id"], trust_remote_code=True, use_fast=False
-    )
+
+    if tokenizer is None:
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_id, trust_remote_code=True, use_fast=False
+        )
+
     return {
         "kind": "internvl_chat",
         "model": model,
