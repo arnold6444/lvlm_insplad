@@ -28,6 +28,8 @@ Source: `supervised_fault_classification.zip`
 ### Aligned Core — same-image cross-track analysis
 The two ZIPs share **8,990 SHA256-identical images**. `unsupervised test ∩ supervised val` contains 1,384 exact same images; six have conflicting binary GT, leaving a clean **Aligned Core of 1,378 images**.
 
+The final baseline table uses this Aligned Core so every model is evaluated on the **same query images** for anomaly detection, normal-reference anomaly detection, and structured defect understanding.
+
 ## Source-label policy
 
 - `good` and `normal` → benchmark `normal`
@@ -44,29 +46,54 @@ python -m pytest -v
 
 ## Main generated benchmark files
 
+The full QA and Aligned Core files are rebuilt from the two source ZIPs when needed:
+
 - `data/qa/anomaly_zero_shot.jsonl` — 6,481
 - `data/qa/anomaly_one_shot.jsonl` — 6,481
 - `data/qa/defect_qa.jsonl` — 6,417
 - `reports/aligned_core.csv` — 1,378 same-image links
+
+Committed smoke samples:
+
 - `samples/anomaly_zero_shot_20.jsonl`
 - `samples/anomaly_one_shot_20.jsonl`
 - `samples/defect_20.jsonl`
 - `samples/aligned_core_20.jsonl`
 
-## Canonical Colab notebooks
+## Colab notebooks
 
-Only two notebooks are used for the current smoke benchmark:
+### Smoke / execution check
 
-- `notebooks/lvlm_baselines_colab.ipynb` — four non-overlapping Hugging Face VLM family representatives
-- `notebooks/luxia_pipeline_smoke_colab.ipynb` — Luxia Vision (Document AI) → Luxia Chat two-stage baseline
+- `notebooks/lvlm_baselines_colab.ipynb` — four non-overlapping Hugging Face VLM family representatives, 20/20/20 smoke
+- `notebooks/luxia_pipeline_smoke_colab.ipynb` — Luxia Vision (Document AI) → Luxia Chat two-stage API smoke
 
-Both use the same 20/20/20 benchmark contract:
+Smoke contract:
 
 ```text
 Zero-shot 20
 → 1-shot normal reference 20
 → Structured 20
 ```
+
+### Final HF baseline table
+
+- `notebooks/lvlm_baselines_full_colab.ipynb` — **Aligned Core 1,378 same query images**
+
+This notebook rebuilds the verified Aligned Core from the source ZIPs, then evaluates:
+
+```text
+Image only anomaly: 1,378
++ normal reference anomaly: 1,378
+structured anomaly + defect class: 1,378
+```
+
+Predictions are checkpointed to:
+
+```text
+MyDrive/lvlm_insplad_results/hf_full_aligned_core_v1/
+```
+
+Successful rows are reused on the next run, so the four models can be run one at a time across multiple Colab sessions.
 
 ## 4-model Hugging Face benchmark
 
@@ -83,7 +110,7 @@ Removed from the active benchmark because a newer model from the same family is 
 - `Qwen/Qwen3-VL-8B-Instruct`
 - `OpenGVLab/InternVL2_5-8B`
 
-`Qwen3.5-4B` is used instead of larger Qwen3.5 variants because the smoke environment is an NVIDIA L4 with about 22 GB VRAM. Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins `transformers==5.14.0` for reproducibility.
+`Qwen3.5-4B` is used instead of larger Qwen3.5 variants because the benchmark environment is an NVIDIA L4 with about 22 GB VRAM. Qwen3.5 support requires the Transformers v5 generation; the Colab notebooks pin `transformers==5.14.0` for reproducibility.
 
 ### GPU-aware adapter policy
 
@@ -91,17 +118,17 @@ Removed from the active benchmark because a newer model from the same family is 
 - MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
 - LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path.
 - InternVL3.5 uses its official `chat()` path with one fixed total visual tile budget of 6 per sample.
-- The notebook does not force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
+- The notebook does not force 4-bit quantization just to fit a T4. Use an L4/A100-class runtime.
 
-### Run the Hugging Face smoke
+### Run the final Hugging Face baseline
 
-Open `notebooks/lvlm_baselines_colab.ipynb` from `main` in Google Colab and run cells from top to bottom.
+Open `notebooks/lvlm_baselines_full_colab.ipynb` from `main` in Google Colab and run cells from top to bottom.
 
 Because this repository is private, add this Colab Secret:
 
 - `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
 
-Use an NVIDIA L4-class or larger GPU.
+The default cell requests all four models. For long Colab sessions, set `MODELS_TO_RUN` to one model at a time. The fixed Drive result directory preserves previous successful rows.
 
 ## Luxia pipeline smoke
 
@@ -112,7 +139,7 @@ Add these Colab Secrets:
 - `GITHUB_TOKEN`
 - `LUXIA_API_KEY`
 
-GPU is not required for the Luxia API pipeline. The notebook evaluates the same Zero-shot 20 / 1-shot 20 / Structured 20 contract and exports `leaderboard.csv`, `prediction_review.csv`, `run_status.json`, and `run_metadata.json`.
+GPU is not required for the Luxia API pipeline. The notebook evaluates the same Zero-shot 20 / 1-shot 20 / Structured 20 smoke contract and exports `leaderboard.csv`, `prediction_review.csv`, `run_status.json`, and `run_metadata.json`.
 
 The Luxia runner reuses successful predictions from the latest `luxia_smoke_*.zip`, retries failed or missing rows only, and still produces a leaderboard if a row-level API failure remains by counting that row as invalid.
 
@@ -123,43 +150,25 @@ Put these files anywhere under Google Drive `MyDrive`:
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
 
-Both canonical notebooks mount Drive and find each filename automatically. If the same filename exists more than once, set `DRIVE_DATA_DIR` to the folder containing the dataset ZIPs.
+The Colab notebooks mount Drive and find each filename automatically. If the same filename exists more than once, set `DRIVE_DATA_DIR` to the folder containing the dataset ZIPs.
 
-Result ZIPs are copied to:
+## Full baseline scoring
 
-```text
-MyDrive/lvlm_insplad_results/
-```
+The final Aligned Core leaderboard reports:
 
-The notebooks also attempt the normal browser download after saving the result to Drive.
+- Zero-shot anomaly Balanced Accuracy / F1
+- Normal-reference anomaly Balanced Accuracy / F1
+- Defect Balanced Accuracy / Macro-F1
+- Joint Accuracy
+- False Defect Rate
+- Consistency Error
+- Structured Invalid Output Rate
 
-## Smoke-test scoring policy
+These structured metrics are an **explainability proxy / fault-understanding evaluation**. InsPLAD does not provide natural-language explanation, location, or appearance ground truth; those require a separate reviewed subset for the later method/ideation stage.
 
-Before the 60-row Hugging Face smoke starts, each HF model first passes:
+## Optional balanced-100 utility
 
-```text
-Zero-shot probe 1
-+ 1-shot probe 1
-```
-
-Only models with zero row-level inference errors are included in the scored leaderboard. `prediction_review.csv` preserves failure details and `run_status.json` records error examples plus peak VRAM.
-
-## Balanced 100 stage
-
-After the smoke results are reviewed, build a deterministic intermediate comparison set before spending GPU/API time on the full benchmark:
-
-```powershell
-python scripts/build_balanced_samples.py --count 100 --seed 42
-```
-
-This writes `samples/balanced100/` with:
-
-- anomaly zero-shot: **50 normal / 50 anomalous**, spread round-robin across asset categories
-- anomaly one-shot: the **same 100 target/query IDs** as zero-shot, with their normal references
-- structured: 100 rows distributed across assets first, then defect classes within each asset
-- `sample_summary.json` so the exact sampling composition is auditable
-
-The 20-row smoke remains the execution-stability gate. The balanced100 subset is the next model-comparison stage; full 6,481 / 6,417 evaluation comes only after that comparison is stable.
+`scripts/build_balanced_samples.py` remains available for quick intermediate experiments, but the current final baseline table goes directly from the 20-row smoke to the **Aligned Core 1,378** evaluation.
 
 ## Evaluation CLI
 
