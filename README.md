@@ -97,12 +97,14 @@ Because this repository is private, add only:
 
 No API secret is required for the Hugging Face smoke notebook.
 
-### Source ZIP upload
+### Source ZIPs from Google Drive
 
-Do **not** mount Google Drive. In the Colab left sidebar, upload these files directly into `/content`:
+Put these files anywhere under Google Drive `MyDrive`:
 
 - `unsupervised_anomaly_detection.zip`
 - `supervised_fault_classification.zip`
+
+The notebook mounts Drive and finds each filename automatically. If the same filename exists more than once, set `DRIVE_DATA_DIR` to the folder containing the dataset ZIPs. Results are also copied to `MyDrive/lvlm_insplad_results/` before the normal browser download is attempted.
 
 Every requested HF model receives the identical smoke regimes:
 
