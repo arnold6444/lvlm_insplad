@@ -82,15 +82,16 @@ def test_colab_repairs_live_kernel_import_path():
     assert 'import insplad_benchmark' in joined
 
 
-def test_colab_uses_runtime_uploads_instead_of_google_drive():
+def test_colab_uses_google_drive_source_zips_and_persists_results():
     joined = _joined_notebook_source()
-    assert "Path('/content')" in joined
+    assert "drive.mount('/content/drive')" in joined
+    assert "Path('/content/drive/MyDrive')" in joined
+    assert 'DRIVE_DATA_DIR' in joined
+    assert 'resolve_drive_zip' in joined
     assert 'unsupervised_anomaly_detection.zip' in joined
     assert 'supervised_fault_classification.zip' in joined
     assert "Path('/content/lvlm_insplad_results')" in joined
-    assert 'drive.mount' not in joined
-    assert '/content/drive' not in joined
-    assert 'MyDrive' not in joined
+    assert "DRIVE_ROOT / 'lvlm_insplad_results'" in joined
 
 
 def test_colab_requires_clean_completion_before_scoring():
