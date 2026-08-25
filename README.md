@@ -57,7 +57,7 @@ python -m pytest -v
 
 Only two notebooks are used for the current smoke benchmark:
 
-- `notebooks/lvlm_baselines_colab.ipynb` — seven Hugging Face VLM baselines
+- `notebooks/lvlm_baselines_colab.ipynb` — four non-overlapping Hugging Face VLM family representatives
 - `notebooks/luxia_pipeline_smoke_colab.ipynb` — Luxia Vision (Document AI) → Luxia Chat two-stage baseline
 
 Both use the same 20/20/20 benchmark contract:
@@ -68,29 +68,29 @@ Zero-shot 20
 → Structured 20
 ```
 
-## 7-model Hugging Face benchmark
+## 4-model Hugging Face benchmark
 
-Models are grouped so the final analysis can compare MMAD-era anchors vs current/latest open VLMs:
+To avoid duplicate model families, only one representative per family is kept:
 
-- `Qwen/Qwen2.5-VL-7B-Instruct` — MMAD-era anchor
-- `Qwen/Qwen3-VL-8B-Instruct` — current Qwen
-- `Qwen/Qwen3.5-4B` — newest L4-friendly Qwen baseline
-- `OpenGVLab/InternVL2_5-8B` — MMAD-era anchor
-- `OpenGVLab/InternVL3_5-8B` — current InternVL
-- `openbmb/MiniCPM-V-4_5` — current compact VLM
-- `llava-hf/llava-onevision-qwen2-7b-ov-hf` — MMAD-family baseline
+- `Qwen/Qwen3.5-4B` — Qwen family
+- `OpenGVLab/InternVL3_5-8B` — InternVL family
+- `openbmb/MiniCPM-V-4_5` — MiniCPM family
+- `llava-hf/llava-onevision-qwen2-7b-ov-hf` — LLaVA family
 
-`Qwen3.5-4B` is deliberately used instead of the 9B/27B variants because the paper smoke environment is an NVIDIA L4 with about 22 GB VRAM. The benchmark does not mix in 4-bit quantization only for one model, because that would add a separate quantization variable to the model comparison.
+Removed from the active benchmark because a newer model from the same family is already included:
 
-Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins `transformers==5.14.0` for reproducibility.
+- `Qwen/Qwen2.5-VL-7B-Instruct`
+- `Qwen/Qwen3-VL-8B-Instruct`
+- `OpenGVLab/InternVL2_5-8B`
+
+`Qwen3.5-4B` is used instead of larger Qwen3.5 variants because the smoke environment is an NVIDIA L4 with about 22 GB VRAM. Qwen3.5 support requires the Transformers v5 generation; the Colab notebook pins `transformers==5.14.0` for reproducibility.
 
 ### GPU-aware adapter policy
 
-- Qwen2.5/Qwen3 use the generic Transformers image-text pipeline.
 - Qwen3.5 uses `AutoProcessor + AutoModelForMultimodalLM` with `enable_thinking=False`.
 - MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
 - LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path.
-- InternVL2.5/3.5 use their official `chat()` path with one fixed total visual tile budget of 6 per sample.
+- InternVL3.5 uses its official `chat()` path with one fixed total visual tile budget of 6 per sample.
 - The notebook does not force 4-bit quantization just to fit a T4. If VRAM is below 20 GB, models are marked `skipped_insufficient_gpu`; use an L4/A100-class runtime.
 
 ### Run the Hugging Face smoke
@@ -113,6 +113,8 @@ Add these Colab Secrets:
 - `LUXIA_API_KEY`
 
 GPU is not required for the Luxia API pipeline. The notebook evaluates the same Zero-shot 20 / 1-shot 20 / Structured 20 contract and exports `leaderboard.csv`, `prediction_review.csv`, `run_status.json`, and `run_metadata.json`.
+
+The Luxia runner reuses successful predictions from the latest `luxia_smoke_*.zip`, retries failed or missing rows only, and still produces a leaderboard if a row-level API failure remains by counting that row as invalid.
 
 ## Source ZIPs from Google Drive
 
