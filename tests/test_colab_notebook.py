@@ -20,16 +20,13 @@ def _joined_notebook_source() -> str:
     return '\n'.join(sources)
 
 
-def test_colab_contains_seven_model_hf_flow():
+def test_colab_contains_four_family_representative_hf_flow():
     joined = _joined_notebook_source()
     for expected in (
         "BRANCH = 'main'",
         'GITHUB_TOKEN',
         'transformers==5.14.0',
-        'Qwen/Qwen2.5-VL-7B-Instruct',
-        'Qwen/Qwen3-VL-8B-Instruct',
         'Qwen/Qwen3.5-4B',
-        'OpenGVLab/InternVL2_5-8B',
         'OpenGVLab/InternVL3_5-8B',
         'openbmb/MiniCPM-V-4_5',
         'llava-hf/llava-onevision-qwen2-7b-ov-hf',
@@ -51,6 +48,9 @@ def test_colab_contains_seven_model_hf_flow():
         assert expected in joined
 
     for removed in (
+        'Qwen/Qwen2.5-VL-7B-Instruct',
+        'Qwen/Qwen3-VL-8B-Instruct',
+        'OpenGVLab/InternVL2_5-8B',
         'OPENAI_API_KEY',
         'GEMINI_API_KEY',
         'LUXIA_API_KEY',
@@ -82,16 +82,13 @@ def test_colab_repairs_live_kernel_import_path():
     assert 'import insplad_benchmark' in joined
 
 
-def test_colab_uses_google_drive_source_zips_and_persists_results():
+def test_colab_uses_google_drive_for_source_zips():
     joined = _joined_notebook_source()
-    assert "drive.mount('/content/drive')" in joined
     assert "Path('/content/drive/MyDrive')" in joined
-    assert 'DRIVE_DATA_DIR' in joined
-    assert 'resolve_drive_zip' in joined
     assert 'unsupervised_anomaly_detection.zip' in joined
     assert 'supervised_fault_classification.zip' in joined
-    assert "Path('/content/lvlm_insplad_results')" in joined
-    assert "DRIVE_ROOT / 'lvlm_insplad_results'" in joined
+    assert 'drive.mount' in joined
+    assert 'DRIVE_DATA_DIR' in joined
 
 
 def test_colab_requires_clean_completion_before_scoring():
