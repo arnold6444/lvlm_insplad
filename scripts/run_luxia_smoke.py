@@ -70,6 +70,12 @@ def write_csv(path: Path, rows: list[dict], fieldnames: list[str]) -> None:
         writer.writerows(rows)
 
 
+def reusable_prediction(row: dict | None) -> bool:
+    if not row:
+        return False
+    return not row.get("error") and bool(str(row.get("output", "")).strip())
+
+
 def safe_extract(zip_path: Path, member: str, out_root: Path, dataset_key: str) -> Path:
     out = out_root / dataset_key / member
     if out.exists():
@@ -128,7 +134,7 @@ def task_inputs(task: str, row: dict, path_cache: dict[str, Path]) -> tuple[list
     return [path_cache[row["image"]]], structured_prompt(row)
 
 
-def call_with_retries(fn, attempts: int = 2):
+def call_with_retries(fn, attempts: int = 3):
     last_error = None
     for attempt in range(attempts):
         try:
@@ -225,38 +231,57 @@ def main() -> int:
     error_examples: list[dict] = []
     review_rows: list[dict] = []
     total_latency_s = 0.0
+    reused_predictions = 0
+    rows_called_this_run = 0
 
     for task, rows in qa_sets.items():
+        prediction_path = args.out_dir / f"{task}.jsonl"
+        existing_rows = read_jsonl(prediction_path) if prediction_path.exists() else []
+        existing_by_id = {row["id"]: row for row in existing_rows if row.get("id")}
         predictions = []
+
         for index, row in enumerate(rows, start=1):
-            print(f"[{task}] {index}/{len(rows)} {row['id']}")
-            image_paths, prompt = task_inputs(task, row, path_cache)
-            started = time.time()
-            try:
-                result = call_with_retries(
-                    lambda: infer_luxia_pipeline(image_paths, prompt, api_key)
-                )
-                output = result["output"]
-                latency_s = float(result["latency_s"])
+            existing = existing_by_id.get(row["id"])
+            if reusable_prediction(existing):
+                prediction = existing
+                output = str(prediction.get("output", ""))
                 error = None
-            except Exception as exc:
-                output = ""
-                latency_s = round(time.time() - started, 3)
-                error = f"{type(exc).__name__}: {exc}"
+                latency_s = float(prediction.get("latency_s") or 0.0)
+                reused_predictions += 1
+                print(f"[{task}] {index}/{len(rows)} {row['id']} reuse")
+            else:
+                print(f"[{task}] {index}/{len(rows)} {row['id']} call")
+                image_paths, prompt = task_inputs(task, row, path_cache)
+                started = time.time()
+                rows_called_this_run += 1
+                try:
+                    result = call_with_retries(
+                        lambda: infer_luxia_pipeline(image_paths, prompt, api_key)
+                    )
+                    output = result["output"]
+                    latency_s = float(result["latency_s"])
+                    error = None
+                except Exception as exc:
+                    output = ""
+                    latency_s = round(time.time() - started, 3)
+                    error = f"{type(exc).__name__}: {exc}"
+                total_latency_s += latency_s
+                prediction = {
+                    "id": row["id"],
+                    "output": output,
+                    "error": error,
+                    "latency_s": round(latency_s, 3),
+                    "model_key": MODEL_KEY,
+                    "model_id": MODEL_ID,
+                    "backend": "api_pipeline",
+                    "provider": "luxia",
+                }
+
+            if error:
                 row_error_count += 1
                 if len(error_examples) < 5:
                     error_examples.append({"task": task, "id": row["id"], "error": error})
-            total_latency_s += latency_s
-            prediction = {
-                "id": row["id"],
-                "output": output,
-                "error": error,
-                "latency_s": round(latency_s, 3),
-                "model_key": MODEL_KEY,
-                "model_id": MODEL_ID,
-                "backend": "api_pipeline",
-                "provider": "luxia",
-            }
+
             predictions.append(prediction)
             review_rows.append(
                 {
@@ -272,7 +297,7 @@ def main() -> int:
                     "latency_s": round(latency_s, 3),
                 }
             )
-            write_jsonl(args.out_dir / f"{task}.jsonl", predictions)
+            write_jsonl(prediction_path, predictions)
 
     status = "completed" if row_error_count == 0 else "completed_with_row_errors"
     run_status = {
@@ -284,6 +309,8 @@ def main() -> int:
         "status": status,
         "row_error_count": row_error_count,
         "error_examples": error_examples,
+        "reused_predictions": reused_predictions,
+        "rows_called_this_run": rows_called_this_run,
         "total_latency_s": round(total_latency_s, 3),
     }
     (args.out_dir / "run_status.json").write_text(
@@ -304,9 +331,10 @@ def main() -> int:
     ]
     write_csv(args.out_dir / "prediction_review.csv", review_rows, review_fields)
 
-    if row_error_count == 0:
-        evaluate_predictions(args.out_dir)
-        build_leaderboard(args.out_dir)
+    # Always score the run. API failures remain empty outputs and are counted by the evaluator
+    # as invalid predictions instead of suppressing the entire leaderboard.
+    evaluate_predictions(args.out_dir)
+    build_leaderboard(args.out_dir)
 
     n_zero = len(qa_sets["zero_shot"])
     n_one = len(qa_sets["one_shot"])
@@ -320,6 +348,8 @@ def main() -> int:
         "qa_counts": {key: len(value) for key, value in qa_sets.items()},
         "expected_vision_calls": n_zero + (2 * n_one) + n_structured,
         "expected_chat_calls": n_zero + n_one + n_structured,
+        "reused_predictions": reused_predictions,
+        "rows_called_this_run": rows_called_this_run,
         "source_zip_paths": [str(args.unsup_zip), str(args.sup_zip)],
         "result_root": str(args.out_dir),
         "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
