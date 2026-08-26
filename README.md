@@ -95,6 +95,76 @@ MyDrive/lvlm_insplad_results/hf_full_aligned_core_v1/
 
 Successful rows are reused on the next run, so the four models can be run one at a time across multiple Colab sessions.
 
+### Retrieved 1-shot+ experiment
+
+`1-shot+` keeps the fixed one-shot prompt and evaluation contract, but replaces the asset-wide fixed normal with a query-specific reference:
+
+```text
+Aligned Core query
+→ same-asset unsupervised train-normal candidates
+→ exclude every train candidate whose size+ZIP-CRC32 fingerprint occurs in test
+→ facebook/dinov2-base@f9e44c814b77203eaa57a6bdbbd535f21ede1415 CLS embedding
+→ deterministic cosine Top-1
+→ [retrieved normal reference, query] LVLM input
+```
+
+Generated artifacts are separate from the fixed baseline:
+
+- `one_shot_plus.jsonl` — retrieved QA with unchanged query ID/image/GT
+- `one_shot_plus_references.csv` — fixed/retrieved paths, cosine score, model commit, and exact cache SHA-256 provenance
+- `reference_embeddings.npz` — pickle-free incremental embedding cache
+- `one_shot_plus_smoke_25.jsonl` — deterministic label-balanced, asset-round-robin smoke QA
+- `hf_one_shot_plus_v1/` — separate predictions and metrics
+
+The plus experiment uses only Qwen3.5-4B, InternVL3.5-8B, and MiniCPM-V-4.5. LLaVA remains available to the legacy baseline but is intentionally rejected by `one_shot_plus` mode.
+
+Top-1 selection is deterministic for the exact pinned embedding cache (recorded by SHA-256). A cold re-embedding on different GPU/runtime kernels can produce tiny floating-point differences near a tie, so reuse the persisted cache when comparing or resuming experiments.
+
+Open `notebooks/lvlm_one_shot_plus_colab.ipynb` for the recommended end-to-end path. It snapshots aligned zero/fixed/structured/retrieved QA, persists the commit-pinned DINO cache in Drive, runs a 25-row smoke by default, and leaves `RUN_FULL = False`; the 1,378-row LVLM inference is never started unless that guard is changed explicitly.
+
+For an already rebuilt benchmark/Aligned Core, the equivalent builder command is:
+
+```powershell
+python -m pip install -e ".[retrieval,hf]"
+python scripts/build_one_shot_plus.py `
+  --anomaly-manifest work/manifests/unsup.csv `
+  --unsup-zip C:\path\to\unsupervised_anomaly_detection.zip `
+  --base-one-shot-qa work/benchmark/data/qa/anomaly_one_shot.jsonl `
+  --aligned-core work/benchmark/reports/aligned_core.csv `
+  --out-qa work/aligned_qa/one_shot_plus.jsonl `
+  --out-manifest work/retrieval/one_shot_plus_references.csv `
+  --cache work/retrieval/reference_embeddings.npz `
+  --smoke-out work/aligned_qa/one_shot_plus_smoke_25.jsonl `
+  --smoke-size 25 `
+  --model-revision f9e44c814b77203eaa57a6bdbbd535f21ede1415 `
+  --device cuda
+```
+
+Run the guarded three-model smoke on an L4/A100-class runtime:
+
+```powershell
+python scripts/run_hf_aligned_core_full.py `
+  --experiment one_shot_plus --smoke-size 25 `
+  --qa-dir work/aligned_qa `
+  --unsup-zip C:\path\to\unsupervised_anomaly_detection.zip `
+  --sup-zip C:\path\to\supervised_fault_classification.zip `
+  --out-dir hf_one_shot_plus_v1/smoke_25 `
+  --models qwen3_5_4b internvl3_5_8b minicpm_v_4_5
+```
+
+`scripts/evaluate.py --regime one_shot_plus` writes overall, per-asset, and unweighted asset-macro anomaly metrics with TP/FP/TN/FN, Precision, Recall, and Specificity. Smoke and full runs must use different output directories; the runner rejects an incompatible or ambiguous existing result root. After complete full predictions exist, compare the three regimes and yoke-suspension FP directly (the analyzer rejects partial, wrong-model, or stale-reference plus results):
+
+```powershell
+python scripts/analyze_aligned_core_results.py `
+  --qa-dir work/aligned_qa `
+  --results-dir hf_full_aligned_core_v1 `
+  --one-shot-plus-qa work/aligned_qa/one_shot_plus.jsonl `
+  --one-shot-plus-results-dir hf_one_shot_plus_v1/full `
+  --out-dir hf_one_shot_plus_v1/comparison
+```
+
+The comparison includes `anomaly_asset_macro.csv`, `fixed_vs_retrieved_overall.csv`, `fixed_vs_retrieved_by_asset.csv`, and `yoke_fp_comparison.csv`.
+
 ## 4-model Hugging Face benchmark
 
 To avoid duplicate model families, only one representative per family is kept:

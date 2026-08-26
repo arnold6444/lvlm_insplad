@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .venv/
 
@@ -10,6 +11,7 @@ raw/
 data/raw/
 datasets/
 images/
+.artifacts/
 
 # Generated benchmark QA/results/reports
 # Keep code/config tracked; generated files can be selectively committed later.

@@ -1,4 +1,4 @@
-from insplad_benchmark.metrics import balanced_accuracy, binary_f1, consistency_error, false_defect_rate, joint_accuracy, macro_f1
+from insplad_benchmark.metrics import anomaly_classification_summary, balanced_accuracy, binary_f1, consistency_error, false_defect_rate, joint_accuracy, macro_f1
 
 
 def test_balanced_accuracy_and_binary_f1():
@@ -23,3 +23,15 @@ def test_false_defect_rate():
 
 def test_consistency_error():
     assert consistency_error(["normal", "anomalous", "anomalous"], ["rust", "normal", "rust"]) == 2 / 3
+
+
+def test_anomaly_summary_preserves_invalid_output_policy():
+    row = anomaly_classification_summary(
+        ["normal", "anomalous"],
+        ["<invalid>", "<invalid>"],
+    )
+    assert (row["tp"], row["fp"], row["tn"], row["fn"]) == (0, 0, 0, 1)
+    assert row["invalid_normal_n"] == 1
+    assert row["invalid_anomalous_n"] == 1
+    assert row["specificity"] == 0.0
+    assert row["invalid_output_rate"] == 1.0

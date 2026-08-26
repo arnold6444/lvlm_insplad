@@ -40,15 +40,33 @@ def main() -> int:
         result = validate_qa_rows(rows, assets or None, defects or None, index or None)
         results.append((path, result, [])); ok = ok and result.ok
     alignment = []
-    if 'anomaly_zero_shot.jsonl' in loaded and 'anomaly_one_shot.jsonl' in loaded:
-        alignment = validate_aligned_anomaly_sets(loaded['anomaly_zero_shot.jsonl'], loaded['anomaly_one_shot.jsonl']); ok = ok and not alignment
+    zero_rows = loaded.get('anomaly_zero_shot.jsonl')
+    if zero_rows is None:
+        zero_rows = loaded.get('zero_shot.jsonl')
+    fixed_rows = loaded.get('anomaly_one_shot.jsonl')
+    if fixed_rows is None:
+        fixed_rows = loaded.get('one_shot.jsonl')
+    plus_rows = loaded.get('one_shot_plus.jsonl')
+    if zero_rows is not None and fixed_rows is not None:
+        errors = validate_aligned_anomaly_sets(zero_rows, fixed_rows)
+        alignment.append(('zero-shot / fixed one-shot', errors)); ok = ok and not errors
+    if zero_rows is not None and plus_rows is not None:
+        errors = validate_aligned_anomaly_sets(zero_rows, plus_rows)
+        alignment.append(('zero-shot / retrieved 1-shot+', errors)); ok = ok and not errors
     lines = ['# QA Validation', '', f"- Status: {'PASS' if ok else 'FAIL'}", '']
     for path, result, errors in results:
         lines += [f'## `{path}`', '']
         if errors: lines += ['- Status: FAIL', *[f'- {e}' for e in errors], '']; continue
         lines += [f"- Status: {'PASS' if result.ok else 'FAIL'}", f'- Rows checked: {result.checked}', f'- Errors: {len(result.errors)}', f'- Warnings: {len(result.warnings)}', '']
         if result.errors: lines += ['### Errors', *[f'- {e}' for e in result.errors[:100]], '']
-    lines += ['## Zero-shot / one-shot alignment', '', '- PASS: identical IDs, images, and GT answers' if not alignment else '- FAIL: ' + '; '.join(alignment), '', '## Validation scope', '', '- Manifest-backed image/category/split/label checks are enabled when manifests are provided.', '- Duplicate content uses SHA256 if available, otherwise size+ZIP CRC32 fingerprint.', '- Exact cross-dataset SHA256 overlap is confirmed separately with `scripts/hash_overlap.py`.', '']
+    lines += ['## Anomaly QA alignment', '']
+    if not alignment:
+        lines += ['- Not checked: no comparable anomaly QA pairs were loaded.', '']
+    else:
+        for name, errors in alignment:
+            lines.append(f"- {'PASS' if not errors else 'FAIL'} `{name}`: " + ('identical IDs, images, and GT answers' if not errors else '; '.join(errors)))
+        lines.append('')
+    lines += ['## Validation scope', '', '- Manifest-backed image/category/split/label checks are enabled when manifests are provided.', '- Every reference must be a same-asset train normal.', '- Duplicate content uses SHA256 if available, otherwise size+ZIP CRC32 fingerprint.', '- Exact cross-dataset SHA256 overlap is confirmed separately with `scripts/hash_overlap.py`.', '']
     args.report.parent.mkdir(parents=True, exist_ok=True); args.report.write_text('\n'.join(lines), encoding='utf-8')
     return 0 if ok else 1
 

@@ -247,18 +247,33 @@ def cross_split_duplicate_candidates(rows: Sequence[Mapping[str, object]]) -> li
     return out
 
 
-def select_reference_by_asset(unsupervised_rows: Sequence[Mapping[str, object]], assets: Iterable[str], *, seed: int = 42) -> dict[str, Mapping[str, object]]:
+def leakage_safe_train_normal_candidates(
+    unsupervised_rows: Sequence[Mapping[str, object]],
+    assets: Iterable[str],
+) -> dict[str, list[Mapping[str, object]]]:
     assets = sorted(set(assets))
-    test_fingerprints: dict[str, set[str]] = defaultdict(set)
-    for row in unsupervised_rows:
-        if row['asset_category'] in assets and row['split'] == 'test':
-            test_fingerprints[str(row['asset_category'])].add(str(row['content_fingerprint']))
-    refs = {}
+    # A content duplicate is leakage even when a mislabeled/cross-copied file
+    # appears under another asset directory. Exclude every fingerprint present
+    # anywhere in the unsupervised test split before grouping by asset.
+    test_fingerprints = {
+        str(row['content_fingerprint'])
+        for row in unsupervised_rows
+        if row['split'] == 'test'
+    }
+    by_asset = {}
     for asset in assets:
-        candidates = [r for r in unsupervised_rows if r['asset_category'] == asset and r['split'] == 'train' and r['label'] == 'normal' and str(r['content_fingerprint']) not in test_fingerprints[asset]]
+        candidates = [r for r in unsupervised_rows if r['asset_category'] == asset and r['split'] == 'train' and r['label'] == 'normal' and str(r['content_fingerprint']) not in test_fingerprints]
         if not candidates:
             raise ValueError(f'no leakage-safe train normal reference for asset {asset}')
         candidates.sort(key=lambda r: str(r['relative_path']))
+        by_asset[asset] = candidates
+    return by_asset
+
+
+def select_reference_by_asset(unsupervised_rows: Sequence[Mapping[str, object]], assets: Iterable[str], *, seed: int = 42) -> dict[str, Mapping[str, object]]:
+    candidates_by_asset = leakage_safe_train_normal_candidates(unsupervised_rows, assets)
+    refs = {}
+    for asset, candidates in candidates_by_asset.items():
         refs[asset] = random.Random(f'{seed}:{asset}').choice(candidates)
     return refs
 
