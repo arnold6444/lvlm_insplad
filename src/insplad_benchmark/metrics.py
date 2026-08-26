@@ -52,6 +52,56 @@ def binary_f1(y_true: Sequence[str], y_pred: Sequence[str], positive: str = "ano
     return float(stats[positive]["f1"])
 
 
+def anomaly_classification_summary(
+    y_true: Sequence[str],
+    y_pred: Sequence[str],
+    normal_label: str = "normal",
+    anomalous_label: str = "anomalous",
+) -> dict[str, float | int | bool]:
+    """Return the benchmark's binary anomaly metrics, including invalid outputs.
+
+    Invalid anomalous predictions count as false negatives. Invalid normal
+    predictions remain separate from false positives, while still reducing
+    specificity because its denominator is the full normal support. This is the
+    policy historically used by the Aligned Core result analyzer.
+    """
+    if len(y_true) != len(y_pred):
+        raise ValueError("y_true and y_pred must have the same length")
+
+    labels = {normal_label, anomalous_label}
+    tp = sum(t == anomalous_label and p == anomalous_label for t, p in zip(y_true, y_pred))
+    fp = sum(t == normal_label and p == anomalous_label for t, p in zip(y_true, y_pred))
+    tn = sum(t == normal_label and p == normal_label for t, p in zip(y_true, y_pred))
+    fn = sum(t == anomalous_label and p != anomalous_label for t, p in zip(y_true, y_pred))
+    normal_n = sum(t == normal_label for t in y_true)
+    anomalous_n = sum(t == anomalous_label for t in y_true)
+    invalid_normal_n = sum(t == normal_label and p not in labels for t, p in zip(y_true, y_pred))
+    invalid_anomalous_n = sum(t == anomalous_label and p not in labels for t, p in zip(y_true, y_pred))
+    valid_n = sum(p in labels for p in y_pred)
+
+    return {
+        "n": len(y_true),
+        "normal_n": normal_n,
+        "anomalous_n": anomalous_n,
+        "has_both_classes": normal_n > 0 and anomalous_n > 0,
+        "valid_n": valid_n,
+        "tp": tp,
+        "fp": fp,
+        "tn": tn,
+        "fn": fn,
+        "precision": _safe_div(tp, tp + fp),
+        "recall": _safe_div(tp, anomalous_n),
+        "specificity": _safe_div(tn, normal_n),
+        "predicted_anomalous_n": sum(p == anomalous_label for p in y_pred),
+        "predicted_normal_n": sum(p == normal_label for p in y_pred),
+        "invalid_normal_n": invalid_normal_n,
+        "invalid_anomalous_n": invalid_anomalous_n,
+        "balanced_accuracy": balanced_accuracy(y_true, y_pred, [normal_label, anomalous_label]),
+        "f1": binary_f1(y_true, y_pred, anomalous_label),
+        "invalid_output_rate": _safe_div(len(y_true) - valid_n, len(y_true)),
+    }
+
+
 def joint_accuracy(anomaly_true: Sequence[str], anomaly_pred: Sequence[str], defect_true: Sequence[str], defect_pred: Sequence[str]) -> float:
     lengths = {len(anomaly_true), len(anomaly_pred), len(defect_true), len(defect_pred)}
     if len(lengths) != 1:

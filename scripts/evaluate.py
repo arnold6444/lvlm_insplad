@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 
 from insplad_benchmark.metrics import (
+    anomaly_classification_summary,
     balanced_accuracy,
-    binary_f1,
     confusion_matrix,
     consistency_error,
     invalid_output_rate,
@@ -34,8 +34,13 @@ def write_csv(path: Path, rows: list[dict]) -> None:
     if not rows:
         path.write_text('', encoding='utf-8')
         return
+    fields: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in fields:
+                fields.append(key)
     with path.open('w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
 
@@ -50,24 +55,21 @@ def upsert_csv(path: Path, rows: list[dict], keys: tuple[str, ...]) -> None:
     write_csv(path, old + rows)
 
 
+def asset_macro_summary(rows: list[dict], regime: str) -> dict:
+    return {
+        'regime': regime,
+        'asset_n': len(rows),
+        'balanced_accuracy': sum(float(row['balanced_accuracy']) for row in rows) / len(rows) if rows else 0.0,
+        'f1': sum(float(row['f1']) for row in rows) / len(rows) if rows else 0.0,
+    }
+
+
 def eval_anomaly(gt: list[dict], predictions: dict[str, str], out_dir: Path, regime: str) -> None:
     def summary(rows: list[dict]) -> dict:
         parsed = [parse_anomaly_output(predictions.get(r['id'], '')) for r in rows]
         y_true = [r['answer'] for r in rows]
         y_pred = [p.anomaly if p.valid and p.anomaly else INVALID for p in parsed]
-        normal_n = sum(y == 'normal' for y in y_true)
-        anomalous_n = sum(y == 'anomalous' for y in y_true)
-        return {
-            'regime': regime,
-            'n': len(rows),
-            'normal_n': normal_n,
-            'anomalous_n': anomalous_n,
-            'has_both_classes': normal_n > 0 and anomalous_n > 0,
-            'valid_n': sum(p.valid for p in parsed),
-            'balanced_accuracy': balanced_accuracy(y_true, y_pred, ['normal', 'anomalous']) if y_true else 0.0,
-            'f1': binary_f1(y_true, y_pred) if y_true else 0.0,
-            'invalid_output_rate': invalid_output_rate([p.valid for p in parsed]),
-        }
+        return {'regime': regime, **anomaly_classification_summary(y_true, y_pred)}
 
     upsert_csv(out_dir / 'anomaly_overall.csv', [summary(gt)], ('regime',))
     groups: dict[str, list[dict]] = defaultdict(list)
@@ -79,6 +81,11 @@ def eval_anomaly(gt: list[dict], predictions: dict[str, str], out_dir: Path, reg
         data['asset_category'] = asset
         by_asset.append(data)
     upsert_csv(out_dir / 'anomaly_by_asset.csv', by_asset, ('regime', 'asset_category'))
+    upsert_csv(
+        out_dir / 'anomaly_asset_macro.csv',
+        [asset_macro_summary(by_asset, regime)],
+        ('regime',),
+    )
 
 
 def eval_explainability(gt: list[dict], predictions: dict[str, str], out_dir: Path) -> None:
@@ -160,7 +167,7 @@ def main() -> int:
     parser.add_argument('--qa', type=Path, required=True)
     parser.add_argument('--predictions', type=Path, required=True)
     parser.add_argument('--out-dir', type=Path, default=Path('results'))
-    parser.add_argument('--regime', choices=['zero_shot', 'one_shot'], default='zero_shot')
+    parser.add_argument('--regime', choices=['zero_shot', 'one_shot', 'one_shot_plus'], default='zero_shot')
     args = parser.parse_args()
     gt = read_jsonl(args.qa)
     predictions = {r['id']: str(r.get('output', '')) for r in read_jsonl(args.predictions)}

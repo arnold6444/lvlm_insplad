@@ -8,6 +8,7 @@ from insplad_benchmark.dataset import (
     build_defect_qa,
     category_intersection,
     core_link_rows,
+    leakage_safe_train_normal_candidates,
     load_overlap_confirmation,
     normalize_defect,
     parse_annotation_previews,
@@ -61,6 +62,42 @@ def test_reference_excludes_test_duplicate(tmp_path):
     z = build_anomaly_qa(rows, ['asset-a'])
     o = build_anomaly_qa(rows, ['asset-a'], references=refs)
     assert [(r['id'], r['image'], r['answer']) for r in z] == [(r['id'], r['image'], r['answer']) for r in o]
+
+
+def test_reference_candidates_apply_complete_leakage_policy():
+    rows = [
+        {'relative_path': 'a/train/good/safe-b.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'normal', 'content_fingerprint': '1:b'},
+        {'relative_path': 'a/train/good/safe-a.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'normal', 'content_fingerprint': '1:a'},
+        {'relative_path': 'a/train/rust/anomalous.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'anomalous', 'content_fingerprint': '2:a'},
+        {'relative_path': 'a/test/good/test-candidate.jpg', 'asset_category': 'a', 'split': 'test', 'label': 'normal', 'content_fingerprint': '3:a'},
+        {'relative_path': 'a/train/good/leaky.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'normal', 'content_fingerprint': '4:dup'},
+        {'relative_path': 'a/test/rust/query.jpg', 'asset_category': 'a', 'split': 'test', 'label': 'anomalous', 'content_fingerprint': '4:dup'},
+        {'relative_path': 'a/train/good/cross-asset-leaky.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'normal', 'content_fingerprint': '6:cross-dup'},
+        {'relative_path': 'b/test/good/cross-copy.jpg', 'asset_category': 'b', 'split': 'test', 'label': 'normal', 'content_fingerprint': '6:cross-dup'},
+        {'relative_path': 'b/train/good/other.jpg', 'asset_category': 'b', 'split': 'train', 'label': 'normal', 'content_fingerprint': '5:b'},
+    ]
+
+    candidates = leakage_safe_train_normal_candidates(rows, ['a'])
+
+    assert [row['relative_path'] for row in candidates['a']] == [
+        'a/train/good/safe-a.jpg',
+        'a/train/good/safe-b.jpg',
+    ]
+
+
+def test_fixed_reference_selection_contract_is_unchanged():
+    rows = [
+        {'relative_path': f'a/train/good/{name}.jpg', 'asset_category': 'a', 'split': 'train', 'label': 'normal', 'content_fingerprint': f'1:{name}'}
+        for name in ('a', 'b', 'c')
+    ] + [
+        {'relative_path': 'a/test/good/query.jpg', 'asset_category': 'a', 'split': 'test', 'label': 'normal', 'content_fingerprint': '2:q'},
+    ]
+
+    first = select_reference_by_asset(rows, ['a'], seed=42)
+    second = select_reference_by_asset(list(reversed(rows)), ['a'], seed=42)
+
+    assert first['a']['relative_path'] == 'a/train/good/c.jpg'
+    assert second == first
 
 
 def test_overlap_summary_must_confirm_all_candidates(tmp_path):
