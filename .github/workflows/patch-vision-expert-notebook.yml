@@ -1,0 +1,136 @@
+name: Patch vision expert notebook
+
+on:
+  push:
+    branches:
+      - feat/vision-expert-smoke-colab
+    paths:
+      - .github/workflows/patch-vision-expert-notebook.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vision-expert-smoke-colab
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Patch notebook, docs, and static test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          notebook_path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          notebook = json.loads(notebook_path.read_text(encoding='utf-8'))
+
+          for cell in notebook['cells']:
+              if cell.get('cell_type') != 'code':
+                  continue
+              source = cell.get('source', '')
+              source = source.replace(
+                  "REPO_REF = 'feat/vision-expert-smoke-colab'",
+                  "REPO_REF = 'main'",
+              )
+              source = source.replace(
+                  "'invalid_output_rate': '',",
+                  "'invalid_output_rate': row.get('one_shot_plus_invalid', ''),",
+              )
+
+              patched_lines = []
+              for line in source.splitlines():
+                  patched_lines.append(line)
+                  stripped = line.strip()
+                  indent = line[: len(line) - len(line.lstrip())]
+                  if stripped == 'release_gpu(predictions, engine, model, datamodule)':
+                      patched_lines.append(indent + 'predictions = engine = model = datamodule = None')
+                      patched_lines.append(indent + 'release_gpu()')
+                  elif stripped == 'release_gpu(text_features, prompt_learner, model)':
+                      patched_lines.append(indent + 'text_features = prompt_learner = model = None')
+                      patched_lines.append(
+                          indent
+                          + 'image = image_features = patch_features = anomaly_maps = anomaly_map = text_probs = None'
+                      )
+                      patched_lines.append(indent + 'release_gpu()')
+              source = '\n'.join(patched_lines)
+              if cell.get('source', '').endswith('\n'):
+                  source += '\n'
+              cell['source'] = source
+
+          joined = '\n'.join(cell.get('source', '') for cell in notebook['cells'])
+          required = (
+              "REPO_REF = 'main'",
+              'predictions = engine = model = datamodule = None',
+              'text_features = prompt_learner = model = None',
+              "row.get('one_shot_plus_invalid', '')",
+          )
+          for token in required:
+              if token not in joined:
+                  raise RuntimeError(f'missing notebook patch token: {token}')
+          if "REPO_REF = 'feat/vision-expert-smoke-colab'" in joined:
+              raise RuntimeError('feature-branch checkout remains in notebook')
+          for index, cell in enumerate(notebook['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'vision_expert_cell_{index}', 'exec')
+
+          notebook_path.write_text(
+              json.dumps(notebook, ensure_ascii=False, indent=1) + '\n',
+              encoding='utf-8',
+          )
+
+          docs_path = Path('docs/vision_expert_smoke.md')
+          docs = docs_path.read_text(encoding='utf-8').replace(
+              'from branch `feat/vision-expert-smoke-colab`',
+              'from `main`',
+          )
+          docs_path.write_text(docs, encoding='utf-8')
+
+          test_path = Path('tests/test_vision_expert_smoke_colab.py')
+          test_source = test_path.read_text(encoding='utf-8')
+          marker = '        "SMOKE_SIZE = 50",\n'
+          additions = (
+              '        "REPO_REF = \'main\'",\n'
+              '        "predictions = engine = model = datamodule = None",\n'
+              '        "text_features = prompt_learner = model = None",\n'
+          )
+          if "REPO_REF = 'main'" not in test_source:
+              if marker not in test_source:
+                  raise RuntimeError('notebook static-test insertion marker missing')
+              test_source = test_source.replace(marker, marker + additions, 1)
+          branch_assertion = '    assert "feat/vision-expert-smoke-colab" not in joined\n'
+          if branch_assertion not in test_source:
+              test_source = test_source.replace(
+                  '    assert "minicpm_v_4_5" not in joined\n',
+                  branch_assertion + '    assert "minicpm_v_4_5" not in joined\n',
+                  1,
+              )
+          test_path.write_text(test_source, encoding='utf-8')
+          PY
+
+      - name: Run focused static and unit tests
+        run: |
+          python -m pip install -q pytest numpy pillow
+          PYTHONPATH=src python -m pytest -q \
+            tests/test_vision_expert.py \
+            tests/test_hf_vision_expert_smoke_runner.py \
+            tests/test_vision_expert_smoke_colab.py
+
+      - name: Commit verified patch and remove temporary workflow
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          rm .github/workflows/patch-vision-expert-notebook.yml
+          git add notebooks/lvlm_vision_expert_smoke_colab.ipynb \
+                  docs/vision_expert_smoke.md \
+                  tests/test_vision_expert_smoke_colab.py \
+                  .github/workflows/patch-vision-expert-notebook.yml
+          git commit -m "fix: harden vision expert Colab runtime"
+          git push origin HEAD:feat/vision-expert-smoke-colab
