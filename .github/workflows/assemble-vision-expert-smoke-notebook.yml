@@ -1,0 +1,67 @@
+name: Assemble vision expert smoke notebook
+
+on:
+  push:
+    branches:
+      - feat/vision-expert-smoke-colab
+    paths:
+      - .github/workflows/assemble-vision-expert-smoke-notebook.yml
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vision-expert-smoke-colab
+          fetch-depth: 0
+
+      - name: Assemble and validate notebook
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p notebooks
+          cat .notebook_parts/vision_expert_smoke/part*.b64 \
+            | tr -d '\r\n ' \
+            | base64 --decode \
+            > notebooks/lvlm_vision_expert_smoke_colab.ipynb
+
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          text = path.read_text(encoding='utf-8')
+          old = 'DINOMALY_DECODER_DEPTH = 4'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one decoder-depth placeholder, got {text.count(old)}')
+          path.write_text(text.replace(old, 'DINOMALY_DECODER_DEPTH = 8'), encoding='utf-8')
+
+          notebook = json.loads(path.read_text(encoding='utf-8'))
+          for index, cell in enumerate(notebook['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'cell_{index}', 'exec')
+          digest = hashlib.sha256(path.read_bytes()).hexdigest()
+          expected = '82c843379b28bd603263e137caae54eee96dbabdb75848c1fd5cb0b8b332d3c0'
+          if digest != expected:
+              raise SystemExit(f'notebook sha256 mismatch: {digest} != {expected}')
+          print(f'validated {len(notebook["cells"])} cells; sha256={digest}')
+          PY
+
+      - name: Commit notebook and remove staging payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .notebook_parts/vision_expert_smoke
+          rm -f .github/workflows/assemble-vision-expert-smoke-notebook.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add notebooks/lvlm_vision_expert_smoke_colab.ipynb \
+                  .notebook_parts/vision_expert_smoke \
+                  .github/workflows/assemble-vision-expert-smoke-notebook.yml
+          git commit -m 'feat: add vision expert screening Colab notebook'
+          git push origin HEAD:feat/vision-expert-smoke-colab
