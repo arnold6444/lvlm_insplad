@@ -24,6 +24,7 @@ def test_vision_expert_smoke_notebook_compiles_and_locks_screening_scope() -> No
         "MODELS_TO_RUN = ['qwen3_5_4b', 'internvl3_5_8b']",
         "EXPERTS_TO_RUN = ['patchcore', 'dinomaly', 'anomalyclip']",
         "anomalib==2.6.0",
+        "DINOMALY_DECODER_DEPTH = 8",
         "facebook/dinov2-base",
         "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
         "scripts/build_vision_expert_smoke_data.py",
