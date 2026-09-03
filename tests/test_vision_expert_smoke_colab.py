@@ -21,6 +21,9 @@ def test_vision_expert_smoke_notebook_compiles_and_locks_screening_scope() -> No
 
     for expected in (
         "SMOKE_SIZE = 50",
+        "REPO_REF = 'main'",
+        "predictions = engine = model = datamodule = None",
+        "text_features = prompt_learner = model = None",
         "MODELS_TO_RUN = ['qwen3_5_4b', 'internvl3_5_8b']",
         "EXPERTS_TO_RUN = ['patchcore', 'dinomaly', 'anomalyclip']",
         "anomalib==2.6.0",
@@ -38,6 +41,7 @@ def test_vision_expert_smoke_notebook_compiles_and_locks_screening_scope() -> No
     ):
         assert expected in joined
 
+    assert "feat/vision-expert-smoke-colab" not in joined
     assert "minicpm_v_4_5" not in joined
     assert "llava_onevision_7b" not in joined
     assert "RUN_FULL = True" not in joined

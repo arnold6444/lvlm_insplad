@@ -14,7 +14,7 @@ Qwen3.5-4B and InternVL3.5-8B are used for screening. RAG, AgentIAD-lite, full 1
 
 ## Run in Colab
 
-Open `notebooks/lvlm_vision_expert_smoke_colab.ipynb` from branch `feat/vision-expert-smoke-colab` and run from top to bottom on an L4/A100-class runtime.
+Open `notebooks/lvlm_vision_expert_smoke_colab.ipynb` from `main` and run from top to bottom on an L4/A100-class runtime.
 
 Colab Secrets:
 
