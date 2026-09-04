@@ -63,3 +63,14 @@ def test_checkout_cell_is_safe_when_rerun_from_deleted_repo_directory() -> None:
     repo_index = checkout_source.index("REPO_DIR = Path('/content/lvlm_insplad')")
     delete_index = checkout_source.index("shutil.rmtree(REPO_DIR)")
     assert chdir_index < repo_index < delete_index
+
+
+def test_anomalyclip_runtime_compatibility_is_explicit() -> None:
+    root = Path(__file__).resolve().parents[1]
+    notebook = root / "notebooks" / "lvlm_vision_expert_smoke_colab.ipynb"
+    data = json.loads(notebook.read_text(encoding="utf-8"))
+    joined = "\n".join(cell.get("source", "") for cell in data["cells"])
+    assert "patch_official_anomalyclip_checkout" in joined
+    assert "ANOMALYCLIP_MODEL_CACHE = Path('/content/anomalyclip_model_cache')" in joined
+    assert "download_root=str(ANOMALYCLIP_MODEL_CACHE)" in joined
+    assert "compat_patch_schema_version" in joined
