@@ -1,0 +1,112 @@
+name: Temporary vision expert smoke hardening
+
+on:
+  push:
+    branches:
+      - fix/vision-expert-smoke-runtime-hardening
+
+permissions:
+  contents: read
+
+jobs:
+  project-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install project test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Run complete repository test suite
+        run: python -m pytest -q
+      - name: Compile source, scripts, and notebook cells
+        run: |
+          python -m compileall -q src scripts tests
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          notebook = json.loads(path.read_text(encoding='utf-8'))
+          for index, cell in enumerate(notebook['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'{path}:cell-{index}', 'exec')
+          print('compiled notebook code cells:', sum(c.get('cell_type') == 'code' for c in notebook['cells']))
+          PY
+
+  colab-runtime-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install exact notebook dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            'anomalib==2.6.0' \
+            'opencv-python-headless>=4.10' \
+            'scipy>=1.12' \
+            'ftfy>=6.2' \
+            'regex>=2024.0' \
+            'pandas>=2.2' \
+            'tqdm>=4.66' \
+            'transformers==5.14.0' \
+            'accelerate==1.14.0' \
+            'sentencepiece==0.2.2' \
+            'pillow>=10' \
+            'numpy>=1.26'
+          python -m pip install -e '.[dev]'
+      - name: Verify notebook imports and anomalib API contract
+        run: |
+          python - <<'PY'
+          import inspect
+          import insplad_benchmark
+          from anomalib.data import Tabular
+          from anomalib.data.utils import TestSplitMode, ValSplitMode
+          from anomalib.engine import Engine
+          from anomalib.models import Dinomaly, Patchcore
+          from insplad_benchmark.vision_expert import save_roi_artifacts, select_best_expert
+
+          checks = {
+              Tabular: {'name', 'samples', 'train_batch_size', 'eval_batch_size', 'num_workers', 'test_split_mode', 'val_split_mode', 'seed'},
+              Patchcore: {'backbone', 'layers', 'coreset_sampling_ratio', 'num_neighbors', 'post_processor', 'evaluator', 'visualizer'},
+              Dinomaly: {'encoder_name', 'decoder_depth', 'bottleneck_dropout', 'use_context_recentering', 'precision', 'post_processor', 'evaluator', 'visualizer'},
+              Engine: {'accelerator', 'devices', 'max_epochs', 'max_steps', 'precision', 'deterministic', 'logger', 'enable_checkpointing', 'limit_val_batches', 'num_sanity_val_steps'},
+          }
+          for target, expected in checks.items():
+              actual = set(inspect.signature(target).parameters)
+              missing = sorted(expected - actual)
+              assert not missing, f'{target.__name__} missing notebook parameters: {missing}'
+
+          assert TestSplitMode.FROM_DIR
+          assert ValSplitMode.NONE
+          assert callable(save_roi_artifacts)
+          assert callable(select_best_expert)
+          print('project package:', insplad_benchmark.__file__)
+          print('anomalib runtime API contract: OK')
+          PY
+      - name: Verify pinned AnomalyCLIP source and checkpoint
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/zqhang/AnomalyCLIP.git /tmp/AnomalyCLIP
+          git -C /tmp/AnomalyCLIP sparse-checkout init --no-cone
+          cat > /tmp/AnomalyCLIP/.git/info/sparse-checkout <<'EOF'
+          /AnomalyCLIP_lib/
+          /prompt_ensemble.py
+          /utils.py
+          /checkpoints/9_12_4_multiscale/epoch_15.pth
+          EOF
+          git -C /tmp/AnomalyCLIP checkout 3911738c0867544f545a076ad78f3f11d9ecbfdf
+          test "$(git -C /tmp/AnomalyCLIP rev-parse HEAD)" = '3911738c0867544f545a076ad78f3f11d9ecbfdf'
+          test -s /tmp/AnomalyCLIP/checkpoints/9_12_4_multiscale/epoch_15.pth
+          PYTHONPATH=/tmp/AnomalyCLIP python - <<'PY'
+          import AnomalyCLIP_lib
+          import prompt_ensemble
+          import utils
+          print('AnomalyCLIP imports and checkpoint: OK')
+          PY
