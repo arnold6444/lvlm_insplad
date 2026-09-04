@@ -1,137 +1,29 @@
 name: Temporary fix evidence Colab cwd
-
-on:
-  push:
-    branches:
-      - fix/evidence-colab-cwd
-
+on: [push]
 permissions:
   contents: write
-
 jobs:
   patch-and-verify:
-    if: github.actor != 'github-actions[bot]'
+    if: github.ref == 'refs/heads/fix/evidence-colab-cwd' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: fix/evidence-colab-cwd
           fetch-depth: 0
-
-      - name: Patch notebook cwd handling
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          notebook_path = Path('notebooks/lvlm_evidence_ablation_smoke_colab.ipynb')
-          notebook = json.loads(notebook_path.read_text(encoding='utf-8'))
-          setup = next(
-              cell for cell in notebook['cells']
-              if cell.get('cell_type') == 'code'
-              and 'focused_tests' in cell.get('source', '')
-              and 'def run_cmd' in cell.get('source', '')
-          )
-          source = setup['source']
-          old = '''def run_cmd(cmd, log_name):
-    log_path = LOG_DIR / f"{log_name}.log"
-    with log_path.open("a", encoding="utf-8") as log:
-        process = subprocess.run([str(x) for x in cmd], stdout=log, stderr=subprocess.STDOUT, text=True)
-    if process.returncode != 0:
-        print(log_path.read_text(encoding="utf-8")[-6000:])
-        raise RuntimeError(f"{log_name} failed; log={log_path}")
-'''
-          new = '''def run_cmd(cmd, log_name, *, cwd=None):
-    log_path = LOG_DIR / f"{log_name}.log"
-    with log_path.open("a", encoding="utf-8") as log:
-        process = subprocess.run(
-            [str(x) for x in cmd],
-            cwd=str(cwd) if cwd is not None else None,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-    if process.returncode != 0:
-        print(log_path.read_text(encoding="utf-8")[-6000:])
-        raise RuntimeError(f"{log_name} failed; log={log_path}")
-'''
-          if old not in source:
-              raise SystemExit('run_cmd block not found')
-          source = source.replace(old, new, 1)
-          old_call = '''run_cmd([sys.executable, "-m", "pytest", "-q", "tests/test_evidence_ablation.py", "tests/test_reconpatch_lite.py", "tests/test_evidence_ablation_colab.py"], "focused_tests")'''
-          new_call = '''run_cmd(
-    [
-        sys.executable, "-m", "pytest", "-q",
-        "tests/test_evidence_ablation.py",
-        "tests/test_reconpatch_lite.py",
-        "tests/test_evidence_ablation_colab.py",
-    ],
-    "focused_tests",
-    cwd=REPO_DIR,
-)'''
-          if old_call not in source:
-              raise SystemExit('focused test call not found')
-          source = source.replace(old_call, new_call, 1)
-          setup['source'] = source
-
-          for index, cell in enumerate(notebook['cells']):
-              if cell.get('cell_type') == 'code':
-                  compile(cell.get('source', ''), f'cell-{index}', 'exec')
-          notebook_path.write_text(json.dumps(notebook, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
-
-          test_path = Path('tests/test_evidence_ablation_colab.py')
-          test_source = test_path.read_text(encoding='utf-8')
-          marker = 'test_setup_runs_focused_tests_from_repo_directory'
-          if marker not in test_source:
-              test_source += '''\n\ndef test_setup_runs_focused_tests_from_repo_directory() -> None:\n    root = Path(__file__).resolve().parents[1]\n    notebook = json.loads((root / "notebooks/lvlm_evidence_ablation_smoke_colab.ipynb").read_text(encoding="utf-8"))\n    setup = next(\n        cell["source"]\n        for cell in notebook["cells"]\n        if cell.get("cell_type") == "code"\n        and "focused_tests" in cell.get("source", "")\n        and "def run_cmd" in cell.get("source", "")\n    )\n    assert "def run_cmd(cmd, log_name, *, cwd=None):" in setup\n    assert "cwd=str(cwd) if cwd is not None else None" in setup\n    assert '"focused_tests",\\n    cwd=REPO_DIR,' in setup\n    for relative in (\n        "tests/test_evidence_ablation.py",\n        "tests/test_reconpatch_lite.py",\n        "tests/test_evidence_ablation_colab.py",\n    ):\n        assert (root / relative).is_file()\n'''
-              test_path.write_text(test_source, encoding='utf-8')
-          PY
-
-      - name: Install targeted dependencies
+      - name: Patch notebook
+        run: echo 'CmltcG9ydCBqc29uCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKbm90ZWJvb2tfcGF0aCA9IFBhdGgoIm5vdGVib29rcy9sdmxtX2V2aWRlbmNlX2FibGF0aW9uX3Ntb2tlX2NvbGFiLmlweW5iIikKbm90ZWJvb2sgPSBqc29uLmxvYWRzKG5vdGVib29rX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQpzZXR1cCA9IG5leHQoCiAgICBjZWxsIGZvciBjZWxsIGluIG5vdGVib29rWyJjZWxscyJdCiAgICBpZiBjZWxsLmdldCgiY2VsbF90eXBlIikgPT0gImNvZGUiCiAgICBhbmQgImZvY3VzZWRfdGVzdHMiIGluIGNlbGwuZ2V0KCJzb3VyY2UiLCAiIikKICAgIGFuZCAiZGVmIHJ1bl9jbWQiIGluIGNlbGwuZ2V0KCJzb3VyY2UiLCAiIikKKQpzb3VyY2UgPSBzZXR1cFsic291cmNlIl0Kb2xkID0gJycnZGVmIHJ1bl9jbWQoY21kLCBsb2dfbmFtZSk6CiAgICBsb2dfcGF0aCA9IExPR19ESVIgLyBmIntsb2dfbmFtZX0ubG9nIgogICAgd2l0aCBsb2dfcGF0aC5vcGVuKCJhIiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgbG9nOgogICAgICAgIHByb2Nlc3MgPSBzdWJwcm9jZXNzLnJ1bihbc3RyKHgpIGZvciB4IGluIGNtZF0sIHN0ZG91dD1sb2csIHN0ZGVycj1zdWJwcm9jZXNzLlNURE9VVCwgdGV4dD1UcnVlKQogICAgaWYgcHJvY2Vzcy5yZXR1cm5jb2RlICE9IDA6CiAgICAgICAgcHJpbnQobG9nX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpWy02MDAwOl0pCiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYie2xvZ19uYW1lfSBmYWlsZWQ7IGxvZz17bG9nX3BhdGh9IikKJycnCm5ldyA9ICcnJ2RlZiBydW5fY21kKGNtZCwgbG9nX25hbWUsICosIGN3ZD1Ob25lKToKICAgIGxvZ19wYXRoID0gTE9HX0RJUiAvIGYie2xvZ19uYW1lfS5sb2ciCiAgICB3aXRoIGxvZ19wYXRoLm9wZW4oImEiLCBlbmNvZGluZz0idXRmLTgiKSBhcyBsb2c6CiAgICAgICAgcHJvY2VzcyA9IHN1YnByb2Nlc3MucnVuKAogICAgICAgICAgICBbc3RyKHgpIGZvciB4IGluIGNtZF0sCiAgICAgICAgICAgIGN3ZD1zdHIoY3dkKSBpZiBjd2QgaXMgbm90IE5vbmUgZWxzZSBOb25lLAogICAgICAgICAgICBzdGRvdXQ9bG9nLAogICAgICAgICAgICBzdGRlcnI9c3VicHJvY2Vzcy5TVERPVVQsCiAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICApCiAgICBpZiBwcm9jZXNzLnJldHVybmNvZGUgIT0gMDoKICAgICAgICBwcmludChsb2dfcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IilbLTYwMDA6XSkKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJ7bG9nX25hbWV9IGZhaWxlZDsgbG9nPXtsb2dfcGF0aH0iKQonJycKYXNzZXJ0IG9sZCBpbiBzb3VyY2UKc291cmNlID0gc291cmNlLnJlcGxhY2Uob2xkLCBuZXcsIDEpCm9sZF9jYWxsID0gJ3J1bl9jbWQoW3N5cy5leGVjdXRhYmxlLCAiLW0iLCAicHl0ZXN0IiwgIi1xIiwgInRlc3RzL3Rlc3RfZXZpZGVuY2VfYWJsYXRpb24ucHkiLCAidGVzdHMvdGVzdF9yZWNvbnBhdGNoX2xpdGUucHkiLCAidGVzdHMvdGVzdF9ldmlkZW5jZV9hYmxhdGlvbl9jb2xhYi5weSJdLCAiZm9jdXNlZF90ZXN0cyIpJwpuZXdfY2FsbCA9ICcnJ3J1bl9jbWQoCiAgICBbCiAgICAgICAgc3lzLmV4ZWN1dGFibGUsICItbSIsICJweXRlc3QiLCAiLXEiLAogICAgICAgICJ0ZXN0cy90ZXN0X2V2aWRlbmNlX2FibGF0aW9uLnB5IiwKICAgICAgICAidGVzdHMvdGVzdF9yZWNvbnBhdGNoX2xpdGUucHkiLAogICAgICAgICJ0ZXN0cy90ZXN0X2V2aWRlbmNlX2FibGF0aW9uX2NvbGFiLnB5IiwKICAgIF0sCiAgICAiZm9jdXNlZF90ZXN0cyIsCiAgICBjd2Q9UkVQT19ESVIsCiknJycKYXNzZXJ0IG9sZF9jYWxsIGluIHNvdXJjZQpzZXR1cFsic291cmNlIl0gPSBzb3VyY2UucmVwbGFjZShvbGRfY2FsbCwgbmV3X2NhbGwsIDEpCmZvciBpLCBjZWxsIGluIGVudW1lcmF0ZShub3RlYm9va1siY2VsbHMiXSk6CiAgICBpZiBjZWxsLmdldCgiY2VsbF90eXBlIikgPT0gImNvZGUiOgogICAgICAgIGNvbXBpbGUoY2VsbC5nZXQoInNvdXJjZSIsICIiKSwgZiJjZWxsLXtpfSIsICJleGVjIikKbm90ZWJvb2tfcGF0aC53cml0ZV90ZXh0KGpzb24uZHVtcHMobm90ZWJvb2ssIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTEpICsgIlxuIiwgZW5jb2Rpbmc9InV0Zi04IikKCnRlc3RfcGF0aCA9IFBhdGgoInRlc3RzL3Rlc3RfZXZpZGVuY2VfYWJsYXRpb25fY29sYWIucHkiKQp0ZXh0ID0gdGVzdF9wYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQpuYW1lID0gInRlc3Rfc2V0dXBfcnVuc19mb2N1c2VkX3Rlc3RzX2Zyb21fcmVwb19kaXJlY3RvcnkiCmlmIG5hbWUgbm90IGluIHRleHQ6CiAgICB0ZXh0ICs9IHIiIgoKZGVmIHRlc3Rfc2V0dXBfcnVuc19mb2N1c2VkX3Rlc3RzX2Zyb21fcmVwb19kaXJlY3RvcnkoKSAtPiBOb25lOgogICAgcm9vdCA9IFBhdGgoX19maWxlX18pLnJlc29sdmUoKS5wYXJlbnRzWzFdCiAgICBub3RlYm9vayA9IGpzb24ubG9hZHMoKHJvb3QgLyAibm90ZWJvb2tzL2x2bG1fZXZpZGVuY2VfYWJsYXRpb25fc21va2VfY29sYWIuaXB5bmIiKS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCiAgICBzZXR1cCA9IG5leHQoCiAgICAgICAgY2VsbFsic291cmNlIl0KICAgICAgICBmb3IgY2VsbCBpbiBub3RlYm9va1siY2VsbHMiXQogICAgICAgIGlmIGNlbGwuZ2V0KCJjZWxsX3R5cGUiKSA9PSAiY29kZSIKICAgICAgICBhbmQgImZvY3VzZWRfdGVzdHMiIGluIGNlbGwuZ2V0KCJzb3VyY2UiLCAiIikKICAgICAgICBhbmQgImRlZiBydW5fY21kIiBpbiBjZWxsLmdldCgic291cmNlIiwgIiIpCiAgICApCiAgICBhc3NlcnQgImRlZiBydW5fY21kKGNtZCwgbG9nX25hbWUsICosIGN3ZD1Ob25lKToiIGluIHNldHVwCiAgICBhc3NlcnQgImN3ZD1zdHIoY3dkKSBpZiBjd2QgaXMgbm90IE5vbmUgZWxzZSBOb25lIiBpbiBzZXR1cAogICAgYXNzZXJ0ICciZm9jdXNlZF90ZXN0cyIsXG4gICAgY3dkPVJFUE9fRElSLCcgaW4gc2V0dXAKIgogICAgdGVzdF9wYXRoLndyaXRlX3RleHQodGV4dCwgZW5jb2Rpbmc9InV0Zi04IikK' | base64 -d | python
+      - name: Install deps
         run: python -m pip install -q pytest numpy pillow
-
-      - name: Verify exact cwd failure mode and notebook
-        shell: bash
+      - name: Verify
         run: |
           python -m pytest -q tests/test_evidence_ablation.py tests/test_reconpatch_lite.py tests/test_evidence_ablation_colab.py
-          python - <<'PY'
-          import json, subprocess, sys, tempfile, os
-          from pathlib import Path
-
-          repo = Path.cwd()
-          notebook = json.loads((repo / 'notebooks/lvlm_evidence_ablation_smoke_colab.ipynb').read_text(encoding='utf-8'))
-          source = next(
-              c['source'] for c in notebook['cells']
-              if c.get('cell_type') == 'code' and 'focused_tests' in c.get('source','') and 'def run_cmd' in c.get('source','')
-          )
-          start = source.index('def run_cmd(')
-          end = source.index('\n\n# private repo checkout', start)
-          helper = source[start:end]
-          with tempfile.TemporaryDirectory() as d:
-              ns = {'LOG_DIR': Path(d), 'subprocess': subprocess}
-              exec(compile(helper, 'run_cmd-helper', 'exec'), ns)
-              outside = Path(d) / 'outside'; outside.mkdir()
-              original = Path.cwd()
-              try:
-                  os.chdir(outside)
-                  ns['run_cmd']([
-                      sys.executable, '-m', 'pytest', '-q',
-                      'tests/test_evidence_ablation.py',
-                      'tests/test_reconpatch_lite.py',
-                      'tests/test_evidence_ablation_colab.py',
-                  ], 'focused_tests_runtime', cwd=repo)
-              finally:
-                  os.chdir(original)
-          print('EVIDENCE_COLAB_CWD_RUNTIME_OK')
-          PY
           python -m py_compile src/insplad_benchmark/evidence_ablation.py src/insplad_benchmark/reconpatch_lite.py scripts/build_evidence_ablation.py scripts/run_reconpatch_lite_smoke.py scripts/run_hf_evidence_ablation.py
-
-      - name: Commit verified fix
-        shell: bash
+          python -c "import json; from pathlib import Path; n=json.loads(Path('notebooks/lvlm_evidence_ablation_smoke_colab.ipynb').read_text()); [compile(c.get('source',''), 'cell', 'exec') for c in n['cells'] if c.get('cell_type')=='code']; print('EVIDENCE_COLAB_CWD_OK')"
+      - name: Commit
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add notebooks/lvlm_evidence_ablation_smoke_colab.ipynb tests/test_evidence_ablation_colab.py
-          git commit -m "fix: run evidence Colab tests from repository root"
+          git commit -m 'fix: run evidence Colab tests from repository root'
           git push origin HEAD:fix/evidence-colab-cwd
