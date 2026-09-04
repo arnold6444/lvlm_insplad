@@ -1,0 +1,137 @@
+name: Temporary fix evidence Colab cwd
+
+on:
+  push:
+    branches:
+      - fix/evidence-colab-cwd
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/evidence-colab-cwd
+          fetch-depth: 0
+
+      - name: Patch notebook cwd handling
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          notebook_path = Path('notebooks/lvlm_evidence_ablation_smoke_colab.ipynb')
+          notebook = json.loads(notebook_path.read_text(encoding='utf-8'))
+          setup = next(
+              cell for cell in notebook['cells']
+              if cell.get('cell_type') == 'code'
+              and 'focused_tests' in cell.get('source', '')
+              and 'def run_cmd' in cell.get('source', '')
+          )
+          source = setup['source']
+          old = '''def run_cmd(cmd, log_name):
+    log_path = LOG_DIR / f"{log_name}.log"
+    with log_path.open("a", encoding="utf-8") as log:
+        process = subprocess.run([str(x) for x in cmd], stdout=log, stderr=subprocess.STDOUT, text=True)
+    if process.returncode != 0:
+        print(log_path.read_text(encoding="utf-8")[-6000:])
+        raise RuntimeError(f"{log_name} failed; log={log_path}")
+'''
+          new = '''def run_cmd(cmd, log_name, *, cwd=None):
+    log_path = LOG_DIR / f"{log_name}.log"
+    with log_path.open("a", encoding="utf-8") as log:
+        process = subprocess.run(
+            [str(x) for x in cmd],
+            cwd=str(cwd) if cwd is not None else None,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+    if process.returncode != 0:
+        print(log_path.read_text(encoding="utf-8")[-6000:])
+        raise RuntimeError(f"{log_name} failed; log={log_path}")
+'''
+          if old not in source:
+              raise SystemExit('run_cmd block not found')
+          source = source.replace(old, new, 1)
+          old_call = '''run_cmd([sys.executable, "-m", "pytest", "-q", "tests/test_evidence_ablation.py", "tests/test_reconpatch_lite.py", "tests/test_evidence_ablation_colab.py"], "focused_tests")'''
+          new_call = '''run_cmd(
+    [
+        sys.executable, "-m", "pytest", "-q",
+        "tests/test_evidence_ablation.py",
+        "tests/test_reconpatch_lite.py",
+        "tests/test_evidence_ablation_colab.py",
+    ],
+    "focused_tests",
+    cwd=REPO_DIR,
+)'''
+          if old_call not in source:
+              raise SystemExit('focused test call not found')
+          source = source.replace(old_call, new_call, 1)
+          setup['source'] = source
+
+          for index, cell in enumerate(notebook['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'cell-{index}', 'exec')
+          notebook_path.write_text(json.dumps(notebook, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+
+          test_path = Path('tests/test_evidence_ablation_colab.py')
+          test_source = test_path.read_text(encoding='utf-8')
+          marker = 'test_setup_runs_focused_tests_from_repo_directory'
+          if marker not in test_source:
+              test_source += '''\n\ndef test_setup_runs_focused_tests_from_repo_directory() -> None:\n    root = Path(__file__).resolve().parents[1]\n    notebook = json.loads((root / "notebooks/lvlm_evidence_ablation_smoke_colab.ipynb").read_text(encoding="utf-8"))\n    setup = next(\n        cell["source"]\n        for cell in notebook["cells"]\n        if cell.get("cell_type") == "code"\n        and "focused_tests" in cell.get("source", "")\n        and "def run_cmd" in cell.get("source", "")\n    )\n    assert "def run_cmd(cmd, log_name, *, cwd=None):" in setup\n    assert "cwd=str(cwd) if cwd is not None else None" in setup\n    assert '"focused_tests",\\n    cwd=REPO_DIR,' in setup\n    for relative in (\n        "tests/test_evidence_ablation.py",\n        "tests/test_reconpatch_lite.py",\n        "tests/test_evidence_ablation_colab.py",\n    ):\n        assert (root / relative).is_file()\n'''
+              test_path.write_text(test_source, encoding='utf-8')
+          PY
+
+      - name: Install targeted dependencies
+        run: python -m pip install -q pytest numpy pillow
+
+      - name: Verify exact cwd failure mode and notebook
+        shell: bash
+        run: |
+          python -m pytest -q tests/test_evidence_ablation.py tests/test_reconpatch_lite.py tests/test_evidence_ablation_colab.py
+          python - <<'PY'
+          import json, subprocess, sys, tempfile, os
+          from pathlib import Path
+
+          repo = Path.cwd()
+          notebook = json.loads((repo / 'notebooks/lvlm_evidence_ablation_smoke_colab.ipynb').read_text(encoding='utf-8'))
+          source = next(
+              c['source'] for c in notebook['cells']
+              if c.get('cell_type') == 'code' and 'focused_tests' in c.get('source','') and 'def run_cmd' in c.get('source','')
+          )
+          start = source.index('def run_cmd(')
+          end = source.index('\n\n# private repo checkout', start)
+          helper = source[start:end]
+          with tempfile.TemporaryDirectory() as d:
+              ns = {'LOG_DIR': Path(d), 'subprocess': subprocess}
+              exec(compile(helper, 'run_cmd-helper', 'exec'), ns)
+              outside = Path(d) / 'outside'; outside.mkdir()
+              original = Path.cwd()
+              try:
+                  os.chdir(outside)
+                  ns['run_cmd']([
+                      sys.executable, '-m', 'pytest', '-q',
+                      'tests/test_evidence_ablation.py',
+                      'tests/test_reconpatch_lite.py',
+                      'tests/test_evidence_ablation_colab.py',
+                  ], 'focused_tests_runtime', cwd=repo)
+              finally:
+                  os.chdir(original)
+          print('EVIDENCE_COLAB_CWD_RUNTIME_OK')
+          PY
+          python -m py_compile src/insplad_benchmark/evidence_ablation.py src/insplad_benchmark/reconpatch_lite.py scripts/build_evidence_ablation.py scripts/run_reconpatch_lite_smoke.py scripts/run_hf_evidence_ablation.py
+
+      - name: Commit verified fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notebooks/lvlm_evidence_ablation_smoke_colab.ipynb tests/test_evidence_ablation_colab.py
+          git commit -m "fix: run evidence Colab tests from repository root"
+          git push origin HEAD:fix/evidence-colab-cwd
