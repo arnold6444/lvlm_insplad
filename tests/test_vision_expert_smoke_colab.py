@@ -80,3 +80,12 @@ def test_anomalyclip_runtime_compatibility_is_explicit() -> None:
     assert "download_root=str(ANOMALYCLIP_MODEL_CACHE)" in joined
     assert "compat_patch_schema_version" in joined
     assert "compat_source_sha256" in joined
+
+
+def test_anomalib_engines_use_barebones_without_checkpoint_conflict() -> None:
+    root = Path(__file__).resolve().parents[1]
+    notebook = root / "notebooks" / "lvlm_vision_expert_smoke_colab.ipynb"
+    data = json.loads(notebook.read_text(encoding="utf-8"))
+    joined = "\n".join(cell.get("source", "") for cell in data["cells"])
+    assert joined.count("barebones=True") == 2
+    assert "enable_checkpointing=False" not in joined
