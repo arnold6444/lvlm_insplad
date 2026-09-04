@@ -1,0 +1,189 @@
+name: Temporary verify anomalib no-validation runtime
+
+on:
+  push:
+    branches:
+      - fix/anomalib-no-val-smoke
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-run:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/anomalib-no-val-smoke
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Patch notebook and add regression guard
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          notebook_path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          data = json.loads(notebook_path.read_text(encoding='utf-8'))
+
+          patchcore = next(
+              cell for cell in data['cells']
+              if cell.get('cell_type') == 'code'
+              and '# 6) Vision expert A' in cell.get('source', '')
+          )
+          dinomaly = next(
+              cell for cell in data['cells']
+              if cell.get('cell_type') == 'code'
+              and '# 7) Vision expert B' in cell.get('source', '')
+          )
+
+          patchcore_old = "            barebones=True,\n"
+          patchcore_new = "            barebones=True, limit_val_batches=0,\n"
+          if patchcore_new not in patchcore['source']:
+              if patchcore_old not in patchcore['source']:
+                  raise RuntimeError('PatchCore Engine configuration no longer matches expected source')
+              patchcore['source'] = patchcore['source'].replace(patchcore_old, patchcore_new, 1)
+
+          dinomaly_old = "        deterministic=True, barebones=True,\n"
+          dinomaly_new = "        deterministic=True, barebones=True, limit_val_batches=0,\n"
+          if dinomaly_new not in dinomaly['source']:
+              if dinomaly_old not in dinomaly['source']:
+                  raise RuntimeError('Dinomaly Engine configuration no longer matches expected source')
+              dinomaly['source'] = dinomaly['source'].replace(dinomaly_old, dinomaly_new, 1)
+
+          for index, cell in enumerate(data['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'cell-{index}', 'exec')
+
+          notebook_path.write_text(
+              json.dumps(data, ensure_ascii=False, indent=1) + '\n',
+              encoding='utf-8',
+          )
+
+          test_path = Path('tests/test_vision_expert_smoke_colab.py')
+          source = test_path.read_text(encoding='utf-8')
+          test_name = 'test_anomalib_engines_disable_missing_validation_loop'
+          if test_name not in source:
+              source += f'''\n\ndef {test_name}() -> None:\n    root = Path(__file__).resolve().parents[1]\n    notebook = root / "notebooks" / "lvlm_vision_expert_smoke_colab.ipynb"\n    data = json.loads(notebook.read_text(encoding="utf-8"))\n    joined = "\\n".join(cell.get("source", "") for cell in data["cells"])\n    assert joined.count("barebones=True") == 2\n    assert joined.count("limit_val_batches=0") == 2\n'''
+              test_path.write_text(source, encoding='utf-8')
+          PY
+
+      - name: Install exact Colab runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          python -m pip install 'anomalib==2.6.0' pytest
+
+      - name: Run notebook regression test
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests/test_vision_expert_smoke_colab.py
+
+      - name: Run actual PatchCore fit and predict
+        env:
+          PYTHONPATH: src
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tempfile
+
+          import numpy as np
+          import pandas as pd
+          from PIL import Image
+
+          from anomalib.data import Tabular
+          from anomalib.data.utils import TestSplitMode, ValSplitMode
+          from anomalib.engine import Engine
+          from anomalib.models import Patchcore
+
+          root = Path(tempfile.mkdtemp(prefix='patchcore-runtime-'))
+          train_paths = []
+          test_paths = []
+
+          rng = np.random.default_rng(42)
+          for index in range(8):
+              array = np.full((64, 64, 3), 110, dtype=np.uint8)
+              array += rng.integers(0, 4, size=array.shape, dtype=np.uint8)
+              path = root / f'train-{index}.png'
+              Image.fromarray(array).save(path)
+              train_paths.append(str(path))
+
+          normal = np.full((64, 64, 3), 111, dtype=np.uint8)
+          normal_path = root / 'test-normal.png'
+          Image.fromarray(normal).save(normal_path)
+          test_paths.append(str(normal_path))
+
+          anomalous = normal.copy()
+          anomalous[20:36, 20:36] = 255
+          anomaly_path = root / 'test-anomaly.png'
+          Image.fromarray(anomalous).save(anomaly_path)
+          test_paths.append(str(anomaly_path))
+
+          samples = pd.DataFrame({
+              'image_path': train_paths + test_paths,
+              'label_index': [0] * len(train_paths) + [0, 1],
+              'split': ['train'] * len(train_paths) + ['test', 'test'],
+          })
+          datamodule = Tabular(
+              name='patchcore-runtime-smoke',
+              samples=samples,
+              train_batch_size=4,
+              eval_batch_size=2,
+              num_workers=0,
+              test_split_mode=TestSplitMode.FROM_DIR,
+              val_split_mode=ValSplitMode.NONE,
+              seed=42,
+          )
+          model = Patchcore(
+              backbone='resnet18',
+              layers=('layer2', 'layer3'),
+              pre_trained=False,
+              coreset_sampling_ratio=1.0,
+              num_neighbors=1,
+              pre_processor=Patchcore.configure_pre_processor(
+                  image_size=(64, 64),
+                  center_crop_size=(56, 56),
+              ),
+              post_processor=False,
+              evaluator=False,
+              visualizer=False,
+          )
+          engine = Engine(
+              accelerator='cpu',
+              devices=1,
+              max_epochs=1,
+              deterministic=True,
+              barebones=True,
+              limit_val_batches=0,
+              default_root_dir=root / 'runs',
+          )
+          engine.fit(model=model, datamodule=datamodule)
+          predictions = engine.predict(model=model, datamodule=datamodule)
+          assert predictions, 'predict returned no batches'
+
+          total = 0
+          for batch in predictions:
+              paths = batch['image_path'] if isinstance(batch, dict) else batch.image_path
+              maps = batch['anomaly_map'] if isinstance(batch, dict) else batch.anomaly_map
+              total += 1 if isinstance(paths, str) else len(paths)
+              assert maps is not None
+          assert total == 2, f'expected two test predictions, got {total}'
+          print(f'PATCHCORE_RUNTIME_OK predictions={total}')
+          PY
+
+      - name: Commit verified notebook fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notebooks/lvlm_vision_expert_smoke_colab.ipynb tests/test_vision_expert_smoke_colab.py
+          git commit -m "fix: skip absent validation split in anomalib engines"
+          git push origin HEAD:fix/anomalib-no-val-smoke
