@@ -1,0 +1,38 @@
+name: Temporary AgentIAD-lite verify
+
+on:
+  push:
+    branches:
+      - feat/agent-iad-lite-smoke
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/agent-iad-lite-smoke
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install targeted dependencies
+        run: python -m pip install -q -e '.[dev]'
+      - name: Verify AgentIAD-lite
+        shell: bash
+        run: |
+          python -m pytest -q tests/test_agent_iad_lite.py tests/test_agent_iad_lite_runner.py tests/test_agent_iad_lite_colab.py
+          python -m py_compile src/insplad_benchmark/agent_iad_lite.py scripts/run_agent_iad_lite_smoke.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('notebooks/lvlm_agent_iad_lite_smoke_colab.ipynb')
+          nb = json.loads(p.read_text(encoding='utf-8'))
+          for i, cell in enumerate(nb['cells']):
+              if cell.get('cell_type') == 'code':
+                  compile(cell.get('source', ''), f'cell-{i}', 'exec')
+          print('AGENT_IAD_LITE_NOTEBOOK_COMPILE_OK', len(nb['cells']))
+          PY
