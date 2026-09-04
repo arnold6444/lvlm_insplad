@@ -1,0 +1,126 @@
+name: Temporary verify vision workspace recovery
+
+on:
+  push:
+    branches:
+      - fix/vision-workspace-auto-repair
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/vision-workspace-auto-repair
+          fetch-depth: 0
+
+      - name: Patch notebook diagnostics and tests
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          notebook_path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          data = json.loads(notebook_path.read_text(encoding='utf-8'))
+
+          setup_cell = next(
+              cell for cell in data['cells']
+              if cell.get('cell_type') == 'code'
+              and "# 1) Configuration, GPU check" in cell.get('source', '')
+          )
+          old_tests = (
+              "    'tests/test_vision_expert.py',\n"
+              "    'tests/test_hf_vision_expert_smoke_runner.py',\n"
+              "    'tests/test_vision_expert_smoke_colab.py',\n"
+          )
+          new_tests = (
+              "    'tests/test_vision_expert.py',\n"
+              "    'tests/test_hf_vision_expert_smoke_runner.py',\n"
+              "    'tests/test_build_vision_expert_smoke_data.py',\n"
+              "    'tests/test_vision_expert_smoke_colab.py',\n"
+          )
+          if old_tests in setup_cell['source']:
+              setup_cell['source'] = setup_cell['source'].replace(old_tests, new_tests, 1)
+          elif "'tests/test_build_vision_expert_smoke_data.py'" not in setup_cell['source']:
+              raise RuntimeError('setup-cell test list no longer matches the expected notebook')
+
+          workspace_cell = next(
+              cell for cell in data['cells']
+              if cell.get('cell_type') == 'code'
+              and '# 4) Extract the exact smoke queries' in cell.get('source', '')
+          )
+          workspace_cell['source'] = workspace_cell['source'].replace(
+              "    sys.executable, 'scripts/build_vision_expert_smoke_data.py',",
+              "    sys.executable, str(REPO_DIR / 'scripts/build_vision_expert_smoke_data.py'),",
+              1,
+          )
+          old_run = "subprocess.run(cmd, check=True)"
+          new_run = """workspace_run = subprocess.run(
+              cmd,
+              cwd=REPO_DIR,
+              text=True,
+              stdout=subprocess.PIPE,
+              stderr=subprocess.STDOUT,
+          )
+          print(workspace_run.stdout, end='')
+          if workspace_run.returncode != 0:
+              raise RuntimeError(
+                  'Vision workspace preparation failed. The complete child-process output is shown above.'
+              )"""
+          if old_run in workspace_cell['source']:
+              workspace_cell['source'] = workspace_cell['source'].replace(old_run, new_run, 1)
+          elif 'workspace_run = subprocess.run(' not in workspace_cell['source']:
+              raise RuntimeError('workspace-cell subprocess call no longer matches the expected notebook')
+
+          notebook_path.write_text(
+              json.dumps(data, ensure_ascii=False, indent=1) + '\n',
+              encoding='utf-8',
+          )
+
+          test_path = Path('tests/test_vision_expert_smoke_colab.py')
+          source = test_path.read_text(encoding='utf-8')
+          marker = '        "scripts/build_vision_expert_smoke_data.py",\n'
+          addition = (
+              marker
+              + '        "tests/test_build_vision_expert_smoke_data.py",\n'
+              + '        "stdout=subprocess.PIPE",\n'
+              + '        "complete child-process output is shown above",\n'
+          )
+          if '"tests/test_build_vision_expert_smoke_data.py"' not in source:
+              if marker not in source:
+                  raise RuntimeError('notebook regression-test marker not found')
+              source = source.replace(marker, addition, 1)
+          test_path.write_text(source, encoding='utf-8')
+          PY
+
+      - name: Install test dependency
+        run: python -m pip install -q pytest
+
+      - name: Run focused tests
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m pytest -q \
+            tests/test_build_vision_expert_smoke_data.py \
+            tests/test_vision_expert_smoke_colab.py \
+            tests/test_vision_expert.py \
+            tests/test_hf_vision_expert_smoke_runner.py
+          python -m py_compile scripts/build_vision_expert_smoke_data.py
+
+      - name: Commit verified notebook patch
+        shell: bash
+        run: |
+          if git diff --quiet -- notebooks/lvlm_vision_expert_smoke_colab.ipynb tests/test_vision_expert_smoke_colab.py; then
+            echo "No notebook patch needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notebooks/lvlm_vision_expert_smoke_colab.ipynb tests/test_vision_expert_smoke_colab.py
+          git commit -m "fix: surface vision workspace failures in Colab"
+          git push origin HEAD:fix/vision-workspace-auto-repair
