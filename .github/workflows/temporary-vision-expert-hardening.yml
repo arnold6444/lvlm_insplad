@@ -6,10 +6,111 @@ on:
       - fix/vision-expert-smoke-runtime-hardening
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  patch-notebook:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.patch.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/vision-expert-smoke-runtime-hardening
+          fetch-depth: 0
+      - id: patch
+        name: Patch AnomalyCLIP runtime compatibility into notebook
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          notebook_path = Path('notebooks/lvlm_vision_expert_smoke_colab.ipynb')
+          notebook = json.loads(notebook_path.read_text(encoding='utf-8'))
+          cells = [
+              cell
+              for cell in notebook['cells']
+              if cell.get('cell_type') == 'code'
+              and "ANOMALYCLIP_COMMIT = '3911738c0867544f545a076ad78f3f11d9ecbfdf'" in cell.get('source', '')
+          ]
+          if len(cells) != 1:
+              raise RuntimeError(f'expected one AnomalyCLIP cell, found {len(cells)}')
+          source = cells[0]['source']
+
+          import_anchor = (
+              "    assert actual_commit == ANOMALYCLIP_COMMIT\n"
+              "    sys.path.insert(0, str(ANOMALYCLIP_DIR))"
+          )
+          import_replacement = (
+              "    assert actual_commit == ANOMALYCLIP_COMMIT\n"
+              "    from insplad_benchmark.anomalyclip_compat import patch_official_anomalyclip_checkout\n"
+              "    anomalyclip_compat = patch_official_anomalyclip_checkout(ANOMALYCLIP_DIR)\n"
+              "    print('AnomalyCLIP compatibility:', anomalyclip_compat)\n"
+              "    sys.path.insert(0, str(ANOMALYCLIP_DIR))"
+          )
+          if 'patch_official_anomalyclip_checkout' not in source:
+              if import_anchor not in source:
+                  raise RuntimeError('AnomalyCLIP import anchor not found')
+              source = source.replace(import_anchor, import_replacement, 1)
+
+          load_anchor = (
+              "    model, _ = AnomalyCLIP_lib.load('ViT-L/14@336px', "
+              "device=device, design_details=parameters)"
+          )
+          load_replacement = (
+              "    ANOMALYCLIP_MODEL_CACHE = Path('/content/anomalyclip_model_cache')\n"
+              "    ANOMALYCLIP_MODEL_CACHE.mkdir(parents=True, exist_ok=True)\n"
+              "    model, _ = AnomalyCLIP_lib.load(\n"
+              "        'ViT-L/14@336px', device=device, design_details=parameters,\n"
+              "        download_root=str(ANOMALYCLIP_MODEL_CACHE),\n"
+              "    )"
+          )
+          if "ANOMALYCLIP_MODEL_CACHE = Path('/content/anomalyclip_model_cache')" not in source:
+              if load_anchor not in source:
+                  raise RuntimeError('AnomalyCLIP load anchor not found')
+              source = source.replace(load_anchor, load_replacement, 1)
+
+          metadata_anchor = "                'model_revision': ANOMALYCLIP_COMMIT,\n"
+          metadata_replacement = (
+              metadata_anchor
+              + "                'compat_patch_schema_version': anomalyclip_compat['schema_version'],\n"
+              + "                'compat_source_sha256': anomalyclip_compat['sha256_after'],\n"
+          )
+          if "'compat_patch_schema_version': anomalyclip_compat['schema_version']" not in source:
+              if metadata_anchor not in source:
+                  raise RuntimeError('AnomalyCLIP metadata anchor not found')
+              source = source.replace(metadata_anchor, metadata_replacement, 1)
+
+          cells[0]['source'] = source
+          notebook_path.write_text(
+              json.dumps(notebook, ensure_ascii=False, indent=1) + '\n',
+              encoding='utf-8',
+          )
+
+          test_path = Path('tests/test_vision_expert_smoke_colab.py')
+          test_source = test_path.read_text(encoding='utf-8')
+          test_name = 'test_anomalyclip_runtime_compatibility_is_explicit'
+          if test_name not in test_source:
+              test_source += f'''\n\ndef {test_name}() -> None:\n    root = Path(__file__).resolve().parents[1]\n    notebook = root / "notebooks" / "lvlm_vision_expert_smoke_colab.ipynb"\n    data = json.loads(notebook.read_text(encoding="utf-8"))\n    joined = "\\n".join(cell.get("source", "") for cell in data["cells"])\n    assert "patch_official_anomalyclip_checkout" in joined\n    assert "ANOMALYCLIP_MODEL_CACHE = Path('/content/anomalyclip_model_cache')" in joined\n    assert "download_root=str(ANOMALYCLIP_MODEL_CACHE)" in joined\n    assert "compat_patch_schema_version" in joined\n'''
+              test_path.write_text(test_source, encoding='utf-8')
+          PY
+
+          if git diff --quiet -- notebooks/lvlm_vision_expert_smoke_colab.ipynb tests/test_vision_expert_smoke_colab.py; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notebooks/lvlm_vision_expert_smoke_colab.ipynb tests/test_vision_expert_smoke_colab.py
+          git commit -m "fix: patch AnomalyCLIP for modern Colab runtime"
+          git push origin HEAD:fix/vision-expert-smoke-runtime-hardening
+
   project-tests:
+    needs: patch-notebook
+    if: needs.patch-notebook.outputs.changed == 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +139,8 @@ jobs:
           PY
 
   colab-runtime-contract:
+    needs: patch-notebook
+    if: needs.patch-notebook.outputs.changed == 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,9 +226,21 @@ jobs:
           git -C /tmp/AnomalyCLIP checkout 3911738c0867544f545a076ad78f3f11d9ecbfdf
           test "$(git -C /tmp/AnomalyCLIP rev-parse HEAD)" = '3911738c0867544f545a076ad78f3f11d9ecbfdf'
           test -s /tmp/AnomalyCLIP/checkpoints/9_12_4_multiscale/epoch_15.pth
+          PYTHONPATH=src python - <<'PY'
+          from pathlib import Path
+          from insplad_benchmark.anomalyclip_compat import patch_official_anomalyclip_checkout
+
+          result = patch_official_anomalyclip_checkout(Path('/tmp/AnomalyCLIP'))
+          assert result['changed'] is True
+          assert result['applied']
+          print('compatibility patch:', result)
+          PY
           PYTHONPATH=/tmp/AnomalyCLIP python - <<'PY'
+          import inspect
           import AnomalyCLIP_lib
           import prompt_ensemble
           import utils
+
+          assert 'download_root' in inspect.signature(AnomalyCLIP_lib.load).parameters
           print('AnomalyCLIP imports and checkpoint: OK')
           PY
