@@ -77,12 +77,31 @@ jobs:
               Tabular: {'name', 'samples', 'train_batch_size', 'eval_batch_size', 'num_workers', 'test_split_mode', 'val_split_mode', 'seed'},
               Patchcore: {'backbone', 'layers', 'coreset_sampling_ratio', 'num_neighbors', 'post_processor', 'evaluator', 'visualizer'},
               Dinomaly: {'encoder_name', 'decoder_depth', 'bottleneck_dropout', 'use_context_recentering', 'precision', 'post_processor', 'evaluator', 'visualizer'},
-              Engine: {'accelerator', 'devices', 'max_epochs', 'max_steps', 'precision', 'deterministic', 'logger', 'enable_checkpointing', 'limit_val_batches', 'num_sanity_val_steps'},
           }
           for target, expected in checks.items():
               actual = set(inspect.signature(target).parameters)
               missing = sorted(expected - actual)
               assert not missing, f'{target.__name__} missing notebook parameters: {missing}'
+
+          engine_signature = inspect.signature(Engine)
+          assert any(
+              parameter.kind is inspect.Parameter.VAR_KEYWORD
+              for parameter in engine_signature.parameters.values()
+          ), 'Engine must forward Lightning Trainer kwargs'
+          engine = Engine(
+              accelerator='cpu',
+              devices=1,
+              max_epochs=1,
+              max_steps=1,
+              precision='32-true',
+              deterministic=True,
+              logger=False,
+              enable_checkpointing=False,
+              limit_val_batches=0,
+              num_sanity_val_steps=0,
+              default_root_dir='/tmp/anomalib-runtime-contract',
+          )
+          assert engine is not None
 
           assert TestSplitMode.FROM_DIR
           assert ValSplitMode.NONE
