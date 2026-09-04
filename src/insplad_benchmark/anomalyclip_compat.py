@@ -5,9 +5,10 @@ from pathlib import Path
 from typing import Final
 
 
-COMPAT_SCHEMA_VERSION: Final[int] = 2
+COMPAT_SCHEMA_VERSION: Final[int] = 3
 MODEL_LOAD_RELATIVE_PATH: Final[Path] = Path("AnomalyCLIP_lib/model_load.py")
 MODEL_RELATIVE_PATH: Final[Path] = Path("AnomalyCLIP_lib/AnomalyCLIP.py")
+PROMPT_RELATIVE_PATH: Final[Path] = Path("prompt_ensemble.py")
 
 
 def _sha256_bytes(value: bytes) -> str:
@@ -30,18 +31,39 @@ def _atomic_write(path: Path, value: bytes) -> None:
     temporary.replace(path)
 
 
+def _modernize_packaging_import(
+    source: str,
+    *,
+    label: str,
+    applied: list[str],
+) -> str:
+    legacy_import = "from pkg_resources import packaging"
+    if legacy_import in source:
+        if source.count(legacy_import) != 1:
+            raise RuntimeError(
+                f"Unsupported AnomalyCLIP {label}: expected one pkg_resources import"
+            )
+        source = source.replace(legacy_import, "from packaging import version", 1)
+        applied.append(f"{label}_pkg_resources_to_packaging")
+    if "packaging.version.parse(" in source:
+        source = source.replace("packaging.version.parse(", "version.parse(")
+        applied.append(f"{label}_packaging_version_reference")
+    return source
+
+
 def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object]:
     """Patch the pinned official AnomalyCLIP checkout for modern Colab.
 
-    The pinned official commit has three runtime-only compatibility problems:
+    The pinned official commit has runtime-only compatibility problems:
 
-    - it imports ``packaging`` through the removed ``pkg_resources`` shim;
-    - it imports only top-level ``urllib`` before accessing ``urllib.request``;
-    - it imports the undeclared ``thop`` profiler even though ``profile`` is not
-      used by inference.
+    - two modules import ``packaging`` through the removed ``pkg_resources`` shim;
+    - the model loader imports only top-level ``urllib`` before using
+      ``urllib.request``;
+    - the model imports the undeclared ``thop`` profiler even though ``profile``
+      is not used by inference.
 
-    This deterministic patch modernizes the first two imports and removes only
-    the unused profiler import. Model architecture, weights, and inference logic
+    This deterministic patch modernizes imports and removes only the unused
+    profiler import. Model architecture, weights, prompts, and inference logic
     remain unchanged. The function is idempotent and fails closed when the
     expected source layout or source fragments cannot be verified.
     """
@@ -49,6 +71,7 @@ def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object
     checkout_root = Path(checkout_root)
     model_load_path = checkout_root / MODEL_LOAD_RELATIVE_PATH
     model_path = checkout_root / MODEL_RELATIVE_PATH
+    prompt_path = checkout_root / PROMPT_RELATIVE_PATH
 
     model_load_original, model_load_source = _read_utf8(
         model_load_path,
@@ -58,22 +81,23 @@ def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object
         model_path,
         label="model source",
     )
+    prompt_original, prompt_source = _read_utf8(
+        prompt_path,
+        label="prompt module",
+    )
 
     applied: list[str] = []
+    model_load_source = _modernize_packaging_import(
+        model_load_source,
+        label="model_loader",
+        applied=applied,
+    )
+    prompt_source = _modernize_packaging_import(
+        prompt_source,
+        label="prompt_module",
+        applied=applied,
+    )
 
-    if "from pkg_resources import packaging" in model_load_source:
-        model_load_source = model_load_source.replace(
-            "from pkg_resources import packaging",
-            "from packaging import version",
-            1,
-        )
-        applied.append("pkg_resources_to_packaging")
-    if "packaging.version.parse(" in model_load_source:
-        model_load_source = model_load_source.replace(
-            "packaging.version.parse(",
-            "version.parse(",
-        )
-        applied.append("packaging_version_reference")
     if "import urllib\n" in model_load_source:
         model_load_source = model_load_source.replace(
             "import urllib\n",
@@ -113,20 +137,44 @@ def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object
             f"could not verify fragments: {missing}"
         )
 
-    forbidden_model_load_fragments = (
+    required_prompt_fragments = (
+        "from packaging import version",
+        "version.parse(torch.__version__)",
+        "version.parse(\"1.8.0\")",
+        "class AnomalyCLIP_PromptLearner(nn.Module):",
+    )
+    prompt_missing = [
+        fragment for fragment in required_prompt_fragments if fragment not in prompt_source
+    ]
+    if prompt_missing:
+        raise RuntimeError(
+            "Unsupported AnomalyCLIP prompt module variant; compatibility patch "
+            f"could not verify fragments: {prompt_missing}"
+        )
+
+    forbidden_fragments = (
         "from pkg_resources import packaging",
         "packaging.version.parse(",
-        "import urllib\n",
     )
-    remaining = [
-        fragment
-        for fragment in forbidden_model_load_fragments
-        if fragment in model_load_source
-    ]
-    if remaining:
+    remaining_by_file = {
+        MODEL_LOAD_RELATIVE_PATH.as_posix(): [
+            fragment for fragment in forbidden_fragments if fragment in model_load_source
+        ],
+        PROMPT_RELATIVE_PATH.as_posix(): [
+            fragment for fragment in forbidden_fragments if fragment in prompt_source
+        ],
+    }
+    remaining_by_file = {
+        path: fragments for path, fragments in remaining_by_file.items() if fragments
+    }
+    if remaining_by_file:
         raise RuntimeError(
-            "AnomalyCLIP compatibility patch left legacy loader fragments behind: "
-            f"{remaining}"
+            "AnomalyCLIP compatibility patch left legacy packaging fragments behind: "
+            f"{remaining_by_file}"
+        )
+    if "import urllib\n" in model_load_source:
+        raise RuntimeError(
+            "AnomalyCLIP compatibility patch left the legacy urllib import behind"
         )
     if "from thop import profile" in model_source:
         raise RuntimeError(
@@ -140,10 +188,12 @@ def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object
     patched_by_path: dict[Path, bytes] = {
         model_load_path: model_load_source.encode("utf-8"),
         model_path: model_source.encode("utf-8"),
+        prompt_path: prompt_source.encode("utf-8"),
     }
     original_by_path = {
         model_load_path: model_load_original,
         model_path: model_original,
+        prompt_path: prompt_original,
     }
     changed_paths: list[str] = []
     for path, patched in patched_by_path.items():
@@ -164,6 +214,7 @@ def patch_official_anomalyclip_checkout(checkout_root: Path) -> dict[str, object
         "schema_version": COMPAT_SCHEMA_VERSION,
         "model_load_path": str(model_load_path.resolve()),
         "model_path": str(model_path.resolve()),
+        "prompt_path": str(prompt_path.resolve()),
         "changed": changed,
         "changed_paths": changed_paths,
         "applied": applied,
