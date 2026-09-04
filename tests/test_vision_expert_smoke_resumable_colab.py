@@ -79,3 +79,37 @@ def test_review_bundle_is_saved_to_drive_and_ready_for_chat_upload() -> None:
     assert len(export_cells) == 1
     assert 'globals().get("RUN_ROOT")' in export_cells[0]
     assert 'globals().get("RUN_FOLDER", "vision_expert_smoke_v1")' in export_cells[0]
+
+
+def test_stage_table_handles_empty_none_multiline_and_malformed_values() -> None:
+    root = Path(__file__).resolve().parents[1]
+    notebook_path = root / "notebooks" / "lvlm_vision_expert_smoke_resumable_colab.ipynb"
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    source = next(
+        "".join(cell.get("source", []))
+        for cell in notebook["cells"]
+        if cell.get("cell_type") == "code"
+        and "def stage_table()" in "".join(cell.get("source", []))
+    )
+    namespace = {
+        "STATE": {
+            "stages": {
+                "complete": {"status": "complete"},
+                "empty": {"status": "failed", "error": ""},
+                "none": {"status": "failed", "error": None},
+                "multi": {"status": "failed", "error": "first line\nsecond line"},
+                "malformed": "broken-state-value",
+            }
+        },
+        "STATE_PATH": Path("state.json"),
+        "RUN_LOG_PATH": Path("run.log"),
+        "display": lambda _value: None,
+    }
+    exec(compile(source, "stage-table-cell", "exec"), namespace)
+    table = namespace["stage_table"]().set_index("stage")
+    assert table.loc["complete", "error"] == ""
+    assert table.loc["empty", "error"] == ""
+    assert table.loc["none", "error"] == ""
+    assert table.loc["multi", "error"] == "first line"
+    assert table.loc["malformed", "status"] == "invalid_state"
+    assert table.loc["malformed", "error"] == "broken-state-value"
