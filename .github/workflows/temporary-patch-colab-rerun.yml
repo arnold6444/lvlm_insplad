@@ -56,6 +56,9 @@ jobs:
               test_path.write_text(test_source, encoding='utf-8')
           PY
 
+      - name: Install test dependency
+        run: python -m pip install -q pytest
+
       - name: Run focused notebook tests
         run: python -m pytest -q tests/test_vision_expert_smoke_colab.py
 
