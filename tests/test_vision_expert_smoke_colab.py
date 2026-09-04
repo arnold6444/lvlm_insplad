@@ -47,3 +47,19 @@ def test_vision_expert_smoke_notebook_compiles_and_locks_screening_scope() -> No
     assert "llava_onevision_7b" not in joined
     assert "RUN_FULL = True" not in joined
     assert "torch==2.0.0" not in joined
+
+
+def test_checkout_cell_is_safe_when_rerun_from_deleted_repo_directory() -> None:
+    root = Path(__file__).resolve().parents[1]
+    notebook = root / "notebooks" / "lvlm_vision_expert_smoke_colab.ipynb"
+    data = json.loads(notebook.read_text(encoding="utf-8"))
+    checkout_source = next(
+        cell["source"]
+        for cell in data["cells"]
+        if cell.get("cell_type") == "code"
+        and "REPO_DIR = Path('/content/lvlm_insplad')" in cell.get("source", "")
+    )
+    chdir_index = checkout_source.index("os.chdir('/content')")
+    repo_index = checkout_source.index("REPO_DIR = Path('/content/lvlm_insplad')")
+    delete_index = checkout_source.index("shutil.rmtree(REPO_DIR)")
+    assert chdir_index < repo_index < delete_index
