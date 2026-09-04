@@ -1,0 +1,74 @@
+name: Temporary materialize evidence ablation notebook
+
+on:
+  push:
+    branches:
+      - feat/evidence-ablation-smoke
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/evidence-ablation-smoke
+          fetch-depth: 0
+
+      - name: Materialize notebook
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, zlib
+          from pathlib import Path
+          payload = '''eNrFPGtzG8eR3/0rJnT5CpCB5UOUzkEOvoNIUEaFJBiSkhMDrNVydwHuabEL7S74MItVcsRcObZSZ+csW/ZRKvkiJ/aVqk7Rw2GqVPfh8k/ykVj+h+uex+7sAxRlq0qpWARmumd6evo504Pd18iYbtq2P1YhrdcI2YX/WIsa7PRNaB3rad5Vw91yxkq0r2cGmqEFGnTt7rEm3x14OoV9nTQcf2m+Nkv+fv0zctnyLdch9e2+6QXkb1+Q+qZlmI5uEm3d1gLs83vuVbPttJ3wzhPiuIG57rpXwzvXCXwP7+2TK5t0DNWkY6gUXN2cvBLeuc1wybmJ8O43R4+fkaPDh+HXT8iSFugbM65nknEyazluT7N34GONfZqZbyyRo0cPAWH4zTMS3n0Q/vpB+NV3x7e+G3784fDj+wonZvjoQxL+6cPhg0OkZvjpJ+To4fXwT9fDu7+RAMsk/PzJ8PP7hJFJGJkASeYvzy+EXzCsu9+Q4b/vh/95HRc5/OT28KPPoPmfEf3o4Zc4PsMb3nkGcOSKrzPy19fdbfizYWpBT+vjehqLzc0p4JMHayGe2TE9ZOcVEt7/VFBiCh4f3751fOMAaeE0HH/1LSw7vPdBeOeQzQ8r/fj+8Re3SfjhQbh/UMGWSUVw8iwni/MrZlbbmVLIsjnjOpTZ5OjxfvjFExJ+j8tqO2eVUUuAbdsnv9gyAeRcefpCCaQlMD3n8jx+f+sC8AuoIMO/7h89/aTtTAMlDz8QnMSeaG0om8PH+yR8enD0+J5gH2wofBt+c0iGv79PriC3gEzOJPJmhH5l+KebnNposnMKnQgHXTf9gHSsbdMguttbtxwmquE95CJl2h+egfxVmAAwZuFWIy9vfnt864BcWW42iO65uGCY4uP74ccHOOHw63vHt26DFJHw1kdIOJdyLpBI1dOD8L9+Q44/PaAjPjwEKOB4ePBs+DVw5vsvZfkrS5sAMgWLfxp+fAf/HD08IEs7q66Hu/P0wfHtfRS94y9vwdaDAHIKwlv7JTL8zTMQcnJ8C3AfFPqa5W1Zvjmuu7A128EA5My3epateVawAzz0TFtjnHECT/MDa9OEtr5n+qYTMEbZpuY5ltMt4m6z2SlTPBOQ+kisalsBSK2ve6aJkGT4aB/4EK+NUE3572+HvzvET/AfsHn43RNBLWcTbgQINrKwP1i3LZ0SUO56mmGiuB49uh7+8Q5d+q398KvPZC0vEyqjyDfUu0ffIrXhfzzkvMF2KgNlZmbCGx8Mb14nIGc6LNSyTYlYJuzDh98B95Pkbri24Q4CpBD3EzhmOWWuvrpmW+sepZhvLwhi+OhJkkgcTzJ0VJ4efjd8dIuE+/eOb9xB4ZDYxvmy/+fhRxSWI8HK7h2EXx7iPkyWzk69hWzjxHHdYrySJx8D404tfI5T0F3D5A7B3Db1Aa5C1d2BE0CvM7Dtkc4CZuwPAupv1rLuY6IIxN8P791qO8uXFtW55vxsfZlUSXtMKK8qfEfkDNpjbWdpuX650by0oqaw8t0HYqwsNH9eV1ca79UB8NwENNTrs/Bxegr1eqE5W59fUVebOCC0ttpj19BuqefU6fX2WAmGtqjt2rSx7S1oW2s79V8u1ZdXk2hU4FFAGJbBXRL7prEvum31WUNKR+ioS8uNhdryr9SZ5uJsY7XRXFxhI/vxqGhm2SduaSli23mdWlCuSGyfKdY4IowLxwIw8H90qQl7SibBjKBRimxo+OV1tFUgJLKcvE7F+9ETMs0RffT159FEGBbulI+WefjgSXj3U9hZ8IU3h398QA3WoxvDx09gFHBWh+H3YCM/vE3d8n20V6BAQDCOn7X7Nz5ADBgPxB+km1k2sK101KcPwq8fyoZyprlwobFYn41ZqC7UloCLu20HJJBEvKzQLeCrVQWDBRDjchKGc16AROxPQkXNALiHG7NcB1KWaqsz76iry7XGorqyWl/CfZ2cmkj0LtR+ySHo9zrCnJ+YSAHVF5ogIMs1WBr0TygT5xL9F+i/XNYnf0olHL2dCgPO/Hyp2VhcVeuX68u/wu62U7sEAjzbfHdxvlmbVVGz6u+q7zWQYaveAMK12eXG5bo6W1utqbMNVLRF1zFxxiUQ/Poc1bwemDrUs7nm8gzo2WrtIqXdN4NCEefXfB9lDL8n1aZIqrgxP1Zx9hJTZHVITHOyFsEofQ80vQCQ3sDBfY0tDEL2wBDaPrYnTAZ2cWXAvuQK94qvxrhOFsmshw4b3XjfhT/oIyFUQHW6cYDf79zGYGb/z23H6vVdYJ7ub5ZIVy+RDc3fAIdVIv/qu06JuH6J+BtAmg1/B+t9z9VNH9t24J/A6pkl9Ha6ua7pV0tkMLCMttPx3B4Bik3sJ3wC8Z1hvU8FiQLCZuKEAg6inA2UG9rXdd2ubSq6a2sRgIFLg6lgz5ErbYc2KD3kW6E9xiIaJxinzbjNHQiPTNUzKUR1TrN9syhke7nZXAVpxUkzuOMLO7NsjCLK/Mql+VXQsBXULQl5HCTA3rR7quX4fVszYCJ/YKM4MG8lppAHGCc5fox5wlzoPCCld9WwPAjkwPIEfhUVtgR22fID1b1KvwLVoI6rdbQo7+CYYngkGYRc9SGQMxXcZyR2vnmRa3kC0Ha7sJafEd59qmnbjmdeG1ieaagQMW5SN0YNZ8wQHBq3bxyio64DgNe09hi0dtpjIBqqv+EGat8e+NyX78ZufI9SbEfGODnmlutd9fsgkHQ06bva0xyrAyG/AqL+wsggGB2ry3mVi5uIQHw+gOdaz5+3g1Yt8Cxz00TpibxSZuF8UIi7DdNbdzXPOHFMmPuFxoBIomf5PsbpsGF+gLscbBRRf6iSEsshyX21OpjL007F8tUOhMuFIgwD7XykCiMN4mHfJHPQv+gGc6CHRt3zXA9UjmdGLPRl+RGma6k4Hr0smC1kv2IMen2/wMcH2XP8gQfRoq9bFlduKoFszb+ooXa/TKkDra4vrzTAj4Mzfbe5/POVpdpMPTOLJEptB9UYuhrg5Rcbc/WV1Qz4KaVHmJT6XH25vgj+dr5eA6twoVlbnk2N+aOlKjJfjefM8kJyhltjmB0QJN+1N031fatfQLlxtJ5Z5NIC4pOMPHg7/o8KYsoAp8IUoIoPGKPlSmplpFxSwY+xgZEDz6HYrLGHAYjpY5wDLsk0CjE9ite13fV4TcVoTUgARxw9MzB0V+DuUZQOdqLuye6IDwlwBT5kkbxNJsW4y+DpwMvmDWkM+jSBNo2fYcSU5jTZ5eO1KpMTa3vRZJwFonOCph2XFlcuLfGIUd7Q9tgAtBJEGcQapI8HcaphBqaOQY7yPoZzRZa5DP9Kj3IwEfifQ8zKG+NNmhwc7B/fesIjmUidsMd2IacmKyuzmGsPHz8Nf/1AzlPmmzO1+aRqptx7NseU1BXIYtZexVAIsHlEpPgb2tS584VCrv6f4C6KigdaoK7vBKZfKBaVDXPbsLqg0xgg07WoePZqejBXmnYcVmGxHR9UZWSgJnGZKshjxNJNNBCbRBclA097CkUFzDtsFA2OpdVKGpiiRKE+3kelYeGg4vUCzzQLKTguLhxGd/s7FCqPZyWSj5ugecuDKJ8RLdMpwnWJ6VwsdA0EtIJxX3Z0HhBhQrhH2RfHR5JVYFQE3k6FCHDqeGxXM/yChBLzE4TJhcSlWwXJDzrlt2DT+WLMbd3sB6RO/4CkxWMiCfSzAmoIJlGDqBHWA0EZyAbSv7tXFNbS10CzaLgW09frwyASNVtWsKH6g07H2oZhFOiPlBc+y4yU3CjFz3OiJbA4oCNBdaoIjhekrY2BD8lZaDwFJBs2bITEomgButvr26D+BdnOc5tCwVvxyteULmRyCEh5QL/R3mAAvVRk22NiQPAzKOcITZUB7KSciYr5UZr4kGygEjlzBuyRZtm+ICdDRwsR1ghLH/n0lQi/PYYmVh0EOraK9EZx3K2CyHAU6CyCZLkdPAoEtZNm3eOKIu1s5BshNtd7RgH+K4FUd1WZafidO0ERsVM3vCsA90BQu2geEBqFIkJR3D74C0iqR+wk0XyElb0tS/fQz0W5nwLkFWh4uM1iw21kOtC6hrzFk8YqDEI/m55XlRBXVmebl1YhAQQhFKkCtzbR2FQkMDEmP6mSiQQpqO/RUk7UvVYZj04qa7ILz/eLEdNIBzYFfSK0VHfFNHuRl4LpN2GTWEINFka/CgttO66v6BuYEMXehaeLS02eTaWdj5wsUtiLjdV3Ll1QVyF2wrNEGNJ0Ni0PdJRJvtxPEbjdl9tlo5UaTyTKo0bLt1KpQdjBT97EeZxtj83QjH3F1GFDfXTTMg49p6bXMnhLsn8Ikb5CSXlnbjQXRJ/MAdEmr14aI7XyxAj5q5aQoxWnJokJa8lDopmIvuUAXrp4sbF4UZ0DR6RK/E+iwWxCcEb6WwGAYYqNScvAs2EQEOaNIOj7lfHx7bKmozKVAwjKncquzPq9f+mCRRisg2fujWue49rG+enp6YRQKgCC9oMOn6P67TEKgBaQgrCP5fK6pzn6Bn4TB4SsHfM025S6I7rRSHjxisCA6Fo/QE/EDrj48YJsL4BFFD1jKfLkkEEyQ9QqTwmbcMKCyjP4N0EVO3XsuQFfKHjrMtDOvrie1bUcfpjI+X9aDuNy0ZBIpybc8Lf8HRAeeiQIEapJCeuxSfriIBSGCjSbk1G+xnvBF2r+29UpZYo1BNeM3tvVaeX8ef4dNsFHb2R6frV6TpmcVib4SSvIjG16YOOq1UmpHe/7MFbuW6YOXRNKNHbfsm136+3qJId0IKLYga/K1Hm6OE5s8SWsq8wO8sBgi23Zaxnm5lo8j4qGmU62sjyDQittIY2ifU8XpgMheKyABKGhr0SfFCAAcvDCRAnh6Lbwg8cAr1kj20O/KfrA0DB01DbBfeCa4qwyZREvLl1Cx45N4pb34WdH/3so2z+AURdrCxgdSsOD9YLUadOCFABdVWECIC8v1xbUixdGAoJ840mCBRnHRFEJ3AAjahBiD2skJiemps+cOUuXIgb6JzI1MSp7nJ8er01OTBwd/pbgKo6+vxne/eZnBG+b7z4gu3yIijLZ2SMXrQvcZ55m0zElCpJbjS3+OP6rZtI0pb+TAUpdCOSBZNM9eqBMQan8dFx9gIkqxYn990xzYaGxmrSAVGO5eTqd5dgs9zXP58bjnXptlk4a2zSRirUdGqRSAzPgyhBHuSUaeQDhvZ4VVCXySqTbH1SF5EiJEcJXImssgKkg0mYJ5VVcUkBeEVc1lHHrRKlGIVWXgnd9iQIKcvSXw+HN66hDUa1KkV+ERQfoicPu9KWRAJbO4yTs9NlbRsZSJ1k65QhPcKQUGs1Ecp7E2RPLfmi2xVGYnWFGHIPxvsE6jA4Q2DdY0AuTF5KjJo9o8EzI6NA0Sbr7xiQJL8iMjsK4Ku7F8i7U4qOFaFk5gOyEIb18sX4uzBmsErt8wHKQ+HBJmIo4Xk8bjaQt10FjQLsRLzUBO4pkViAeDcOQ6KCg7LlukHNAkIIH8S1DZM80SMhGCoYVeviB2fcjuMxtbwqnp21zvD47TEthZm6C0/jUjJdpRUkaVbofTmGtUzXzrffNFE58Z5zC8E3TQFisl+Bda7k3sMkTzow65LvDtO5zzeZ1LE9I+OU+VrdINUy3w4+eijM+MedJQhbbTgA2Qcm4YAr72MI7toX6WtYMRfVvY6/INp4tkhG1gVGFRHjjDr2+rV9uzNKbgDy7J6DRWEWAks1LIssYmXsHZuui7lHmLjPLy7J4mYGTh+Bo8H6SMHhnaHuq5CCPBjzC8Ewbo0EbUi60kMh01d00PVvbUdkl2JtRJ9+KZH8lc9VQSDMX5iiezA3ewmovcm3w+sCyDTXeVmaCc3YlZYXTeC/TCCfHTsVqSZNyjZ48iZu5H2mf1zUfQa2yEFVEydy05SFpEBh3ND2IJoputFLQsV1JTJL0vqNxMvOM9COSr0mIjWx3M3ufULw8zcy3vJEJEUviJYG8rjVtW/NE59SmNZpLsMJPWdcouUqaAPNU+m9YmE3vFABa6XruoL++UxDlOHjtonW7BacKTdcGprejWujOQG6pD4TgnJpYtWdREPYlLvtkcQRF6GGCH8Nr28+D17bx/F/BWtlAxWP07ULxFXmS6WK8B3hlb5lbtGQfLRxW+XFjhh63A7OUrZ7WNQkvCma3cPfAA7OKO3TFrAIv2raeFvRtN8Drsf4OfqI7aAe8fmepMS9sfANHxg33NRQe2N78bSvRK1WeGgF5RmESeNexuiWibdMrVxhewYwMZvMLaOTZiLBDUyUCgLjB1cIkJPDT3AtwgCJL/6UWjIEnK2LgFv5dg8nAI+BH1XO3SqSgQu7lbhXRQeDlJvYAkXQABeIFUKstP7a4DBkJMW0Di50CWKyEygZtsSq0hBNJlKSletYilHT5p+x6tG3F6vkb7laBcpud92f8kLvVosStFYsJVJRWSi49GQcwninsAdIu7YivgzmKtm35sHdup0N7cGcCq7sRqEA5CGaBt1GSXpEGnCuSJQ/E2tuJXqNUROHr374ghfxAC4QJ3y+A2xdPF3glZV6YRY/25FhLVCFi9DGzSsuNUegSlYPF/AiFt+bUMYoYrM9Wkw3BxK1QROaIAoyT6iF+RIQm1UxwEgHA6LRAy6MKYZjLyl3cGkO8au5QDWf4rRavu1ShnZrWyEigD+Jjgg6sKYbn9tWotMEvZFNiHJrqe3pzRoRags1CaESwlWV/KtbKIr7slHej8xLCLTFCIrLJeNkUUiaiyYtWfmhAR2tGyu+zg+CotGR0pBQJejpB5qW6JXImWaubYoCotQK4pBKmAOP6dgqbld40PB4R9l0IhYDJEHhEtKarsOXoLkfckpqa1fr88E7onpl5g2c5ibjtuSJ76ihPTImLxCjDsGiVTzbWMzpqbBpk2/EcmyXFevEQrfjjaQyMgmGFuqnZAzAPGcPSmaQ+VvMhnKOXyS169UQN4dqrCt7OF/mTjuHj/f/7S+ZxBH2/xj1ZuH8Pn1z8/d9+L72EY0848Nne8Ve/owfDP4j1Eh7n/IuwHUuAWBygORj70ECLB1l0D2hpm6ynUiAVmTlcMwJmp5DCHx3ss4WFGLIPKQhiow1HJ0C/FMk/kEJmLdidmFdaRO5M8Ze0jKFU0dRNg8XrWAmn6wNP03fEVReAWga/TVDx7i0thbwWh/9BmZSLGrYsx6FlYxIJlu3qtDwvKpwQjFe0PsSDRmE37mMmS1KFCuNMKQ0Sm5/I61aSXMqgsDeVsOgETv4TnVZiqLXMWMLvV/iSeWQ6kkxkfIV0bFcLChyjM1kcCb4O+5JByGyajL/HJZop0yxo9ZyHd3MRs6F/ab62mFt7H3EGoUVURj8HLtXJCJNVYW1HjxaEFUTgV2SU/rGY+9a2gvWa4okhe5x7lj45+Rpt0Di3Y/F7XDxs+Py30pOtVKzMVxhVjwlRyj92fK4VOznIzcSyzzeK1AogN/EdVmywWK6IloruZ5weSmaK1dAaLDrGE8WEZcK8K2qgFiq6shHd4gKH9SUMF3ZnFa8omQNG9JtVQsupovphg+XCybiZL7BKMrs0ImiOpk5HzTk7mAqbc1Dz4ubTMjknvn7pMfZz4+wfHGu/cLz9Q2LuU8fdp4y9s/F3Qpbz+BKH4LFc58AlI/B8Gc9De8FAnAfjHUkYdxNL2GPfs5PzDn5eko7d88xXfvAuIF8oeh+hOacO36NJnxO/vwpv81ZRvHVnP+BQEZUAsQ8aF034Qwz4tvHGhzH73ox+7eECRstz+NKfn02K93rrALiBrFQyCi9OP3zTNvVAxYBbpT8WoK7vqFQq0A465tYLuw/PTLuc0Q97GHg6do6NIHRmbaDAyAn68AoAQlRWCdP33MDVXZu9ZKZHxO7ATz8YSh0tJALGUUouwPDYXYayjARQIjqU3lKnpowjQPZEeHNKzXnelELKibsZJcnHXhj+JfBY+JgF7EwmwHLj9zw8DsiRMXZ0baDatXJlIPngqhglHxynlTz7oo+wsVoFxV8VG0jrN8EAaJ7luzxKBSwdwttWImAVclIsEZDjEuGTgBm0ug5ecbAAlBVi0pN5EYtCTLBUW26sNPOD3MSFFCNDhLpSCw94U2Olw962o2GpIY2ZdpMyknseQ87kpxkKT82Ke22HRfm0tH2kdheSlKJd5NUGnuHTOyFOV+wJ/CpvArIvgFPP5U3OVNEz3AhpxIsNTvePfbNxigRcOAoYplqt4kgsN4SR6XfuheidUpXErGrJbBuRdctCkTxEEOwTMatIeXCaVlL2kwfCNNnOz7VHpdpruQl77hiJtDx6ZiqzCTeOFtbxHaJV52zFcW1fxwJR5kU4yfK+WCaqfIBX5HJ/WiQzG1pwcWmVDL/fD/fxp2cI+3EIgk/9ROUJ940QN2Ji1cayXfok6YSXMH7gdbAFGPHGr97ovWGsvvHOGwtvrLzHfSLusXjckno2gYkEfeeSLebkP1yxSwnYY28LgTxHtweGGb89P/H5eykHJidNzwMbaejygEdrPoc+dUkOh39OqJELJd5jAgX40xknDRhHgyrbnhNgBU8Hfoqp6XKJNbS+sMlcdJT3rD4+hC1IAoDasUXfCgBTPdPH19HVCL6xpM7W5+ZrkIjSR0uap29Ym6Z0cCjeq3MpSJbnpG+9ODozuAU2PX9khCK2CUbYLYhtLOII0Z5a7FWwwn8PgWCczVromy027etk+PUB1qx+9BnBt194DDLc/0P4+RNUKPoa5u6nR49uRpft8VtWsR7b7eJc4kcY6BPj9tgZ9tRLznvRXeARits98YkUeAVMOfwqrRO22cPXVnmSvZGQ7nhl1mBxc4f9IsQ4PpECfTZ7eyouSQm2abaJ02G6sY22wc/8kEV7TOVd+JMS/OOpflIC8jeUARoCiNGxpiqSGIU9+LbxEDTI/kTHSLOBUrSyKqyG9G51KimPEQHFk6DY9FIVdmw4K6yIOwKWgNgbZ4ZLwaJhQNZG/UqPkPZRv5OC0u1zGPyo4I874hvWAu6jTIhwNK8RdAcJjwHN8csQ10MPcXHpEnU7Y3Q2DkTAUribpoNuk/oV4bjGrpoeZp99U49AuUunrxlwxKWdYAOC1LPcm4G17Q60Lu3q0y7eIeBZ49nIOUYYEKx23GiaJDhfISKMOevsQSb0TsvfsRiILvLca3uv/T8EChhV'''
+          data = zlib.decompress(base64.b64decode(payload))
+          path = Path('notebooks/lvlm_evidence_ablation_smoke_colab.ipynb')
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_bytes(data)
+          print(path, len(data))
+          PY
+
+      - name: Install targeted test dependencies
+        run: |
+          python -m pip install -q pytest numpy pillow
+          python -m pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchvision
+
+      - name: Verify notebook and utilities
+        run: |
+          python -m pytest -q tests/test_evidence_ablation.py tests/test_reconpatch_lite.py tests/test_evidence_ablation_colab.py
+          python -m py_compile src/insplad_benchmark/evidence_ablation.py src/insplad_benchmark/reconpatch_lite.py scripts/build_evidence_ablation.py scripts/run_reconpatch_lite_smoke.py scripts/run_hf_evidence_ablation.py
+          python - <<'PY'
+          import sys, tempfile
+          from pathlib import Path
+          from PIL import Image
+          sys.path.insert(0, 'src')
+          from insplad_benchmark.reconpatch_lite import WideResNetPatchExtractor, ReConPatchLiteConfig, ReConPatchLiteProjector, random_memory, nearest_memory_map
+          with tempfile.TemporaryDirectory() as d:
+              d=Path(d); paths=[]
+              for i in range(2):
+                  p=d/f'{i}.png'; Image.new('RGB',(64,64),(30+i*20,40,50)).save(p); paths.append(p)
+              ext=WideResNetPatchExtractor(device='cpu', pretrained=False, image_size=64)
+              patches,h,w=ext.extract_batch(paths)
+              cfg=ReConPatchLiteConfig(embedding_dim=16, projection_dim=8, train_steps=2, batch_size=32, max_train_patches=64, memory_ratio=0.5)
+              proj=ReConPatchLiteProjector(patches.shape[-1], cfg, device='cpu')
+              flat=patches.reshape(-1,patches.shape[-1])[:64]
+              proj.fit(flat)
+              mem=random_memory(proj.transform(flat),0.5,42)
+              q=proj.transform(patches[0])
+              amap=nearest_memory_map(q,mem,h,w)
+              assert amap.shape==(h,w)
+              print('RECONPATCH_LITE_RUNTIME_OK', patches.shape, amap.shape)
+          PY
+
+      - name: Commit verified notebook
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notebooks/lvlm_evidence_ablation_smoke_colab.ipynb
+          git commit -m "feat: add evidence ablation Colab notebook"
+          git push origin HEAD:feat/evidence-ablation-smoke
