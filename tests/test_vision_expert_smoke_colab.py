@@ -21,6 +21,7 @@ def test_vision_expert_smoke_notebook_compiles_and_locks_screening_scope() -> No
 
     for expected in (
         "SMOKE_SIZE = 50",
+        "SRC_DIR = str(REPO_DIR / 'src')",
         "REPO_REF = 'main'",
         "predictions = engine = model = datamodule = None",
         "text_features = prompt_learner = model = None",
