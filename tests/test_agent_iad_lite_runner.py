@@ -142,6 +142,8 @@ def test_agent_runner_end_to_end_with_fake_adapter(tmp_path, monkeypatch):
             str(artifact_root),
             "--out-dir",
             str(out),
+            "--image-cache",
+            str(tmp_path / "image_cache"),
             "--checkpoint-every",
             "1",
             "--retry-attempts",
