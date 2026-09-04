@@ -24,6 +24,8 @@ from insplad_benchmark.agent_iad_lite import (
 )
 from insplad_benchmark.hf_adapters import infer_hf, load_hf_adapter
 
+PROMPT_SCHEMA_VERSION = 1
+
 MODEL_SPEC = {
     "backend": "hf",
     "provider": "huggingface",
@@ -138,12 +140,36 @@ def call(adapter, images, prompt):
     return output, error, round(time.perf_counter() - started, 6)
 
 
-def reuse_stage(existing: Mapping[str, object] | None, stage: str) -> bool:
-    return bool(
-        existing
-        and not existing.get(f"{stage}_error")
-        and str(existing.get(f"{stage}_output", "")).strip()
+def call_decision(adapter, images, prompt, allowed_tools, attempts: int):
+    total_latency = 0.0
+    last_output = ""
+    last_error = ""
+    for attempt in range(1, attempts + 1):
+        prompt_text = prompt
+        if attempt > 1:
+            prompt_text += " Previous output was invalid. Output only the exact JSON object now."
+        output, error, latency = call(adapter, images, prompt_text)
+        total_latency += latency
+        last_output, last_error = output, error
+        decision = parse_agent_decision(output, allowed_tools)
+        if not error and decision.valid:
+            return output, "", round(total_latency, 6), decision, attempt
+    return (
+        last_output,
+        last_error or "invalid_structured_output",
+        round(total_latency, 6),
+        parse_agent_decision(last_output, allowed_tools),
+        attempts,
     )
+
+
+def reuse_stage(existing: Mapping[str, object] | None, stage: str, allowed_tools) -> bool:
+    if not existing or existing.get("prompt_schema_version") != PROMPT_SCHEMA_VERSION:
+        return False
+    if existing.get(f"{stage}_error"):
+        return False
+    output = str(existing.get(f"{stage}_output", "")).strip()
+    return bool(output and parse_agent_decision(output, allowed_tools).valid)
 
 
 def main() -> int:
@@ -160,9 +186,12 @@ def main() -> int:
     p.add_argument("--conflict-low", type=float, default=10.0)
     p.add_argument("--conflict-high", type=float, default=90.0)
     p.add_argument("--checkpoint-every", type=int, default=1)
+    p.add_argument("--retry-attempts", type=int, default=2)
     args = p.parse_args()
     if not 0 <= args.min_confidence <= 1:
         p.error("min-confidence must be in [0,1]")
+    if args.retry_attempts <= 0:
+        p.error("retry-attempts must be positive")
 
     qa = read_jsonl(args.qa)
     queries = workspace_queries(args.workspace_root)
@@ -204,16 +233,23 @@ def main() -> int:
                 "query_image": gt["image"],
                 "reference_image": gt["reference_image"],
                 "patchcore_percentile_smoke": pctl,
+                "prompt_schema_version": PROMPT_SCHEMA_VERSION,
             }
 
-            # Stage Q: query-only. Used by efficiency-first agent.
-            if reuse_stage(existing, "query"):
+            if reuse_stage(existing, "query", {"none", "reference"}):
                 qo = existing["query_output"]
                 qe = existing.get("query_error", "")
                 ql = existing.get("query_latency_seconds", 0.0)
+                qd = parse_agent_decision(qo, {"none", "reference"})
+                q_attempts = int(existing.get("query_attempts", 1))
             else:
-                qo, qe, ql = call(adapter, [query_path], query_prompt())
-            qd = parse_agent_decision(qo, {"none", "reference"})
+                qo, qe, ql, qd, q_attempts = call_decision(
+                    adapter,
+                    [query_path],
+                    query_prompt(),
+                    {"none", "reference"},
+                    args.retry_attempts,
+                )
             route_q, reasons_q = should_route(
                 qd,
                 expected_tool="reference",
@@ -230,20 +266,26 @@ def main() -> int:
                     "query_prediction": qd.anomaly or "<invalid>",
                     "query_confidence": qd.confidence,
                     "query_request_tool": qd.request_tool,
+                    "query_attempts": q_attempts,
                     "query_route": route_q,
                     "query_route_reasons": ";".join(reasons_q),
                 }
             )
 
-            # Stage R: reference comparison. Precomputed for paired comparison and
-            # is also the first stage of the accuracy-first agent.
-            if reuse_stage(existing, "reference"):
+            if reuse_stage(existing, "reference", {"none", "zoom"}):
                 ro = existing["reference_output"]
                 re_ = existing.get("reference_error", "")
                 rl = existing.get("reference_latency_seconds", 0.0)
+                rd = parse_agent_decision(ro, {"none", "zoom"})
+                r_attempts = int(existing.get("reference_attempts", 1))
             else:
-                ro, re_, rl = call(adapter, [ref_path, query_path], reference_prompt())
-            rd = parse_agent_decision(ro, {"none", "zoom"})
+                ro, re_, rl, rd, r_attempts = call_decision(
+                    adapter,
+                    [ref_path, query_path],
+                    reference_prompt(),
+                    {"none", "zoom"},
+                    args.retry_attempts,
+                )
             route_r, reasons_r = should_route(
                 rd,
                 expected_tool="zoom",
@@ -260,24 +302,32 @@ def main() -> int:
                     "reference_prediction": rd.anomaly or "<invalid>",
                     "reference_confidence": rd.confidence,
                     "reference_request_tool": rd.request_tool,
+                    "reference_attempts": r_attempts,
                     "reference_route": route_r,
                     "reference_route_reasons": ";".join(reasons_r),
                 }
             )
 
-            # Zoom is required whenever the reference-first policy routes.
             need_zoom = route_r
             zo = ze = ""
             zl = 0.0
             zd = None
+            z_attempts = 0
             if need_zoom:
-                if reuse_stage(existing, "zoom"):
+                if reuse_stage(existing, "zoom", {"none"}):
                     zo = existing["zoom_output"]
                     ze = existing.get("zoom_error", "")
                     zl = existing.get("zoom_latency_seconds", 0.0)
+                    zd = parse_agent_decision(zo, {"none"})
+                    z_attempts = int(existing.get("zoom_attempts", 1))
                 else:
-                    zo, ze, zl = call(adapter, [ref_path, query_path, roi_path], zoom_prompt())
-                zd = parse_agent_decision(zo, {"none"})
+                    zo, ze, zl, zd, z_attempts = call_decision(
+                        adapter,
+                        [ref_path, query_path, roi_path],
+                        zoom_prompt(),
+                        {"none"},
+                        args.retry_attempts,
+                    )
             row.update(
                 {
                     "zoom_output": zo,
@@ -285,15 +335,14 @@ def main() -> int:
                     "zoom_latency_seconds": zl,
                     "zoom_prediction": zd.anomaly if zd and zd.anomaly else "",
                     "zoom_confidence": zd.confidence if zd else None,
+                    "zoom_attempts": z_attempts,
                 }
             )
 
-            # Same-run fixed reference prompt control.
             row["fixed_prompt_prediction"] = (
                 rd.anomaly if rd.valid and rd.anomaly else "<invalid>"
             )
 
-            # Agent A: reference-first accuracy-oriented.
             if route_r:
                 final_a = zd.anomaly if zd and zd.valid and zd.anomaly else rd.anomaly
                 calls_a = 2
@@ -312,9 +361,6 @@ def main() -> int:
                 }
             )
 
-            # Agent B: query-first efficiency-oriented. Reference/zoom outputs may
-            # have been precomputed above, but counts/latency include only stages
-            # this policy would invoke.
             if not route_q:
                 final_b = qd.anomaly
                 calls_b = 1
@@ -412,6 +458,7 @@ def main() -> int:
             "min_confidence": args.min_confidence,
             "conflict_low": args.conflict_low,
             "conflict_high": args.conflict_high,
+            "retry_attempts": args.retry_attempts,
             "patchcore_score_source": (
                 "fixed-smoke unlabeled percentile screening only; replace with "
                 "train-normal calibration before holdout"
