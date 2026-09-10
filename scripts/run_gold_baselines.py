@@ -7,50 +7,42 @@ import hashlib
 import json
 import os
 import re
+import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 MODEL_REGISTRY = {
     "qwen3_5_4b": {
-        "backend": "hf",
-        "provider": "huggingface",
+        "backend": "hf", "provider": "huggingface",
         "model_id": "Qwen/Qwen3.5-4B",
-        "trust_remote_code": False,
-        "adapter": "pipeline",
+        "trust_remote_code": False, "adapter": "pipeline",
         "role": "qwen_family",
     },
     "internvl3_5_8b": {
-        "backend": "hf",
-        "provider": "huggingface",
+        "backend": "hf", "provider": "huggingface",
         "model_id": "OpenGVLab/InternVL3_5-8B",
-        "trust_remote_code": True,
-        "adapter": "internvl_chat",
-        "max_total_tiles": 6,
-        "role": "internvl_family",
+        "trust_remote_code": True, "adapter": "internvl_chat",
+        "max_total_tiles": 6, "role": "internvl_family",
     },
     "minicpm_v_4_5": {
-        "backend": "hf",
-        "provider": "huggingface",
+        "backend": "hf", "provider": "huggingface",
         "model_id": "openbmb/MiniCPM-V-4_5",
-        "trust_remote_code": True,
-        "adapter": "minicpm_chat",
+        "trust_remote_code": True, "adapter": "minicpm_chat",
         "role": "minicpm_family",
     },
     "llava_onevision_7b": {
-        "backend": "hf",
-        "provider": "huggingface",
+        "backend": "hf", "provider": "huggingface",
         "model_id": "llava-hf/llava-onevision-qwen2-7b-ov-hf",
-        "trust_remote_code": False,
-        "adapter": "llava_processor",
+        "trust_remote_code": False, "adapter": "llava_processor",
         "role": "llava_family",
     },
     "luxia": {
-        "backend": "luxia",
-        "provider": "luxia",
+        "backend": "luxia", "provider": "luxia",
         "model_id": "document-ai + luxia3-llm-32b-0731",
         "role": "luxia_api_pipeline",
     },
@@ -101,7 +93,11 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 
 def qa_identity(rows: list[dict]) -> str:
     payload = json.dumps(
-        rows, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+        rows,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
@@ -335,9 +331,7 @@ def _safe_div(a: float, b: float) -> float:
     return a / b if b else 0.0
 
 
-def binary_f1(
-    gold: list[str], pred: list[str | None], positive: str
-) -> tuple[float, float, float]:
+def binary_f1(gold: list[str], pred: list[str | None], positive: str) -> tuple[float, float, float]:
     tp = sum(g == positive and p == positive for g, p in zip(gold, pred))
     fp = sum(g != positive and p == positive for g, p in zip(gold, pred))
     fn = sum(g == positive and p != positive for g, p in zip(gold, pred))
@@ -373,9 +367,7 @@ def predicted_semantic(row: dict, choice: str | None) -> str | None:
     return None
 
 
-def evaluate_model(
-    model_key: str, rows: list[dict], pred_path: Path
-) -> tuple[dict, list[dict]]:
+def evaluate_model(model_key: str, rows: list[dict], pred_path: Path) -> tuple[dict, list[dict]]:
     predictions = read_jsonl(pred_path)
     by_id = {str(r["id"]): r for r in predictions}
     if len(by_id) != len(rows):
