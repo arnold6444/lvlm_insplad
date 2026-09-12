@@ -66,6 +66,9 @@ def main() -> int:
     for r in rows:
         by_core.setdefault(r['core_id'], r)
     images=[{
+        # build_vision_expert_smoke_data.py requires a stable, unique `id` field.
+        # Use core_id so ROI manifests can be joined back to all Q1/Q2/Q3 rows.
+        'id': r['core_id'],
         'core_id': r['core_id'], 'asset_category': r['asset_category'],
         'image': r['unsupervised_image'], 'supervised_image': r['image'],
         'reference_image': r['normal_reference_image'],
