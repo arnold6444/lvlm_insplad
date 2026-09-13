@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 
 APPROVE = {'approve', 'approved', 'keep', 'pass', 'ok'}
@@ -136,8 +137,7 @@ def main() -> int:
     (args.out_dir / 'build_summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
-    # Best-effort publication to MyDrive root so ChatGPT can reliably find the
-    # newest benchmark metadata without depending on recursive Drive indexing.
+    # Best-effort publication to MyDrive root for local/Drive discoverability.
     try:
         from publish_latest_results import publish
         published = publish(
@@ -145,9 +145,28 @@ def main() -> int:
             'lvlm_gold_v2_final',
             ('build_summary.json', 'master_counts.csv', 'manual_review_final.csv'),
         )
-        print(json.dumps({'chatgpt_publish': published}, ensure_ascii=False, indent=2))
+        print(json.dumps({'drive_publish': published}, ensure_ascii=False, indent=2))
     except Exception as exc:
-        print(f'[chatgpt-publish skipped] {type(exc).__name__}: {exc}')
+        print(f'[drive-publish skipped] {type(exc).__name__}: {exc}')
+
+    # Best-effort publication of small summaries to GitHub so ChatGPT can read
+    # results immediately without waiting for Google Drive indexing.
+    if os.environ.get('GITHUB_TOKEN', '').strip():
+        try:
+            from publish_results_to_github import publish as publish_github
+            published = publish_github(
+                args.out_dir,
+                repo='arnold6444/lvlm_insplad',
+                branch='main',
+                prefix='gold_v2_final',
+                token=os.environ['GITHUB_TOKEN'],
+                filenames=('build_summary.json', 'master_counts.csv', 'manual_review_final.csv'),
+            )
+            print(json.dumps({'github_publish': published}, ensure_ascii=False, indent=2))
+        except Exception as exc:
+            print(f'[github-publish skipped] {type(exc).__name__}: {exc}')
+    else:
+        print('[github-publish skipped] GITHUB_TOKEN is not set in environment')
     return 0
 
 
