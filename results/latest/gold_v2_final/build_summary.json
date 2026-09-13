@@ -1,0 +1,11 @@
+{
+  "candidate_count": 246,
+  "approved_count": 246,
+  "excluded_count": 0,
+  "final_master_images": 246,
+  "final_q1_q2_questions": 492,
+  "final_localization_images": 42,
+  "final_localization_questions": 126,
+  "sampling_policy": "all anomalies + median-capped DINOv2-diverse normals, followed by complete manual quality review",
+  "quality_status": "FROZEN"
+}
