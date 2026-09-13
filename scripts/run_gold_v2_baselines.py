@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 from collections import Counter
 from pathlib import Path
 
@@ -48,6 +49,30 @@ def load_gold_qa_v2(qa_dir: Path) -> list[dict]:
 base.load_gold_qa = load_gold_qa_v2
 
 
+def publish_core_results(out_dir: Path) -> None:
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if not token:
+        print("[github-publish skipped] GITHUB_TOKEN is missing")
+        return
+    try:
+        publish_path = ROOT / "scripts" / "publish_results_to_github.py"
+        spec = importlib.util.spec_from_file_location("publish_results_to_github", publish_path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        result = module.publish(
+            out_dir,
+            repo="arnold6444/lvlm_insplad",
+            branch="main",
+            prefix="gold_v2_baseline",
+            token=token,
+            filenames=("leaderboard.csv", "metrics_by_asset.csv", "run_status.json", "run_metadata.json"),
+        )
+        print(json.dumps({"github_publish": result}, ensure_ascii=False, indent=2))
+    except Exception as exc:
+        print(f"[github-publish skipped] {type(exc).__name__}: {exc}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--qa-dir", type=Path, required=True)
@@ -73,6 +98,7 @@ def main() -> int:
         }
     )
     metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    publish_core_results(known.out_dir)
     return 0
 
 
