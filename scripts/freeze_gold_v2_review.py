@@ -135,6 +135,19 @@ def main() -> int:
     }
     (args.out_dir / 'build_summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+
+    # Best-effort publication to MyDrive root so ChatGPT can reliably find the
+    # newest benchmark metadata without depending on recursive Drive indexing.
+    try:
+        from publish_latest_results import publish
+        published = publish(
+            args.out_dir,
+            'lvlm_gold_v2_final',
+            ('build_summary.json', 'master_counts.csv', 'manual_review_final.csv'),
+        )
+        print(json.dumps({'chatgpt_publish': published}, ensure_ascii=False, indent=2))
+    except Exception as exc:
+        print(f'[chatgpt-publish skipped] {type(exc).__name__}: {exc}')
     return 0
 
 
