@@ -1,0 +1,42 @@
+[
+  {
+    "model_key": "qwen3_5_4b",
+    "called_this_run": 0,
+    "reused_predictions": 534,
+    "row_errors": 0,
+    "called_latency_s": 0.0,
+    "status": "completed"
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "called_this_run": 0,
+    "reused_predictions": 534,
+    "row_errors": 0,
+    "called_latency_s": 0.0,
+    "status": "completed"
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "called_this_run": 0,
+    "reused_predictions": 534,
+    "row_errors": 0,
+    "called_latency_s": 0.0,
+    "status": "completed"
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "called_this_run": 0,
+    "reused_predictions": 534,
+    "row_errors": 0,
+    "called_latency_s": 0.0,
+    "status": "completed"
+  },
+  {
+    "model_key": "luxia",
+    "called_this_run": 529,
+    "reused_predictions": 5,
+    "row_errors": 25,
+    "called_latency_s": 3426.29,
+    "status": "completed"
+  }
+]
