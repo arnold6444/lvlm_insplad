@@ -1,0 +1,59 @@
+{
+  "qa_dir": "/content/drive/MyDrive/lvlm_insplad_qa/gold_v2_final",
+  "qa_count": 534,
+  "qa_identity_sha256": "cc3d5aef45da6d9903546dbfa4174a45b82af1738a257be64b3481ca576daba3",
+  "master_q1_q2_count": 492,
+  "q3_count": 42,
+  "models_requested": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b",
+    "luxia"
+  ],
+  "model_registry": {
+    "qwen3_5_4b": {
+      "backend": "hf",
+      "provider": "huggingface",
+      "model_id": "Qwen/Qwen3.5-4B",
+      "trust_remote_code": false,
+      "adapter": "pipeline",
+      "role": "qwen_family"
+    },
+    "internvl3_5_8b": {
+      "backend": "hf",
+      "provider": "huggingface",
+      "model_id": "OpenGVLab/InternVL3_5-8B",
+      "trust_remote_code": true,
+      "adapter": "internvl_chat",
+      "max_total_tiles": 6,
+      "role": "internvl_family"
+    },
+    "minicpm_v_4_5": {
+      "backend": "hf",
+      "provider": "huggingface",
+      "model_id": "openbmb/MiniCPM-V-4_5",
+      "trust_remote_code": true,
+      "adapter": "minicpm_chat",
+      "role": "minicpm_family"
+    },
+    "llava_onevision_7b": {
+      "backend": "hf",
+      "provider": "huggingface",
+      "model_id": "llava-hf/llava-onevision-qwen2-7b-ov-hf",
+      "trust_remote_code": false,
+      "adapter": "llava_processor",
+      "role": "llava_family"
+    },
+    "luxia": {
+      "backend": "luxia",
+      "provider": "luxia",
+      "model_id": "document-ai + luxia3-llm-32b-0731",
+      "role": "luxia_api_pipeline"
+    }
+  },
+  "condition": "image_only_final_gold_v2",
+  "q1_count": 246,
+  "q2_count": 246,
+  "benchmark_version": "gold_v2_final"
+}
