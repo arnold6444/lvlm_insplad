@@ -1,0 +1,39 @@
+{
+  "benchmark_version": "gold_v2_final",
+  "qa_dir": "/content/drive/MyDrive/lvlm_insplad_qa/gold_v2_final",
+  "qa_identity_sha256": "cc3d5aef45da6d9903546dbfa4174a45b82af1738a257be64b3481ca576daba3",
+  "reference_manifest_sha256": "f370c7830be51d30f95388a7d99d2633a70a182d8c5ca0d5874b7da013a0bdad",
+  "reference_core_count": 246,
+  "q1_count": 246,
+  "q2_count": 246,
+  "q3_count": 42,
+  "conditions": [
+    "normal_reference",
+    "positive_reference",
+    "normal_positive_reference"
+  ],
+  "models_requested": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b"
+  ],
+  "positive_reference_policy": "same-asset supervised-train anomalous bank, DINOv2 nearest neighbor; target GT unused",
+  "normal_reference_policy": "existing fixed verified normal reference stored in gold_v2 QA",
+  "image_order": {
+    "normal_reference": [
+      "normal_reference",
+      "target"
+    ],
+    "positive_reference": [
+      "positive_reference",
+      "target"
+    ],
+    "normal_positive_reference": [
+      "normal_reference",
+      "positive_reference",
+      "target"
+    ]
+  },
+  "q3_scope_note": "Q3 is evaluated only on the 42 available localization questions."
+}
