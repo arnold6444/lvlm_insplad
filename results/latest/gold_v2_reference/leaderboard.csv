@@ -1,0 +1,13 @@
+model_key,model_id,backend,questions,valid_output_rate,overall_accuracy,anomaly_accuracy,anomaly_precision,anomaly_recall,anomaly_f1,defect_accuracy,defect_macro_f1,localization_questions,localization_accuracy,condition
+qwen3_5_4b,Qwen/Qwen3.5-4B,hf,534,1.0,0.653558,0.654472,0.648352,0.848921,0.735202,0.674797,0.594679,42,0.52381,normal_reference
+internvl3_5_8b,OpenGVLab/InternVL3_5-8B,hf,534,1.0,0.623596,0.760163,0.77027,0.820144,0.794425,0.53252,0.4676,42,0.357143,normal_reference
+minicpm_v_4_5,openbmb/MiniCPM-V-4_5,hf,534,1.0,0.565543,0.638211,0.613636,0.971223,0.752089,0.528455,0.468544,42,0.357143,normal_reference
+llava_onevision_7b,llava-hf/llava-onevision-qwen2-7b-ov-hf,hf,534,1.0,0.631086,0.654472,0.635,0.913669,0.749263,0.626016,0.445776,42,0.52381,normal_reference
+qwen3_5_4b,Qwen/Qwen3.5-4B,hf,534,1.0,0.509363,0.536585,0.587413,0.604317,0.595745,0.48374,0.411699,42,0.5,positive_reference
+internvl3_5_8b,OpenGVLab/InternVL3_5-8B,hf,534,1.0,0.468165,0.422764,0.0,0.0,0.0,0.504065,0.364664,42,0.52381,positive_reference
+minicpm_v_4_5,openbmb/MiniCPM-V-4_5,hf,534,1.0,0.483146,0.422764,0.0,0.0,0.0,0.536585,0.331683,42,0.52381,positive_reference
+llava_onevision_7b,llava-hf/llava-onevision-qwen2-7b-ov-hf,hf,534,1.0,0.440075,0.426829,0.0,0.0,0.0,0.439024,0.172822,42,0.52381,positive_reference
+qwen3_5_4b,Qwen/Qwen3.5-4B,hf,534,1.0,0.554307,0.569106,0.610738,0.654676,0.631944,0.544715,0.522268,42,0.52381,normal_positive_reference
+internvl3_5_8b,OpenGVLab/InternVL3_5-8B,hf,534,1.0,0.649813,0.735772,0.849057,0.647482,0.734694,0.609756,0.490039,42,0.380952,normal_positive_reference
+minicpm_v_4_5,openbmb/MiniCPM-V-4_5,hf,534,1.0,0.582397,0.621951,0.701754,0.57554,0.632411,0.581301,0.499975,42,0.357143,normal_positive_reference
+llava_onevision_7b,llava-hf/llava-onevision-qwen2-7b-ov-hf,hf,534,1.0,0.552434,0.54065,0.566327,0.798561,0.662687,0.569106,0.429023,42,0.52381,normal_positive_reference
