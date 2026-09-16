@@ -1,0 +1,11 @@
+{
+  "benchmark": "gold_v2_final",
+  "target_count": 246,
+  "positive_bank_count": 2670,
+  "positive_bank_source": "supervised_fault_classification train split only",
+  "retrieval_model": "facebook/dinov2-small",
+  "retrieval_policy": "same-asset nearest anomalous train image by DINOv2 cosine similarity",
+  "target_gt_used_for_selection": false,
+  "exact_content_duplicates_excluded": true,
+  "reference_target_split_disjoint": true
+}
