@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-09-16T05:52:09.524476+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_reference_v2",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_reference",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_reference/leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/leaderboard.csv",
+      "commit_sha": "2bd625a03370b2202030934a003d491b17b22406",
+      "size_bytes": 1932,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "remote_path": "results/latest/gold_v2_reference/metrics_by_asset.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/metrics_by_asset.csv",
+      "commit_sha": "9a14875136afaea8b8867201866947787c4d2ec9",
+      "size_bytes": 5479,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "ablation_comparison.csv",
+      "remote_path": "results/latest/gold_v2_reference/ablation_comparison.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/ablation_comparison.csv",
+      "commit_sha": "b09822014f69d61d89860d1dfd48d271dcdc46d0",
+      "size_bytes": 2626,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "ablation_vs_baseline.csv",
+      "remote_path": "results/latest/gold_v2_reference/ablation_vs_baseline.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/ablation_vs_baseline.csv",
+      "commit_sha": "af8ae3563996a76b01f155cea57d6f0085261176",
+      "size_bytes": 2025,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "reference_manifest.csv",
+      "remote_path": "results/latest/gold_v2_reference/reference_manifest.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/reference_manifest.csv",
+      "commit_sha": "6fa4db1ec833654a94f57ec5fd74c756fdd0b6ea",
+      "size_bytes": 79174,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "positive_reference_summary.csv",
+      "remote_path": "results/latest/gold_v2_reference/positive_reference_summary.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/positive_reference_summary.csv",
+      "commit_sha": "d8836ff287d285c54a147d5bd8a457c2abfcd1a1",
+      "size_bytes": 436,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "positive_reference_metadata.json",
+      "remote_path": "results/latest/gold_v2_reference/positive_reference_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/positive_reference_metadata.json",
+      "commit_sha": "a49cf1a594ffb5c4b909d5b1b4450b61d5c70ba9",
+      "size_bytes": 436,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_status.json",
+      "remote_path": "results/latest/gold_v2_reference/run_status.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/run_status.json",
+      "commit_sha": "49c10154ff48889660fcff292a330b1b368a72dd",
+      "size_bytes": 2663,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_reference/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference/run_metadata.json",
+      "commit_sha": "26f170a292a5af8420795bd66cc731affaa1d2e5",
+      "size_bytes": 1196,
+      "mime_type": "application/json"
+    }
+  ],
+  "missing": []
+}
