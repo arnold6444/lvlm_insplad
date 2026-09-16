@@ -1,0 +1,6 @@
+asset_category,target_count,positive_bank_count,positive_bank_defects,unique_positive_references_selected,mean_cosine_similarity,max_exact_duplicates_excluded_per_target
+glass-insulator,32,690,missing-cap,29,0.89617755,0
+lightning-rod-suspension,53,310,rust,34,0.77693067,0
+polymer-insulator-upper-shackle,32,740,corrosão,26,0.8457368,0
+vari-grip,76,640,bird-nest|rust,61,0.81577323,0
+yoke-suspension,53,290,rust,46,0.67499981,0
