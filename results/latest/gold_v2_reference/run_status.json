@@ -1,0 +1,110 @@
+[
+  {
+    "condition": "normal_reference",
+    "model_key": "qwen3_5_4b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 482.182,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_reference",
+    "model_key": "internvl3_5_8b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 392.372,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_reference",
+    "model_key": "minicpm_v_4_5",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 638.253,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_reference",
+    "model_key": "llava_onevision_7b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 2077.616,
+    "status": "completed"
+  },
+  {
+    "condition": "positive_reference",
+    "model_key": "qwen3_5_4b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 473.267,
+    "status": "completed"
+  },
+  {
+    "condition": "positive_reference",
+    "model_key": "internvl3_5_8b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 420.447,
+    "status": "completed"
+  },
+  {
+    "condition": "positive_reference",
+    "model_key": "minicpm_v_4_5",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 614.653,
+    "status": "completed"
+  },
+  {
+    "condition": "positive_reference",
+    "model_key": "llava_onevision_7b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 1939.706,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_positive_reference",
+    "model_key": "qwen3_5_4b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 642.904,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_positive_reference",
+    "model_key": "internvl3_5_8b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 551.881,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_positive_reference",
+    "model_key": "minicpm_v_4_5",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 931.714,
+    "status": "completed"
+  },
+  {
+    "condition": "normal_positive_reference",
+    "model_key": "llava_onevision_7b",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "called_latency_s": 3267.906,
+    "status": "completed"
+  }
+]
