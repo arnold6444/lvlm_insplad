@@ -1,0 +1,24 @@
+{
+  "winner_expert": "anomalyclip",
+  "winner_condition": "score",
+  "mean_f1": 0.5285832642916322,
+  "mean_balanced_accuracy": 0.5700000000000001,
+  "mean_accuracy": 0.5700000000000001,
+  "mean_invalid_output_rate": 0.0,
+  "selection_rule": "highest mean anomaly F1 across selected LVLMs; tie-break by mean balanced accuracy; then lower mean invalid-output rate",
+  "models": [
+    "qwen3_5_4b",
+    "internvl3_5_8b"
+  ],
+  "experts": [
+    "patchcore",
+    "dinomaly",
+    "anomalyclip",
+    "reconpatch_lite"
+  ],
+  "conditions": [
+    "score",
+    "bbox",
+    "heatmap"
+  ]
+}
