@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "published_at_utc": "2026-09-17T02:24:23.075204+00:00",
+  "published_at_utc": "2026-09-17T02:35:47.017045+00:00",
   "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_vision_expert_selection/eval",
   "repo": "arnold6444/lvlm_insplad",
   "branch": "main",
@@ -11,7 +11,7 @@
       "name": "leaderboard.csv",
       "remote_path": "results/latest/gold_v2_vision_expert_selection/leaderboard.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/leaderboard.csv",
-      "commit_sha": "4fd95a88a1c8ca7829adc91951ea8c7560a15f08",
+      "commit_sha": "3a667695f45f9960ae6db03930699531836240c7",
       "size_bytes": 4092,
       "mime_type": "text/csv"
     },
@@ -19,7 +19,7 @@
       "name": "anomaly_by_asset.csv",
       "remote_path": "results/latest/gold_v2_vision_expert_selection/anomaly_by_asset.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/anomaly_by_asset.csv",
-      "commit_sha": "c5e0440cb02b29096b246c849311270c8df5c9b1",
+      "commit_sha": "9fb7355e177ec1c92de6ee27074ec6589f842e82",
       "size_bytes": 14809,
       "mime_type": "text/csv"
     },
@@ -27,14 +27,34 @@
       "name": "run_status.json",
       "remote_path": "results/latest/gold_v2_vision_expert_selection/run_status.json",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/run_status.json",
-      "commit_sha": "8c1b6f2033e58bcb96cf005c8a1377c487850313",
+      "commit_sha": "9202ce3c5459a6d97762a69b2d2bb46517a227fc",
       "size_bytes": 3437,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "screening_summary.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_selection/screening_summary.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/screening_summary.csv",
+      "commit_sha": "ffa1301c71dab32aef47d0a2bf08326da60800dc",
+      "size_bytes": 797,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "winner.json",
+      "remote_path": "results/latest/gold_v2_vision_expert_selection/winner.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/winner.json",
+      "commit_sha": "6f6780e05b29fd0b568950bee3111b6b01e210bf",
+      "size_bytes": 580,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_vision_expert_selection/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_selection/run_metadata.json",
+      "commit_sha": "e1e11ecaa6b5fa0be115353f3c9fbd533d0eb259",
+      "size_bytes": 1098,
       "mime_type": "application/json"
     }
   ],
-  "missing": [
-    "screening_summary.csv",
-    "winner.json",
-    "run_metadata.json"
-  ]
+  "missing": []
 }
