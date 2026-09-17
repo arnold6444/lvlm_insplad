@@ -1,0 +1,170 @@
+[
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "bbox",
+    "status": "complete",
+    "error_rows": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "error_rows": 0
+  }
+]
