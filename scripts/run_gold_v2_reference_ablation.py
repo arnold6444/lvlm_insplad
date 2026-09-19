@@ -163,12 +163,22 @@ def run_model(
     positive_paths: dict[str, Path],
     out_dir: Path,
     checkpoint_every: int,
+    max_attempts_per_row: int = 0,
 ) -> dict:
     spec = base.MODEL_REGISTRY[model_key]
     pred_path = out_dir / condition / 'predictions' / f'{model_key}.jsonl'
     existing_rows = base.read_jsonl(pred_path) if pred_path.is_file() else []
-    existing = {str(row['id']): row for row in existing_rows if row.get('id')}
-    predictions: list[dict] = []
+    existing = {str(row['id']): dict(row) for row in existing_rows if row.get('id')}
+    predictions_by_id: dict[str, dict] = dict(existing)
+
+    def ordered_predictions() -> list[dict]:
+        # Always checkpoint the complete known state, not only the processed prefix.
+        # This preserves reusable tail rows if Colab stops mid-resume.
+        return [
+            predictions_by_id[str(row['id'])]
+            for row in rows
+            if str(row['id']) in predictions_by_id
+        ]
 
     adapter = None
     if spec['backend'] == 'hf':
@@ -179,14 +189,33 @@ def run_model(
     if spec['backend'] == 'luxia' and not api_key:
         raise RuntimeError('LUXIA_API_KEY is required for Luxia')
 
-    called = reused = errors = 0
+    called = reused = errors = exhausted = 0
     total_latency = 0.0
     try:
         for index, row in enumerate(rows, start=1):
-            old = existing.get(str(row['id']))
+            row_id = str(row['id'])
+            old = existing.get(row_id)
             if base.reusable_prediction(old):
-                predictions.append(old)
                 reused += 1
+                continue
+
+            prior_attempts = 0
+            if old is not None:
+                try:
+                    prior_attempts = int(old.get('attempt_count', 1))
+                except (TypeError, ValueError):
+                    prior_attempts = 1
+
+            if old is not None and bool(old.get('retry_exhausted')):
+                exhausted += 1
+                continue
+
+            if max_attempts_per_row > 0 and prior_attempts >= max_attempts_per_row:
+                frozen = dict(old or {})
+                frozen['retry_exhausted'] = True
+                frozen['attempt_count'] = prior_attempts
+                predictions_by_id[row_id] = frozen
+                exhausted += 1
                 continue
 
             prompt = prompt_for_condition(row, condition)
@@ -212,27 +241,33 @@ def run_model(
             valid_letters = {str(key).upper() for key in row['options']}
             choice = base.parse_choice(output, valid_letters)
             core = manifest_by_core[str(row['core_id'])]
-            predictions.append(
-                {
-                    'id': row['id'],
-                    'core_id': row['core_id'],
-                    'asset_category': row['asset_category'],
-                    'question_type': row['question_type'],
-                    'condition': condition,
-                    'output': output,
-                    'predicted_choice': choice,
-                    'latency_s': latency,
-                    'error': error,
-                    'normal_reference_image': core['normal_reference_image'],
-                    'positive_reference_image': core['positive_reference_image'],
-                }
+            attempt_count = prior_attempts + 1
+            retry_exhausted = bool(
+                error
+                and max_attempts_per_row > 0
+                and attempt_count >= max_attempts_per_row
             )
+            predictions_by_id[row_id] = {
+                'id': row['id'],
+                'core_id': row['core_id'],
+                'asset_category': row['asset_category'],
+                'question_type': row['question_type'],
+                'condition': condition,
+                'output': output,
+                'predicted_choice': choice,
+                'latency_s': latency,
+                'error': error,
+                'normal_reference_image': core['normal_reference_image'],
+                'positive_reference_image': core['positive_reference_image'],
+                'attempt_count': attempt_count,
+                'retry_exhausted': retry_exhausted,
+            }
             called += 1
             total_latency += latency
             if checkpoint_every > 0 and called % checkpoint_every == 0:
-                base.write_jsonl(pred_path, predictions)
+                base.write_jsonl(pred_path, ordered_predictions())
                 print(f'[{condition}/{model_key}] {index}/{len(rows)} checkpoint', flush=True)
-        base.write_jsonl(pred_path, predictions)
+        base.write_jsonl(pred_path, ordered_predictions())
     finally:
         if adapter is not None:
             del adapter
@@ -250,6 +285,11 @@ def run_model(
         'called_this_run': called,
         'reused_predictions': reused,
         'row_errors': errors,
+        'retry_exhausted_rows': exhausted + sum(
+            bool(row.get('retry_exhausted'))
+            for row in predictions_by_id.values()
+            if not base.reusable_prediction(row)
+        ),
         'called_latency_s': round(total_latency, 3),
     }
 
@@ -353,7 +393,18 @@ def main() -> int:
         choices=list(base.MODEL_REGISTRY),
     )
     parser.add_argument('--checkpoint-every', type=int, default=5)
+    parser.add_argument(
+        '--max-attempts-per-row',
+        type=int,
+        default=0,
+        help=(
+            'Maximum total attempts per QA row. 0 keeps legacy unlimited retry behavior. '
+            'Legacy error rows without attempt_count are treated as having one prior attempt.'
+        ),
+    )
     args = parser.parse_args()
+    if args.max_attempts_per_row < 0:
+        parser.error('--max-attempts-per-row must be >= 0')
 
     rows = v2.load_gold_qa_v2(args.qa_dir)
     positive_rows = read_csv(args.positive_manifest)
@@ -390,6 +441,7 @@ def main() -> int:
                     model_key, condition, rows, manifest_by_core,
                     target_paths, normal_paths, positive_paths,
                     args.out_dir, args.checkpoint_every,
+                    args.max_attempts_per_row,
                 )
                 metric, by_asset = evaluate_condition(
                     model_key, condition, rows,
@@ -437,6 +489,12 @@ def main() -> int:
             'normal_positive_reference': ['normal_reference', 'positive_reference', 'target'],
         },
         'q3_scope_note': 'Q3 is evaluated only on the 42 available localization questions.',
+        'max_attempts_per_row': args.max_attempts_per_row,
+        'retry_policy_note': (
+            'Successful rows are always reused. When max_attempts_per_row > 0, '
+            'failed rows are retried only until that total-attempt cap and are then '
+            'kept as invalid outputs with retry_exhausted=true.'
+        ),
     }
     (args.out_dir / 'run_metadata.json').write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
