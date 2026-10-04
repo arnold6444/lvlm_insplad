@@ -1,0 +1,27 @@
+{
+  "protocol": "gold_v2_vision_expert_full",
+  "gold_images": 246,
+  "qa_questions": 534,
+  "models": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b"
+  ],
+  "experts": [
+    "patchcore",
+    "dinomaly",
+    "anomalyclip",
+    "reconpatch_lite"
+  ],
+  "conditions": [
+    "score",
+    "roi",
+    "heatmap",
+    "score_roi",
+    "score_heatmap"
+  ],
+  "score_definition": "within-expert, within-asset percentile over the fixed unlabeled 246-image benchmark cohort; no GT labels used (transductive relative cue)",
+  "selection_rule": "report all combinations; summarize by mean of anomaly F1 and defect macro-F1 across all five LVLMs; localization reported separately",
+  "expected_runs": 80
+}
