@@ -175,3 +175,74 @@ def test_evaluation_metrics_use_semantic_labels(tmp_path):
     assert metric["defect_macro_f1"] == 1.0
     assert metric["localization_accuracy"] == 1.0
     assert by_asset[0]["q3_accuracy"] == 1.0
+
+
+def _hf_model_key(module) -> str:
+    return next(key for key, spec in module.MODEL_REGISTRY.items() if spec["backend"] == "hf")
+
+
+def test_lazy_hf_adapter_loads_once_and_only_on_use():
+    calls = []
+    holder = RUNNER.LazyHFAdapter({"model_id": "fake"}, loader=lambda spec: calls.append(spec) or "adapter")
+    assert not holder.loaded and calls == []
+    assert holder.get() == "adapter"
+    assert holder.get() == "adapter"
+    assert len(calls) == 1
+    holder.release()
+    assert not holder.loaded
+
+
+def test_run_model_skips_model_load_when_all_predictions_reused(tmp_path, monkeypatch):
+    import insplad_benchmark.hf_adapters as hf_adapters
+
+    def fail_load(spec):
+        raise AssertionError("model must not load when every prediction is reusable")
+
+    monkeypatch.setattr(hf_adapters, "load_hf_adapter", fail_load)
+    model_key = _hf_model_key(RUNNER)
+    rows = _master_rows()[:4]
+    _write_jsonl(
+        tmp_path / "predictions" / f"{model_key}.jsonl",
+        [{"id": row["id"], "output": "A", "predicted_choice": "A", "error": None} for row in rows],
+    )
+    status = RUNNER.run_model(model_key, rows, {}, tmp_path, checkpoint_every=20)
+    assert status["called_this_run"] == 0
+    assert status["reused_predictions"] == 4
+
+
+def _load_reference_runner():
+    spec = importlib.util.spec_from_file_location(
+        "gold_v2_reference_ablation", ROOT / "scripts" / "run_gold_v2_reference_ablation.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_reference_runner_shares_one_model_load_across_conditions(tmp_path, monkeypatch):
+    import insplad_benchmark.hf_adapters as hf_adapters
+
+    ref = _load_reference_runner()
+    monkeypatch.setattr(hf_adapters, "infer_hf", lambda adapter, images, prompt: "A")
+    monkeypatch.setattr(ref, "image_list_for", lambda *args, **kwargs: [])
+    loads = []
+    model_key = _hf_model_key(ref.base)
+    holder = ref.base.LazyHFAdapter(
+        ref.base.MODEL_REGISTRY[model_key], loader=lambda spec: loads.append(spec) or object()
+    )
+    rows = _master_rows()[:4]
+    manifest = {
+        row["core_id"]: {"normal_reference_image": "n.jpg", "positive_reference_image": "p.jpg"}
+        for row in rows
+    }
+    for condition in ref.CONDITIONS:
+        status = ref.run_model(
+            model_key, condition, rows, manifest, {}, {}, {}, tmp_path,
+            checkpoint_every=20, holder=holder,
+        )
+        assert status["called_this_run"] == 4
+        saved = (tmp_path / condition / "predictions" / f"{model_key}.jsonl").read_text(encoding="utf-8")
+        assert len(saved.splitlines()) == 4
+    assert len(loads) == 1
+    assert holder.loaded

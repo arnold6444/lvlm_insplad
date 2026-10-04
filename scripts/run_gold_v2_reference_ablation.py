@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import gc
 import hashlib
 import importlib.util
 import json
@@ -164,6 +163,7 @@ def run_model(
     out_dir: Path,
     checkpoint_every: int,
     max_attempts_per_row: int = 0,
+    holder: 'base.LazyHFAdapter | None' = None,
 ) -> dict:
     spec = base.MODEL_REGISTRY[model_key]
     pred_path = out_dir / condition / 'predictions' / f'{model_key}.jsonl'
@@ -180,10 +180,10 @@ def run_model(
             if str(row['id']) in predictions_by_id
         ]
 
-    adapter = None
-    if spec['backend'] == 'hf':
-        from insplad_benchmark.hf_adapters import load_hf_adapter
-        adapter = load_hf_adapter(spec)
+    # A caller-provided holder is shared across conditions and released by the caller.
+    owns_holder = holder is None and spec['backend'] == 'hf'
+    if owns_holder:
+        holder = base.LazyHFAdapter(spec)
 
     api_key = os.environ.get('LUXIA_API_KEY', '')
     if spec['backend'] == 'luxia' and not api_key:
@@ -223,6 +223,8 @@ def run_model(
                 row, condition, manifest_by_core,
                 target_paths, normal_paths, positive_paths,
             )
+            # Load outside the per-row try so a load failure fails the model, not every row.
+            adapter = holder.get() if spec['backend'] == 'hf' else None
             started = time.time()
             output = ''
             error = None
@@ -269,15 +271,9 @@ def run_model(
                 print(f'[{condition}/{model_key}] {index}/{len(rows)} checkpoint', flush=True)
         base.write_jsonl(pred_path, ordered_predictions())
     finally:
-        if adapter is not None:
-            del adapter
-        gc.collect()
-        try:
-            import torch
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-        except Exception:
-            pass
+        adapter = None
+        if owns_holder:
+            holder.release()
 
     return {
         'condition': condition,
@@ -430,40 +426,64 @@ def main() -> int:
         rows, manifest, args.sup_zip, args.unsup_zip, args.out_dir / '_images'
     )
 
-    run_status: list[dict] = []
-    leaderboard: list[dict] = []
-    by_asset_all: list[dict] = []
-    for condition in args.conditions:
-        for model_key in args.models:
-            print(f'\n=== {condition} / {model_key} ===', flush=True)
-            try:
-                status = run_model(
-                    model_key, condition, rows, manifest_by_core,
-                    target_paths, normal_paths, positive_paths,
-                    args.out_dir, args.checkpoint_every,
-                    args.max_attempts_per_row,
+    # Model-outer loop: each HF model is loaded at most once for all conditions.
+    # Outputs keep the original condition-major row order.
+    results: dict[tuple[str, str], tuple[dict, dict | None, list[dict]]] = {}
+
+    def ordered(index: int) -> list:
+        return [
+            results[(condition, model_key)][index]
+            for condition in args.conditions
+            for model_key in args.models
+            if (condition, model_key) in results
+        ]
+
+    for model_key in args.models:
+        spec = base.MODEL_REGISTRY[model_key]
+        holder = base.LazyHFAdapter(spec) if spec['backend'] == 'hf' else None
+        try:
+            for condition in args.conditions:
+                print(f'\n=== {condition} / {model_key} ===', flush=True)
+                metric = None
+                by_asset: list[dict] = []
+                try:
+                    status = run_model(
+                        model_key, condition, rows, manifest_by_core,
+                        target_paths, normal_paths, positive_paths,
+                        args.out_dir, args.checkpoint_every,
+                        args.max_attempts_per_row,
+                        holder=holder,
+                    )
+                    metric, by_asset = evaluate_condition(
+                        model_key, condition, rows,
+                        args.out_dir / condition / 'predictions' / f'{model_key}.jsonl',
+                    )
+                    status['status'] = 'completed'
+                except Exception as exc:
+                    status = {
+                        'condition': condition,
+                        'model_key': model_key,
+                        'status': 'failed',
+                        'error': f'{type(exc).__name__}: {exc}',
+                    }
+                    print(status['error'], flush=True)
+                results[(condition, model_key)] = (status, metric, by_asset)
+                base.write_csv(
+                    args.out_dir / 'leaderboard.csv',
+                    [item for item in ordered(1) if item is not None],
                 )
-                metric, by_asset = evaluate_condition(
-                    model_key, condition, rows,
-                    args.out_dir / condition / 'predictions' / f'{model_key}.jsonl',
+                base.write_csv(
+                    args.out_dir / 'metrics_by_asset.csv',
+                    [item for group in ordered(2) for item in group],
                 )
-                status['status'] = 'completed'
-                leaderboard.append(metric)
-                by_asset_all.extend(by_asset)
-            except Exception as exc:
-                status = {
-                    'condition': condition,
-                    'model_key': model_key,
-                    'status': 'failed',
-                    'error': f'{type(exc).__name__}: {exc}',
-                }
-                print(status['error'], flush=True)
-            run_status.append(status)
-            base.write_csv(args.out_dir / 'leaderboard.csv', leaderboard)
-            base.write_csv(args.out_dir / 'metrics_by_asset.csv', by_asset_all)
-            (args.out_dir / 'run_status.json').write_text(
-                json.dumps(run_status, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
-            )
+                (args.out_dir / 'run_status.json').write_text(
+                    json.dumps(ordered(0), ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+                )
+        finally:
+            if holder is not None:
+                holder.release()
+
+    leaderboard = [item for item in ordered(1) if item is not None]
 
     comparison, deltas = build_ablation_comparison(leaderboard, args.baseline_leaderboard)
     base.write_csv(args.out_dir / 'ablation_comparison.csv', comparison)
