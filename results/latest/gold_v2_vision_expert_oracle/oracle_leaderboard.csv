@@ -1,0 +1,13 @@
+model_key,condition,images,questions,valid_output_rate,overall_accuracy,defect_accuracy,defect_macro_f1,localization_accuracy
+qwen3_5_4b,gt_bbox,20,40,1.0,0.8,0.95,0.9743589743589743,0.65
+qwen3_5_4b,gt_roi,20,40,1.0,0.85,1.0,1.0,0.7
+qwen3_5_4b,gt_mask,20,40,1.0,0.85,1.0,1.0,0.7
+internvl3_5_8b,gt_bbox,20,40,1.0,0.625,0.75,0.8571428571428571,0.5
+internvl3_5_8b,gt_roi,20,40,1.0,0.85,0.85,0.9189189189189189,0.85
+internvl3_5_8b,gt_mask,20,40,1.0,0.95,0.9,0.9473684210526316,1.0
+minicpm_v_4_5,gt_bbox,20,40,1.0,0.725,0.9,0.9473684210526316,0.55
+minicpm_v_4_5,gt_roi,20,40,1.0,0.775,0.85,0.9189189189189189,0.7
+minicpm_v_4_5,gt_mask,20,40,1.0,0.875,1.0,1.0,0.75
+llava_onevision_7b,gt_bbox,20,40,1.0,0.05,0.1,0.18181818181818182,0.0
+llava_onevision_7b,gt_roi,20,40,1.0,0.075,0.15,0.2608695652173913,0.0
+llava_onevision_7b,gt_mask,20,40,1.0,0.0,0.0,0.0,0.0
