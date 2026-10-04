@@ -1,0 +1,642 @@
+[
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "dinomaly",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "anomalyclip",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "reconpatch_lite",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "dinomaly",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "anomalyclip",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "reconpatch_lite",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "dinomaly",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "dinomaly",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "dinomaly",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "anomalyclip",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "anomalyclip",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "anomalyclip",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "reconpatch_lite",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "reconpatch_lite",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "reconpatch_lite",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "dinomaly",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "dinomaly",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "dinomaly",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "dinomaly",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "dinomaly",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "anomalyclip",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "anomalyclip",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "anomalyclip",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "anomalyclip",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "anomalyclip",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "reconpatch_lite",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "reconpatch_lite",
+    "condition": "roi",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "reconpatch_lite",
+    "condition": "heatmap",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "reconpatch_lite",
+    "condition": "score_roi",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "reconpatch_lite",
+    "condition": "score_heatmap",
+    "status": "complete",
+    "called_this_run": 534,
+    "row_errors": 0
+  }
+]
