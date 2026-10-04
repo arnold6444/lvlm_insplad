@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-04T15:03:15.684218+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_vision_expert_full/eval",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_vision_expert_full",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_full/leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_full/leaderboard.csv",
+      "commit_sha": "b25bc9e272b31c1316359710bb8310b405eb095a",
+      "size_bytes": 11850,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_full/metrics_by_asset.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_full/metrics_by_asset.csv",
+      "commit_sha": "884c4b0eb70b3c3a7af37f6a402f2ab1bfb659c7",
+      "size_bytes": 35637,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "run_status.json",
+      "remote_path": "results/latest/gold_v2_vision_expert_full/run_status.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_full/run_status.json",
+      "commit_sha": "d93987e51f7bd24d161b3d0b27f1aee525ecf27c",
+      "size_bytes": 13855,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "screening_summary.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_full/screening_summary.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_full/screening_summary.csv",
+      "commit_sha": "c11b067735dd96fb3715d048883df98d6431beaa",
+      "size_bytes": 1791,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_vision_expert_full/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_full/run_metadata.json",
+      "commit_sha": "0a72a45d8df9f35b60e258ba1548303687fa9672",
+      "size_bytes": 732,
+      "mime_type": "application/json"
+    }
+  ],
+  "missing": []
+}
