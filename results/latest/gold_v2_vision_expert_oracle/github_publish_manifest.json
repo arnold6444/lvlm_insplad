@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-04T15:03:24.209759+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_vision_expert_full/oracle",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_vision_expert_oracle",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "oracle_leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_oracle/oracle_leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_oracle/oracle_leaderboard.csv",
+      "commit_sha": "1501c298d195e80c70d01b06311d5a049c60a2e7",
+      "size_bytes": 852,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "oracle_manifest.csv",
+      "remote_path": "results/latest/gold_v2_vision_expert_oracle/oracle_manifest.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_vision_expert_oracle/oracle_manifest.csv",
+      "commit_sha": "45b8ac7522bf1c2882cc6d2996f0f1d00264900a",
+      "size_bytes": 11250,
+      "mime_type": "text/csv"
+    }
+  ],
+  "missing": []
+}
