@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import gc
 import json
 import os
 import sys
@@ -21,7 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import run_gold_baselines as base  # noqa: E402
 import run_gold_v2_baselines as v2  # noqa: E402
-from insplad_benchmark.hf_adapters import infer_hf, load_hf_adapter  # noqa: E402
+from insplad_benchmark.hf_adapters import infer_hf  # noqa: E402
 from insplad_benchmark.vision_expert import read_manifest, resolve_artifact_path  # noqa: E402
 
 EXPERTS = ("patchcore", "dinomaly", "anomalyclip", "reconpatch_lite")
@@ -254,11 +253,9 @@ def main() -> int:
 
     for model_key in args.models:
         spec = base.MODEL_REGISTRY[model_key]
-        adapter = None
-        if spec["backend"] == "hf":
-            print(f"=== load {model_key} ===", flush=True)
-            adapter = load_hf_adapter(spec)
-        elif model_key == "luxia" and not luxia_key:
+        # Loaded on first missing prediction, so fully completed models are skipped.
+        holder = base.LazyHFAdapter(spec) if spec["backend"] == "hf" else None
+        if model_key == "luxia" and not luxia_key:
             raise RuntimeError("LUXIA_API_KEY is required for Luxia")
 
         try:
@@ -295,6 +292,8 @@ def main() -> int:
                         )
                         percentile = float(erow["score_percentile_full"])
                         prompt_text = prompt(row, condition, expert, percentile)
+                        # Load outside the per-row try so a load failure stops the model.
+                        adapter = holder.get() if holder is not None else None
                         started = time.time()
                         output = ""
                         error = ""
@@ -386,13 +385,8 @@ def main() -> int:
                     )
         finally:
             adapter = None
-            gc.collect()
-            try:
-                import torch
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-            except Exception:
-                pass
+            if holder is not None:
+                holder.release()
 
     leaderboard = read_csv(leaderboard_path)
     selected_lb = [

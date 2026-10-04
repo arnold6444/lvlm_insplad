@@ -207,6 +207,44 @@ def reusable_prediction(row: dict | None) -> bool:
     return bool(row and not row.get("error") and str(row.get("output", "")).strip())
 
 
+class LazyHFAdapter:
+    """Load an HF adapter on first inference so fully reused runs skip model loading."""
+
+    def __init__(self, spec: dict, loader=None) -> None:
+        self.spec = spec
+        self._loader = loader
+        self._adapter = None
+
+    @property
+    def loaded(self) -> bool:
+        return self._adapter is not None
+
+    def get(self):
+        if self._adapter is None:
+            loader = self._loader
+            if loader is None:
+                from insplad_benchmark.hf_adapters import load_hf_adapter
+
+                loader = load_hf_adapter
+            print(f"[{self.spec.get('model_id', '')}] loading adapter", flush=True)
+            self._adapter = loader(self.spec)
+        return self._adapter
+
+    def release(self) -> None:
+        was_loaded = self._adapter is not None
+        self._adapter = None
+        if not was_loaded:
+            return
+        gc.collect()
+        try:
+            import torch
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception:
+            pass
+
+
 def infer_luxia_mcqa(image_path: Path, prompt: str, api_key: str) -> tuple[str, float]:
     from insplad_benchmark.luxia_adapter import (
         LUXIA_CHAT_MODEL,
@@ -244,11 +282,7 @@ def run_model(
     existing = {str(r["id"]): r for r in existing_rows if r.get("id")}
     predictions: list[dict] = []
 
-    adapter = None
-    if spec["backend"] == "hf":
-        from insplad_benchmark.hf_adapters import load_hf_adapter
-
-        adapter = load_hf_adapter(spec)
+    holder = LazyHFAdapter(spec) if spec["backend"] == "hf" else None
 
     api_key = os.environ.get("LUXIA_API_KEY", "")
     if spec["backend"] == "luxia" and not api_key:
@@ -269,6 +303,8 @@ def run_model(
 
             prompt = prompt_for(row)
             image_path = image_paths[str(row["image"])]
+            # Load outside the per-row try so a load failure fails the model, not every row.
+            adapter = holder.get() if holder is not None else None
             started = time.time()
             error = None
             output = ""
@@ -307,16 +343,9 @@ def run_model(
 
         write_jsonl(pred_path, predictions)
     finally:
-        if adapter is not None:
-            del adapter
-        gc.collect()
-        try:
-            import torch
-
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-        except Exception:
-            pass
+        adapter = None
+        if holder is not None:
+            holder.release()
 
     return {
         "model_key": model_key,
