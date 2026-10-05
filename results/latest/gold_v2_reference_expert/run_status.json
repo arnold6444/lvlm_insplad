@@ -1,0 +1,38 @@
+[
+  {
+    "model_key": "qwen3_5_4b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "minicpm_v_4_5",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0
+  },
+  {
+    "model_key": "llava_onevision_7b",
+    "expert": "patchcore",
+    "condition": "score",
+    "status": "complete",
+    "called_this_run": 534,
+    "reused_predictions": 0,
+    "row_errors": 0
+  }
+]
