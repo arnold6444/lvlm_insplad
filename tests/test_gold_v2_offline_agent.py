@@ -137,6 +137,10 @@ def test_main_end_to_end_routing_fixes_conflicts(tmp_path):
     assert float(stats["qwen3_5_4b"]["score_conflict_rate"]) == 1 / 6
     meta = json.loads((out / "run_metadata.json").read_text(encoding="utf-8"))
     assert meta["new_lvlm_inference"] is False
+    with (out / "significance.csv").open(encoding="utf-8") as h:
+        sig = list(csv.DictReader(h))
+    assert {r["policy"] for r in sig} >= {"A1_q12+S", "A5_conflict_or_inconsistent+S"}
+    assert all(float(r["Q1_ci_low"]) <= float(r["Q1_delta"]) <= float(r["Q1_ci_high"]) for r in sig)
 
 
 def test_missing_predictions_fail_loudly(tmp_path):
@@ -162,3 +166,37 @@ def test_offline_agent_notebook_is_cpu_only_and_verifies_against_published_resul
     assert "검증 통과" in code and "gold_v2_reference_expert/leaderboard.csv" in code
     assert '"--prefix", "gold_v2_offline_agent"' in code
     assert "CONFLICT_LOW, CONFLICT_HIGH = 10.0, 90.0" in code
+    assert "significance.csv" in code and "all3_at_least_best_fixed" in code
+
+
+def test_bootstrap_components_reproduce_point_metrics():
+    import numpy as np
+    rows = _rows(8)
+    choice = _answers(rows, wrong={"core-1-q1", "core-3-q2", "core-5-q3", "core-0-q2"})
+    cores = sorted({r["core_id"] for r in rows})
+    comp = RUNNER._components(rows, choice, cores)
+    boot = RUNNER.metrics_from_weights(comp, np.ones((1, len(cores))))
+    point = RUNNER.score(rows, choice)
+    for key in RUNNER.METRIC_KEYS:
+        assert abs(float(boot[key][0]) - point[key]) < 1e-12
+
+
+def test_paired_bootstrap_identical_and_better():
+    rows = _rows(8)
+    worse = _answers(rows, wrong={"core-1-q1", "core-3-q1", "core-5-q2"})
+    better = _answers(rows)
+    same = RUNNER.paired_bootstrap(rows, worse, worse, n_boot=200)
+    assert all(v["delta"] == 0 and v["p_le_0"] == 1.0 for v in same.values())
+    up = RUNNER.paired_bootstrap(rows, worse, better, n_boot=200)
+    assert up["Q1_anomaly_f1"]["delta"] > 0 and up["Q1_anomaly_f1"]["p_le_0"] < 0.5
+
+
+def test_at_least_best_fixed_allows_q3_tie():
+    results = [
+        {"model_key": "m", "policy": "fixed_normal_ref", "Q1_anomaly_f1": 0.8, "Q2_defect_macro_f1": 0.5, "Q3_loc_acc": 0.4},
+        {"model_key": "m", "policy": "fixed_image_only", "Q1_anomaly_f1": 0.6, "Q2_defect_macro_f1": 0.4, "Q3_loc_acc": 0.6},
+        {"model_key": "m", "policy": "X+S", "Q1_anomaly_f1": 0.82, "Q2_defect_macro_f1": 0.52, "Q3_loc_acc": 0.6},
+    ]
+    RUNNER.add_flags(results, ["m"])
+    x = results[-1]
+    assert x["all3_up_vs_normal_ref"] and not x["all3_beat_best_fixed"] and x["all3_at_least_best_fixed"]
