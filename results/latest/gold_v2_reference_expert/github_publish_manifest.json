@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-05T05:24:33.228826+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_reference_expert",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_reference_expert",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_reference_expert/leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference_expert/leaderboard.csv",
+      "commit_sha": "dcfbe0bb262a1364451406e11f82337875e4d80f",
+      "size_bytes": 897,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "remote_path": "results/latest/gold_v2_reference_expert/metrics_by_asset.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference_expert/metrics_by_asset.csv",
+      "commit_sha": "786b260b67a8ea37c85df6a0f549aa7ca1d574d7",
+      "size_bytes": 2286,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "comparison.csv",
+      "remote_path": "results/latest/gold_v2_reference_expert/comparison.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference_expert/comparison.csv",
+      "commit_sha": "b28c08ce6f6227ea20646762d8cffc5cc4f4106f",
+      "size_bytes": 2075,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "run_status.json",
+      "remote_path": "results/latest/gold_v2_reference_expert/run_status.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference_expert/run_status.json",
+      "commit_sha": "8a2994f8718894a326484768a708c6c188237bed",
+      "size_bytes": 802,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_reference_expert/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_reference_expert/run_metadata.json",
+      "commit_sha": "0aed34c189ef5e5026e56af5d373485343228be9",
+      "size_bytes": 790,
+      "mime_type": "application/json"
+    }
+  ],
+  "missing": []
+}
