@@ -18,6 +18,8 @@ import sys
 from pathlib import Path
 from typing import Callable, Iterable, Mapping, Sequence
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
@@ -108,6 +110,74 @@ def score(rows: Sequence[Mapping], choice: Mapping[str, str | None]) -> dict[str
     }
 
 
+def _components(rows: Sequence[Mapping], choice: Mapping[str, str | None], cores: Sequence[str]) -> dict:
+    """Per-image count vectors so any metric can be recomputed for a resampled set of images."""
+    index = {c: i for i, c in enumerate(cores)}
+    n = len(cores)
+    zeros = lambda: np.zeros(n)  # noqa: E731
+    comp = {"q1_tp": zeros(), "q1_fp": zeros(), "q1_fn": zeros(), "q3_ok": zeros(), "q3_n": zeros(), "q2": {}}
+    labels = sorted({str(r["defect_gt"]) for r in rows if r["question_type"] == Q2})
+    for label in labels:
+        comp["q2"][label] = {"tp": zeros(), "fp": zeros(), "fn": zeros()}
+    for row in rows:
+        i = index[str(row["core_id"])]
+        pred = choice[str(row["id"])]
+        if row["question_type"] == Q1:
+            p, g = base.predicted_semantic(row, pred) == "anomalous", row["anomaly_gt"] == "anomalous"
+            comp["q1_tp"][i] += p and g
+            comp["q1_fp"][i] += p and not g
+            comp["q1_fn"][i] += g and not p
+        elif row["question_type"] == Q2:
+            p, g = base.predicted_semantic(row, pred), str(row["defect_gt"])
+            for label, c in comp["q2"].items():
+                c["tp"][i] += p == label and g == label
+                c["fp"][i] += p == label and g != label
+                c["fn"][i] += g == label and p != label
+        elif row["question_type"] == Q3:
+            comp["q3_ok"][i] += pred == row["answer"]
+            comp["q3_n"][i] += 1
+    return comp
+
+
+def _f1(tp, fp, fn):
+    denom = 2 * tp + fp + fn
+    return np.divide(2 * tp, denom, out=np.zeros_like(denom, dtype=float), where=denom > 0)
+
+
+def metrics_from_weights(comp: Mapping, weights: np.ndarray) -> dict[str, np.ndarray]:
+    """``weights``: (B, n_images) resampling counts. Matches ``score`` when weights are all ones."""
+    w = np.atleast_2d(weights)
+    q1 = _f1(w @ comp["q1_tp"], w @ comp["q1_fp"], w @ comp["q1_fn"])
+    f1s, present = [], []
+    for c in comp["q2"].values():
+        f1s.append(_f1(w @ c["tp"], w @ c["fp"], w @ c["fn"]))
+        present.append((w @ (c["tp"] + c["fn"])) > 0)
+    f1s, present = np.array(f1s), np.array(present)
+    q2 = (f1s * present).sum(axis=0) / np.maximum(present.sum(axis=0), 1)
+    n3 = w @ comp["q3_n"]
+    q3 = np.divide(w @ comp["q3_ok"], n3, out=np.zeros_like(n3, dtype=float), where=n3 > 0)
+    return {"Q1_anomaly_f1": q1, "Q2_defect_macro_f1": q2, "Q3_loc_acc": q3}
+
+
+def paired_bootstrap(rows: Sequence[Mapping], base_choice: Mapping[str, str | None],
+                     new_choice: Mapping[str, str | None], n_boot: int = 2000, seed: int = 0) -> dict[str, dict]:
+    """Image-level paired bootstrap of (new - base) for Q1/Q2/Q3. p = share of resamples with delta <= 0."""
+    cores = sorted({str(r["core_id"]) for r in rows})
+    a, b = _components(rows, base_choice, cores), _components(rows, new_choice, cores)
+    rng = np.random.default_rng(seed)
+    weights = rng.multinomial(len(cores), np.full(len(cores), 1 / len(cores)), size=n_boot).astype(float)
+    full = np.ones((1, len(cores)))
+    ma, mb = metrics_from_weights(a, weights), metrics_from_weights(b, weights)
+    pa, pb = metrics_from_weights(a, full), metrics_from_weights(b, full)
+    out = {}
+    for key in METRIC_KEYS:
+        delta = mb[key] - ma[key]
+        out[key] = {"delta": float(pb[key][0] - pa[key][0]),
+                    "ci_low": float(np.percentile(delta, 2.5)), "ci_high": float(np.percentile(delta, 97.5)),
+                    "p_le_0": float((delta <= 0).mean())}
+    return out
+
+
 def score_conflict(q1_row: Mapping, choice: str | None, percentile: float, low: float, high: float) -> bool:
     label = base.predicted_semantic(q1_row, choice)
     return label is None or (label == "normal" and percentile >= high) or (label == "anomalous" and percentile <= low)
@@ -167,19 +237,32 @@ def score_only(rows: Sequence[Mapping], percentiles: Mapping[str, float], thresh
     return out
 
 
+def routing_sets(rows: Sequence[Mapping], first: Mapping[str, str | None], percentiles: Mapping[str, float],
+                 low: float, high: float) -> tuple[set[str], set[str]]:
+    """Images whose first-pass (normal reference) answers conflict with PatchCore / contradict Q1 vs Q2."""
+    cores = group_by_core(rows)
+    conflict = {c for c, qs in cores.items()
+                if score_conflict(qs[Q1], first[str(qs[Q1]["id"])], percentiles[c], low, high)}
+    inconsistent = {c for c, qs in cores.items()
+                    if q12_inconsistent(qs[Q1], first[str(qs[Q1]["id"])], qs[Q2], first[str(qs[Q2]["id"])])}
+    return conflict, inconsistent
+
+
 def run_policies(
     rows: Sequence[Mapping], preds: Preds, percentiles: Mapping[str, float], models: Sequence[str],
     low: float = 10.0, high: float = 90.0, score_only_threshold: float = 50.0,
-) -> tuple[list[dict], list[dict]]:
+) -> tuple[list[dict], list[dict], dict[tuple[str, str], dict]]:
     cores = group_by_core(rows)
     results: list[dict] = []
     route_stats: list[dict] = []
+    choices: dict[tuple[str, str], dict] = {}
     all_q = lambda cond: {q: cond for q in QTYPES}  # noqa: E731
     split = {Q1: "normal_ref", Q2: "normal_ref", Q3: "image_only"}
     q12_combined = {Q1: "combined", Q2: "combined"}
 
     def add(model: str, policy: str, composed: tuple[Mapping, float], note: str = "") -> None:
         choice, calls = composed
+        choices[(model, policy)] = dict(choice)
         results.append({"model_key": model, "policy": policy, **score(rows, choice),
                         "avg_lvlm_calls_per_q": round(calls, 4), "note": note})
 
@@ -187,10 +270,7 @@ def run_policies(
         for cond in CONDITIONS:
             add(model, f"fixed_{cond}", compose(rows, preds, model, all_q(cond)))
         nr = preds[(model, "normal_ref")]
-        conflict = {c for c, qs in cores.items()
-                    if score_conflict(qs[Q1], nr[str(qs[Q1]["id"])], percentiles[c], low, high)}
-        inconsistent = {c for c, qs in cores.items()
-                        if q12_inconsistent(qs[Q1], nr[str(qs[Q1]["id"])], qs[Q2], nr[str(qs[Q2]["id"])])}
+        conflict, inconsistent = routing_sets(rows, nr, percentiles, low, high)
         either = conflict | inconsistent
         route_stats.append({"model_key": model, "images": len(cores),
                             "score_conflict_rate": len(conflict) / len(cores),
@@ -220,19 +300,57 @@ def run_policies(
         add("vote_4models", f"A3_model_vote_{cond}",
             (vote(rows, [preds[(m, cond)] for m in models], preds[(tie_model, cond)]), float(len(models))),
             f"tie -> {tie_model}")
+    add_flags(results, models)
+    return results, route_stats, choices
 
+
+def add_flags(results: list[dict], models: Sequence[str]) -> None:
+    """d_* vs normal reference, and whether all three questions improve.
+    ``all3_at_least_best_fixed``: every question >= the model's best fixed condition and at least one strictly
+    better (policies that copy Q3 from image-only can tie but never exceed it, so strict '>' is not usable)."""
+    tie_model = TIE_MODEL if TIE_MODEL in models else models[0]
     reference = {r["model_key"]: r for r in results if r["policy"] == "fixed_normal_ref"}
     best = {m: {k: max(r[k] for r in results if r["model_key"] == m and r["policy"].startswith("fixed_"))
                 for k in METRIC_KEYS} for m in models}
-    for alias in ("patchcore_only", "vote_4models"):
-        reference[alias], best[alias] = reference[tie_model], best[tie_model]
     for r in results:
-        ref, top = reference[r["model_key"]], best[r["model_key"]]
+        key = r["model_key"] if r["model_key"] in reference else tie_model
+        ref, top = reference[key], best[key]
         for k in METRIC_KEYS:
             r[f"d_{k.split('_')[0]}_vs_normal_ref"] = round(r[k] - ref[k], 6)
         r["all3_up_vs_normal_ref"] = all(r[k] > ref[k] for k in METRIC_KEYS)
         r["all3_beat_best_fixed"] = all(r[k] > top[k] for k in METRIC_KEYS)
-    return results, route_stats
+        r["all3_at_least_best_fixed"] = (all(r[k] >= top[k] - 1e-12 for k in METRIC_KEYS)
+                                         and any(r[k] > top[k] + 1e-12 for k in METRIC_KEYS))
+
+
+SIGNIFICANCE_PAIRS = (
+    # (baseline policy, new policy); the S_q3_image_only baselines isolate the agent from the Q3 image-only rule
+    ("fixed_normal_ref", "A1_q12"),
+    ("fixed_normal_ref", "S_q3_image_only"),
+    ("fixed_normal_ref", "A1_q12+S"),
+    ("fixed_normal_ref", "A5_conflict_or_inconsistent+S"),
+    ("fixed_normal_ref", "A4_condition_vote"),
+    ("S_q3_image_only", "A1_q12+S"),
+    ("S_q3_image_only", "A5_conflict_or_inconsistent+S"),
+)
+
+
+def significance(rows: Sequence[Mapping], choices: Mapping[tuple[str, str], Mapping], models: Sequence[str],
+                 pairs: Sequence[tuple[str, str]] = SIGNIFICANCE_PAIRS, n_boot: int = 2000,
+                 seed: int = 0) -> list[dict]:
+    out = []
+    for model in models:
+        for base_policy, new_policy in pairs:
+            if (model, base_policy) not in choices or (model, new_policy) not in choices:
+                continue
+            stats = paired_bootstrap(rows, choices[(model, base_policy)], choices[(model, new_policy)], n_boot, seed)
+            row = {"model_key": model, "baseline": base_policy, "policy": new_policy, "n_boot": n_boot}
+            for key, st in stats.items():
+                q = key.split("_")[0]
+                row.update({f"{q}_delta": round(st["delta"], 6), f"{q}_ci_low": round(st["ci_low"], 6),
+                            f"{q}_ci_high": round(st["ci_high"], 6), f"{q}_p_le_0": round(st["p_le_0"], 4)})
+            out.append(row)
+    return out
 
 
 def write_csv(path: Path, rows: Sequence[Mapping]) -> None:
@@ -259,16 +377,18 @@ def main(argv: Sequence[str] | None = None, load_qa: Callable[[Path], list[dict]
     p.add_argument("--conflict-low", type=float, default=10.0)
     p.add_argument("--conflict-high", type=float, default=90.0)
     p.add_argument("--score-only-threshold", type=float, default=50.0)
+    p.add_argument("--n-boot", type=int, default=2000)
     args = p.parse_args(argv)
 
     rows = load_qa(args.qa_dir)
     preds, percentiles = load_predictions(args.models, args.image_only_csv, args.normal_ref_dir,
                                           args.expert_dir, args.combined_dir, args.expert_pair)
     check_coverage(rows, preds, percentiles)
-    results, route_stats = run_policies(rows, preds, percentiles, args.models, args.conflict_low,
-                                        args.conflict_high, args.score_only_threshold)
+    results, route_stats, choices = run_policies(rows, preds, percentiles, args.models, args.conflict_low,
+                                                 args.conflict_high, args.score_only_threshold)
     write_csv(args.out_dir / "leaderboard.csv", results)
     write_csv(args.out_dir / "route_stats.csv", route_stats)
+    write_csv(args.out_dir / "significance.csv", significance(rows, choices, args.models, n_boot=args.n_boot))
     metadata = {
         "protocol": "gold_v2_offline_agent",
         "new_lvlm_inference": False,
@@ -282,6 +402,10 @@ def main(argv: Sequence[str] | None = None, load_qa: Callable[[Path], list[dict]
         "post_hoc_rules": ["S_q3_image_only: Q3 answered from image-only because normal reference lowered "
                            "localization in earlier gold-v2 runs"],
         "calls_note": "avg_lvlm_calls_per_q counts one call per question plus one per re-asked question",
+        "significance": f"image-level paired bootstrap, {args.n_boot} resamples, seed 0; "
+                        "p_le_0 = share of resamples where the policy is not better than its baseline",
+        "criteria": {"all3_beat_best_fixed": "every question > best fixed condition (strict)",
+                     "all3_at_least_best_fixed": "every question >= best fixed and at least one >"},
     }
     (args.out_dir / "run_metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
                                                     encoding="utf-8")
