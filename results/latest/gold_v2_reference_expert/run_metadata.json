@@ -1,0 +1,23 @@
+{
+  "protocol": "gold_v2_reference_expert",
+  "regime": "normal_reference+expert",
+  "gold_images": 246,
+  "qa_questions": 534,
+  "models": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b"
+  ],
+  "pairs": [
+    "patchcore:score"
+  ],
+  "image_order": [
+    "normal_reference",
+    "target",
+    "expert_evidence (roi/heatmap conditions only)"
+  ],
+  "heatmap_evidence": "pure heatmap overlay without ROI box (merged manifest overlay_path)",
+  "score_definition": "within-expert, within-asset percentile over the fixed unlabeled 246-image cohort; no GT labels used",
+  "selection_note": "top-1 by mean (anomaly F1 + defect macro-F1)/2 across 4 LVLMs in gold_v2_vision_expert_full; selected post hoc on the same 246 images (not a held-out selection)"
+}
