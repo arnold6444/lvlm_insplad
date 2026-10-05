@@ -1,0 +1,23 @@
+{
+  "protocol": "gold_v2_offline_agent",
+  "new_lvlm_inference": false,
+  "gold_images": 246,
+  "qa_questions": 534,
+  "models": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b"
+  ],
+  "expert_pair": "patchcore__score",
+  "conflict_thresholds": {
+    "low": 10.0,
+    "high": 90.0,
+    "source": "AgentIAD-lite defaults, fixed before looking at gold-v2 results"
+  },
+  "score_percentile": "within-expert, within-asset percentile over the 246-image cohort (transductive)",
+  "post_hoc_rules": [
+    "S_q3_image_only: Q3 answered from image-only because normal reference lowered localization in earlier gold-v2 runs"
+  ],
+  "calls_note": "avg_lvlm_calls_per_q counts one call per question plus one per re-asked question"
+}
