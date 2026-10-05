@@ -1,0 +1,5 @@
+model_key,model_id,backend,questions,valid_output_rate,overall_accuracy,anomaly_accuracy,anomaly_precision,anomaly_recall,anomaly_f1,defect_accuracy,defect_macro_f1,localization_questions,localization_accuracy,expert,condition,regime
+qwen3_5_4b,Qwen/Qwen3.5-4B,hf,534,1.0,0.59176,0.544715,0.595745,0.604317,0.6,0.662602,0.596718,42,0.452381,patchcore,score,normal_reference+expert
+internvl3_5_8b,OpenGVLab/InternVL3_5-8B,hf,534,1.0,0.608614,0.691057,0.760331,0.661871,0.707692,0.565041,0.494575,42,0.380952,patchcore,score,normal_reference+expert
+minicpm_v_4_5,openbmb/MiniCPM-V-4_5,hf,534,1.0,0.664794,0.727642,0.790323,0.705036,0.745247,0.634146,0.528903,42,0.47619,patchcore,score,normal_reference+expert
+llava_onevision_7b,llava-hf/llava-onevision-qwen2-7b-ov-hf,hf,534,1.0,0.616105,0.646341,0.617117,0.985612,0.759003,0.601626,0.416867,42,0.52381,patchcore,score,normal_reference+expert
