@@ -60,6 +60,8 @@ Use the same QA, prompts, output schema, and evaluator for all models, but run e
   - MiniCPM-V 4.5
   - LLaVA-OneVision 7B
 
+> **Correction (2026-10-07):** the active open-source set is the one in `README.md` ("one representative per family"): `Qwen/Qwen3.5-4B`, `OpenGVLab/InternVL3_5-8B`, `openbmb/MiniCPM-V-4_5`, `llava-hf/llava-onevision-qwen2-7b-ov-hf`. `Qwen3-VL-8B` was removed because a newer Qwen model is already included. README is authoritative for the current model lineup.
+
 Do not silently quantize open-source baselines on low-VRAM hardware. If the runtime has less than 20 GB VRAM, skip direct HF baselines and use an L4/A100-class runtime instead. Record requested model ID, backend, benchmark commit, GPU/VRAM, and run status with every experiment.
 
 ## Stage deliverables
