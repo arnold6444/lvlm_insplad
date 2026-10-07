@@ -1,0 +1,5 @@
+expert,questions,q3_acc,q3_acc_region_only,note
+patchcore,42,0.190476,0.4,ROI centre mapped to 3x3 region; never answers 'none'
+dinomaly,42,0.047619,0.1,ROI centre mapped to 3x3 region; never answers 'none'
+anomalyclip,42,0.142857,0.3,ROI centre mapped to 3x3 region; never answers 'none'
+reconpatch_lite,42,0.0,0.0,ROI centre mapped to 3x3 region; never answers 'none'
