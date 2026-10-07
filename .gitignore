@@ -15,3 +15,7 @@ images/
 
 # Generated benchmark QA/results/reports
 # Keep code/config tracked; generated files can be selectively committed later.
+
+# 에이전트 · 테스트 로컬 파일
+.pytest-tmp/
+.claude/settings.local.json

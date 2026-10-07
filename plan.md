@@ -78,6 +78,8 @@ Add a leakage-safe `1-shot+` Aligned Core regime that retrieves a query-specific
 - The complete local suite passes (123 tests); source compilation, CLI help, notebook compilation, and `git diff --check` pass.
 - LVLM smoke/full inference was not run locally because the available 6 GB GPU is below the runner's 20 GB requirement; the guarded L4/A100 Colab path is ready.
 
+> **Correction (2026-10-07):** the nested-checkout note under Current State is stale — the working checkout is `Desktop\lvlm_insplad_fresh` tracking `origin/main`. On `origin/main` (`4e3ebc3`) the suite has 187 tests: with `--basetemp=.pytest-tmp`, 185 pass and 2 fail in `tests/test_anomalyclip_compat.py` (the compat patch rejects an `import urllib.request` fragment). Without `--basetemp`, 56 tests error on Windows temp-dir permissions.
+
 - [x] Verify authoritative Google Drive ZIP identities and sizes.
 - [x] Parse actual ZIP manifests and discover categories/splits/classes.
 - [x] Verify supervised annotation line schema from local ZIP text previews.
