@@ -1,0 +1,25 @@
+{
+  "protocol": "gold_v2_consistency_metrics",
+  "new_lvlm_inference": false,
+  "images": 246,
+  "models": [
+    "qwen3_5_4b",
+    "internvl3_5_8b",
+    "minicpm_v_4_5",
+    "llava_onevision_7b"
+  ],
+  "rows": 100,
+  "skipped_incomplete": [
+    {
+      "model_key": "llava_onevision_7b",
+      "condition": "vx:anomalyclip:score (1)",
+      "missing_q1_q2": 373
+    }
+  ],
+  "definitions": {
+    "consistency_error": "Q1 normal but Q2 defect, or Q1 anomalous but Q2 normal; over images with both answers valid",
+    "joint_accuracy": "Q1 and Q2 both correct; invalid counts as wrong; over all images",
+    "false_defect_rate": "normal images whose valid Q2 answer is a defect type; over normal images"
+  },
+  "source": "same conventions as scripts/evaluate.py; each question was asked independently"
+}
