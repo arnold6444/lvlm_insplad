@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import csv
+import gc
 import importlib.util
 import io
 import json
+import weakref
 import zipfile
 from pathlib import Path
 
@@ -18,6 +20,23 @@ SPEC.loader.exec_module(RUNNER)
 
 MODELS = ["qwen3_5_4b", "internvl3_5_8b"]
 EXPERTS = ["patchcore", "anomalyclip"]
+
+
+class _FakeModel:
+    """Stands in for GPU weights: the previous model must be freed before the next one loads."""
+
+
+def _tracking_loader(alive_at_load: list[int]):
+    refs: list[weakref.ref] = []
+
+    def loader(spec):
+        gc.collect()
+        alive_at_load.append(sum(ref() is not None for ref in refs))
+        model = _FakeModel()
+        refs.append(weakref.ref(model))
+        return {"model": model}
+
+    return loader
 
 
 def _q3(i: int, answer_text: str) -> dict:
@@ -113,7 +132,10 @@ def test_main_end_to_end_with_fake_model(tmp_path):
             "--artifact-root", str(art), "--image-only-csv", str(img_csv), "--vx-pred-dir", str(vx),
             "--out-dir", str(out), "--models", *MODELS, "--experts", *EXPERTS]
     load = lambda _: rows + [other]  # noqa: E731
-    assert RUNNER.main(argv, load_qa=load, loader=lambda s: loads.append(s) or {}, infer=infer) == 0
+    alive_at_load: list[int] = []
+    track = _tracking_loader(alive_at_load)
+    assert RUNNER.main(argv, load_qa=load, loader=lambda s: loads.append(s) or track(s), infer=infer) == 0
+    assert alive_at_load == [0] * len(MODELS)   # a model still in memory pushed MiniCPM onto meta tensors
     with (out / "leaderboard.csv").open(encoding="utf-8") as h:
         lb = {(r["model_key"], r["expert"], r["condition"]): r for r in csv.DictReader(h)}
     box = lb[(MODELS[0], "patchcore", "roi_box_single")]
