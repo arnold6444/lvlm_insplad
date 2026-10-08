@@ -248,6 +248,7 @@ def main(argv: Sequence[str] | None = None, *, load_qa: Callable[[Path], list[di
                                      "called_this_run": called, "reused_predictions": reused, "row_errors": errors,
                                      "status": "complete" if errors == 0 else "has_errors"})
         finally:
+            adapter = None   # drop the loop's reference too, or the next model loads beside this one
             holder.release()
 
     region_rows = [r for r in rows if dict(r["options"]).get(r["answer"]) != NONE_TEXT]

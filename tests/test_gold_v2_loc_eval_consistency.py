@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import csv
+import gc
 import importlib.util
 import io
 import json
 import sys
+import weakref
 import zipfile
 from pathlib import Path
 
@@ -29,6 +31,23 @@ DEFECT = {"A": "Normal / no defect.", "B": "Rust / corrosion.",
           "C": "Missing cap / missing insulator component.", "D": "Bird nest / foreign nesting material."}
 LETTER = {"normal": "A", "rust": "B"}
 MODELS = ["qwen3_5_4b", "internvl3_5_8b"]
+
+
+class _FakeModel:
+    """Stands in for GPU weights: the previous model must be freed before the next one loads."""
+
+
+def _tracking_loader(alive_at_load: list[int]):
+    refs: list[weakref.ref] = []
+
+    def loader(spec):
+        gc.collect()
+        alive_at_load.append(sum(ref() is not None for ref in refs))
+        model = _FakeModel()
+        refs.append(weakref.ref(model))
+        return {"model": model}
+
+    return loader
 
 
 def _gold(n: int = 6) -> list[dict]:
@@ -164,7 +183,9 @@ def test_loc_eval_end_to_end_with_fake_model(tmp_path):
     out = tmp_path / "out"
     argv = ["--loc-qa", str(loc_path), "--qa-dir", str(tmp_path), "--sup-zip", str(sup), "--unsup-zip", str(unsup),
             "--roi-manifest", str(manifest), "--out-dir", str(out), "--models", *MODELS]
-    assert LOC.main(argv, load_qa=lambda _: gold, loader=lambda s: {}, infer=infer) == 0
+    alive_at_load: list[int] = []
+    assert LOC.main(argv, load_qa=lambda _: gold, loader=_tracking_loader(alive_at_load), infer=infer) == 0
+    assert alive_at_load == [0] * len(MODELS)   # a model still in memory pushed MiniCPM onto meta tensors
     with (out / "leaderboard.csv").open(encoding="utf-8") as h:
         lb = {(r["model_key"], r["condition"]): r for r in csv.DictReader(h)}
     assert float(lb[("qwen3_5_4b", "image_only")]["loc_accuracy"]) == 0.0

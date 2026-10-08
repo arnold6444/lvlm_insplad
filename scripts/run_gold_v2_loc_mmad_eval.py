@@ -170,6 +170,7 @@ def main(argv: Sequence[str] | None = None, *, load_qa: Callable[[Path], list[di
                     first = next(r["error"] for r in out_rows if r.get("error"))
                     print(f"[{model_key}/{condition}] {errors} errors, first: {first[:300]}", flush=True)
         finally:
+            adapter = None   # drop the loop's reference too, or the next model loads beside this one
             holder.release()
 
     def correct(choice: Mapping[str, str | None], subset: Sequence[Mapping]) -> list[bool]:
