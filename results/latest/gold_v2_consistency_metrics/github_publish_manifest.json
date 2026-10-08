@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "published_at_utc": "2026-10-08T14:07:53.594693+00:00",
+  "published_at_utc": "2026-10-08T14:17:51.064226+00:00",
   "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_consistency_metrics",
   "repo": "arnold6444/lvlm_insplad",
   "branch": "main",
@@ -11,16 +11,16 @@
       "name": "consistency_leaderboard.csv",
       "remote_path": "results/latest/gold_v2_consistency_metrics/consistency_leaderboard.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_consistency_metrics/consistency_leaderboard.csv",
-      "commit_sha": "c9c2d5a564dccb5e43a971927ac48e534e62f6f1",
-      "size_bytes": 10317,
+      "commit_sha": "35da3ffad2a6a166a37734549f3bfed70f87132c",
+      "size_bytes": 14238,
       "mime_type": "text/csv"
     },
     {
       "name": "run_metadata.json",
       "remote_path": "results/latest/gold_v2_consistency_metrics/run_metadata.json",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_consistency_metrics/run_metadata.json",
-      "commit_sha": "df3e538e4af204c0b9dfa29c07376213cba61015",
-      "size_bytes": 802,
+      "commit_sha": "afdfb1d724b84bf09327e69aac982e36b505e515",
+      "size_bytes": 1122,
       "mime_type": "application/json"
     }
   ],
