@@ -1,0 +1,7 @@
+Answer policy,Q3 Acc
+Always 'no defect region',0.52381
+Always 'center',0.47619
+InternVL3.5-8B (image only),0.547619
+LLaVA-OneVision-7B (image only),0.52381
+MiniCPM-V-4.5 (image only),0.666667
+Qwen3.5-4B (image only),0.666667
