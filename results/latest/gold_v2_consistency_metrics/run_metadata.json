@@ -9,17 +9,22 @@
     "llava_onevision_7b"
   ],
   "rows": 100,
-  "skipped_incomplete": [
-    {
-      "model_key": "llava_onevision_7b",
-      "condition": "vx:anomalyclip:score (1)",
-      "missing_q1_q2": 373
+  "skipped_incomplete": [],
+  "q3_constant_baselines": {
+    "questions": 42,
+    "always_no_defect_region": 0.52381,
+    "always_center": 0.47619,
+    "answer_regions": {
+      "Center region.": 20,
+      "No localized defect region is present.": 22
     }
-  ],
+  },
   "definitions": {
     "consistency_error": "Q1 normal but Q2 defect, or Q1 anomalous but Q2 normal; over images with both answers valid",
     "joint_accuracy": "Q1 and Q2 both correct; invalid counts as wrong; over all images",
-    "false_defect_rate": "normal images whose valid Q2 answer is a defect type; over normal images"
+    "false_defect_rate": "normal images whose valid Q2 answer is a defect type; over normal images",
+    "q1q3_contradiction": "Q1 normal but Q3 names a region, or Q1 anomalous but Q3 says no defect region; over Q3 images with both answers valid",
+    "q1q3_joint_accuracy": "Q1 and Q3 both correct; over Q3 images"
   },
   "source": "same conventions as scripts/evaluate.py; each question was asked independently"
 }
