@@ -215,3 +215,45 @@ def test_eval_notebook_runs_consistency_then_location():
     assert code.index("run_gold_v2_consistency_metrics.py") < code.index("run_gold_v2_loc_mmad_eval.py")
     assert '"--prefix", "gold_v2_consistency_metrics"' in code and '"--prefix", "gold_v2_loc_mmad_eval"' in code
     assert 'quality_status") != "FROZEN"' in code and "CHECKPOINT_EVERY = 20" in code
+
+
+def _with_q3(rows):
+    """Add gold-v2 style Q3 rows (with a 'no defect region' option) for every image."""
+    out = list(rows)
+    for r in rows:
+        if r["question_type"] != "anomaly_detection":
+            continue
+        normal = r["anomaly_gt"] == "normal"
+        options = {"A": "Center region.", "B": CONS.NONE_TEXT, "C": "Upper-left region.", "D": "Lower-right region."}
+        out.append({**{k: r[k] for k in ("core_id", "asset_category", "image", "anomaly_gt", "defect_gt")},
+                    "id": f"{r['core_id']}-q3", "question_type": "defect_localization",
+                    "question": "Where is the defect region located in the target image?",
+                    "options": options, "answer": "B" if normal else "A"})
+    return out
+
+
+def test_q1_q3_contradiction_and_constant_baselines():
+    rows = _with_q3(_gold(4))     # core-0 normal, core-1 rust, core-2 normal, core-3 rust
+    pairs = CONS.q3_pairs(rows)
+    choice = {
+        "core-0-q1": "A", "core-0-q3": "A",   # normal but names a region -> contradiction, Q3 wrong
+        "core-1-q1": "B", "core-1-q3": "A",   # anomalous + region -> consistent, both right
+        "core-2-q1": "A", "core-2-q3": "B",   # normal + none -> consistent, both right
+        "core-3-q1": "B", "core-3-q3": "B",   # anomalous but none -> contradiction
+    }
+    r = CONS.q3_row(pairs, choice)
+    assert r["q3_questions"] == 4 and r["q3_accuracy"] == 0.5
+    assert r["q1q3_contradictions"] == 2 and r["q1q3_contradiction"] == 0.5
+    assert r["q1q3_joint_accuracy"] == 0.5
+    b = CONS.q3_baselines(pairs)
+    assert b["always_no_defect_region"] == 0.5 and b["always_center"] == 0.5
+    assert CONS.q3_row(pairs, {k: v for k, v in choice.items() if k != "core-3-q3"}) == {}   # incomplete -> blank
+
+
+def test_discover_skips_drive_duplicate_files(tmp_path):
+    for name in ("patchcore__score.jsonl", "anomalyclip__score (1).jsonl"):
+        f = tmp_path / "vx" / "qwen3_5_4b" / name
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps({"id": "x", "predicted_choice": "A"}) + "\n", encoding="utf-8")
+    found = CONS.discover(["qwen3_5_4b"], None, None, tmp_path / "vx", None)
+    assert set(c for _, c in found) == {"vx:patchcore:score"}
