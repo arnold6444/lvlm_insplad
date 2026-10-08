@@ -257,3 +257,54 @@ def test_discover_skips_drive_duplicate_files(tmp_path):
         f.write_text(json.dumps({"id": "x", "predicted_choice": "A"}) + "\n", encoding="utf-8")
     found = CONS.discover(["qwen3_5_4b"], None, None, tmp_path / "vx", None)
     assert set(c for _, c in found) == {"vx:patchcore:score"}
+
+
+def _mixed_choice(rows):
+    wrong = {"core-0-q2", "core-1-q1", "core-3-q3", "core-4-q1", "core-5-q2", "core-2-q3"}
+    out = {}
+    for r in rows:
+        out[r["id"]] = next(k for k in r["options"] if k != r["answer"]) if r["id"] in wrong else r["answer"]
+    out["core-6-q2"] = None   # one invalid answer
+    return out
+
+
+def test_bootstrap_components_match_point_metrics():
+    import numpy as np
+    rows = _with_q3(_gold(8))
+    pairs, loc = CONS.image_pairs(rows), CONS.q3_pairs(rows)
+    choice = _mixed_choice(rows)
+    point = {**CONS.consistency_row(pairs, choice), **CONS.q3_row(loc, choice)}
+    boot = CONS.metrics_from_weights(CONS.image_components(pairs, loc, choice), np.ones((1, len(pairs))))
+    for k in CONS.BOOT_METRICS:
+        assert abs(float(boot[k][0]) - point[k]) < 1e-6, k
+
+
+def test_paired_bootstrap_identical_is_not_significant_and_better_is():
+    rows = _with_q3(_gold(8))
+    pairs, loc = CONS.image_pairs(rows), CONS.q3_pairs(rows)
+    worse, perfect = _mixed_choice(rows), {r["id"]: r["answer"] for r in rows}
+    same = CONS.paired_bootstrap(pairs, loc, worse, worse, n_boot=200)
+    assert all(v["delta"] == 0 and not v["significant"] for v in same.values())
+    up = CONS.paired_bootstrap(pairs, loc, worse, perfect, n_boot=200)
+    assert up["joint_accuracy"]["delta"] > 0 and up["joint_accuracy"]["ci_low"] <= up["joint_accuracy"]["delta"]
+
+
+def test_main_writes_significance_for_main_pairs(tmp_path):
+    rows = _gold(4)
+    correct = {r["id"]: r["answer"] for r in rows}
+    img = tmp_path / "baseline.csv"
+    with img.open("w", newline="", encoding="utf-8") as h:
+        w = csv.DictWriter(h, fieldnames=["model_key", "id", "predicted_choice"])
+        w.writeheader()
+        for r in rows:
+            w.writerow({"model_key": "qwen3_5_4b", "id": r["id"], "predicted_choice": "A"})
+    p = tmp_path / "ref" / "normal_reference" / "predictions" / "qwen3_5_4b.jsonl"
+    p.parent.mkdir(parents=True)
+    p.write_text("\n".join(json.dumps({"id": i, "predicted_choice": c}) for i, c in correct.items()) + "\n", encoding="utf-8")
+    out = tmp_path / "out"
+    assert CONS.main(["--qa-dir", str(tmp_path), "--image-only-csv", str(img), "--reference-dir", str(tmp_path / "ref"),
+                      "--out-dir", str(out), "--models", "qwen3_5_4b", "--n-boot", "100"], load_qa=lambda _: rows) == 0
+    with (out / "significance_main.csv").open(encoding="utf-8") as h:
+        sig = list(csv.DictReader(h))
+    assert {(r["baseline"], r["condition"]) for r in sig} == {("image_only", "normal_reference")}
+    assert {r["metric"] for r in sig} == set(CONS.BOOT_METRICS)

@@ -11,6 +11,7 @@ conventions as ``scripts/evaluate.py``:
 - on the images that also have a Q3 (location) question: ``q3_accuracy``, ``q1q3_contradiction`` (Q1 normal but
   Q3 names a region, or Q1 anomalous but Q3 says no defect region) and ``q1q3_joint_accuracy``
 plus Q1 anomaly F1 and Q2 defect macro-F1 so the rows can be checked against the published leaderboards.
+``significance_main.csv`` adds image-level paired bootstrap 95% CIs for the main condition comparisons.
 """
 from __future__ import annotations
 
@@ -21,6 +22,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Mapping, Sequence
+
+import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -175,6 +178,113 @@ def consistency_row(pairs: Sequence[tuple[Mapping, Mapping]], choice: Mapping[st
     }
 
 
+MAIN_PAIRS = (
+    ("image_only", "normal_reference"),
+    ("image_only", "vx:patchcore:score"),
+    ("image_only", "ref+patchcore:score"),
+    ("normal_reference", "ref+patchcore:score"),
+)
+BOOT_METRICS = ("q1_anomaly_f1", "q2_defect_macro_f1", "joint_accuracy", "consistency_error",
+                "false_defect_rate", "q3_accuracy", "q1q3_contradiction")
+
+
+def image_components(pairs: Sequence[tuple[Mapping, Mapping]], loc_pairs: Sequence[tuple[Mapping, Mapping]],
+                     choice: Mapping[str, str | None]) -> dict:
+    """Per-image 0/1 vectors from which every metric can be recomputed for a resampled image set."""
+    sem = base.predicted_semantic
+    n = len(pairs)
+    index = {str(q1["core_id"]): i for i, (q1, _) in enumerate(pairs)}
+    z = lambda: np.zeros(n)  # noqa: E731
+    c = {k: z() for k in ("q1_tp", "q1_fp", "q1_fn", "joint", "contra", "valid", "normal", "false_def",
+                          "q3_ok", "q3_n", "q13_contra", "q13_valid")}
+    labels = sorted({str(q2["defect_gt"]) for _, q2 in pairs})
+    c["q2"] = {lab: {"tp": z(), "fp": z(), "fn": z()} for lab in labels}
+    for i, (q1, q2) in enumerate(pairs):
+        a = sem(q1, choice.get(str(q1["id"])))
+        d = sem(q2, choice.get(str(q2["id"])))
+        pa, ga = a == "anomalous", q1["anomaly_gt"] == "anomalous"
+        c["q1_tp"][i], c["q1_fp"][i], c["q1_fn"][i] = pa and ga, pa and not ga, ga and not pa
+        for lab, v in c["q2"].items():
+            v["tp"][i] = d == lab and q2["defect_gt"] == lab
+            v["fp"][i] = d == lab and q2["defect_gt"] != lab
+            v["fn"][i] = q2["defect_gt"] == lab and d != lab
+        c["joint"][i] = a == q1["anomaly_gt"] and d == q2["defect_gt"]
+        if a is not None and d is not None:
+            c["valid"][i] = 1
+            c["contra"][i] = (a == "normal") != (d == "normal")
+        if q1["anomaly_gt"] == "normal":
+            c["normal"][i] = 1
+            c["false_def"][i] = d is not None and d != "normal"
+    for q1, q3 in loc_pairs:
+        i = index.get(str(q1["core_id"]))
+        if i is None or str(q3["id"]) not in choice:
+            continue
+        a = sem(q1, choice.get(str(q1["id"])))
+        kind = q3_kind(q3, choice.get(str(q3["id"])))
+        c["q3_n"][i] = 1
+        c["q3_ok"][i] = choice.get(str(q3["id"])) == q3["answer"]
+        if a is not None and kind is not None:
+            c["q13_valid"][i] = 1
+            c["q13_contra"][i] = (a == "normal") != (kind == "none")
+    return c
+
+
+def _ratio(num, den):
+    return np.divide(num, den, out=np.zeros_like(den, dtype=float), where=den > 0)
+
+
+def metrics_from_weights(c: Mapping, w: np.ndarray) -> dict[str, np.ndarray]:
+    """``w``: (B, n_images) resample counts. Equals consistency_row / q3_row when w is all ones."""
+    w = np.atleast_2d(w)
+    tp, fp, fn = w @ c["q1_tp"], w @ c["q1_fp"], w @ c["q1_fn"]
+    f1s, present = [], []
+    for v in c["q2"].values():
+        t2, f2, n2 = w @ v["tp"], w @ v["fp"], w @ v["fn"]
+        f1s.append(_ratio(2 * t2, 2 * t2 + f2 + n2))
+        present.append((t2 + n2) > 0)
+    f1s, present = np.array(f1s), np.array(present)
+    return {
+        "q1_anomaly_f1": _ratio(2 * tp, 2 * tp + fp + fn),
+        "q2_defect_macro_f1": (f1s * present).sum(axis=0) / np.maximum(present.sum(axis=0), 1),
+        "joint_accuracy": _ratio(w @ c["joint"], w.sum(axis=1)),
+        "consistency_error": _ratio(w @ c["contra"], w @ c["valid"]),
+        "false_defect_rate": _ratio(w @ c["false_def"], w @ c["normal"]),
+        "q3_accuracy": _ratio(w @ c["q3_ok"], w @ c["q3_n"]),
+        "q1q3_contradiction": _ratio(w @ c["q13_contra"], w @ c["q13_valid"]),
+    }
+
+
+def paired_bootstrap(pairs, loc_pairs, base_choice, new_choice, n_boot: int = 2000, seed: int = 0) -> dict:
+    a = image_components(pairs, loc_pairs, base_choice)
+    b = image_components(pairs, loc_pairs, new_choice)
+    n = len(pairs)
+    w = np.random.default_rng(seed).multinomial(n, np.full(n, 1 / n), size=n_boot).astype(float)
+    ones = np.ones((1, n))
+    ma, mb = metrics_from_weights(a, w), metrics_from_weights(b, w)
+    pa, pb = metrics_from_weights(a, ones), metrics_from_weights(b, ones)
+    out = {}
+    for k in BOOT_METRICS:
+        delta = mb[k] - ma[k]
+        lo, hi = float(np.percentile(delta, 2.5)), float(np.percentile(delta, 97.5))
+        out[k] = {"base": float(pa[k][0]), "new": float(pb[k][0]), "delta": float(pb[k][0] - pa[k][0]),
+                  "ci_low": lo, "ci_high": hi, "significant": bool(lo > 0 or hi < 0)}
+    return out
+
+
+def significance_rows(pairs, loc_pairs, found, models, comparisons=MAIN_PAIRS, n_boot: int = 2000) -> list[dict]:
+    rows = []
+    for model in models:
+        for base_cond, new_cond in comparisons:
+            if (model, base_cond) not in found or (model, new_cond) not in found:
+                continue
+            stats = paired_bootstrap(pairs, loc_pairs, found[(model, base_cond)], found[(model, new_cond)], n_boot)
+            for metric, st in stats.items():
+                rows.append({"model_key": model, "baseline": base_cond, "condition": new_cond, "metric": metric,
+                             **{k: (round(v, 6) if isinstance(v, float) else v) for k, v in st.items()},
+                             "n_boot": n_boot})
+    return rows
+
+
 def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--qa-dir", type=Path, required=True)
@@ -184,6 +294,7 @@ def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> in
     p.add_argument("--combined-dir", type=Path, help="reference+expert predictions")
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--models", nargs="+", default=list(MODELS))
+    p.add_argument("--n-boot", type=int, default=2000)
     args = p.parse_args(argv)
 
     rows = load_qa(args.qa_dir)
@@ -198,6 +309,9 @@ def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> in
             continue
         out.append({"model_key": model, "condition": cond, **consistency_row(pairs, choice), **q3_row(loc_pairs, choice)})
     write_csv(args.out_dir / "consistency_leaderboard.csv", out)
+    complete = {k: v for k, v in found.items() if not any(s["model_key"] == k[0] and s["condition"] == k[1] for s in skipped)}
+    write_csv(args.out_dir / "significance_main.csv",
+              significance_rows(pairs, loc_pairs, complete, args.models, n_boot=args.n_boot))
     meta = {
         "protocol": "gold_v2_consistency_metrics",
         "new_lvlm_inference": False,
@@ -212,6 +326,9 @@ def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> in
             "q1q3_joint_accuracy": "Q1 and Q3 both correct; over Q3 images",
         },
         "source": "same conventions as scripts/evaluate.py; each question was asked independently",
+        "significance": {"pairs": [list(x) for x in MAIN_PAIRS], "method": f"image-level paired bootstrap, "
+                         f"{args.n_boot} resamples, seed 0, two-sided 95% CI; significant = CI excludes 0",
+                         "note": "consistency_error / false_defect_rate / q1q3_contradiction: lower is better"},
     }
     (args.out_dir / "run_metadata.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
                                                     encoding="utf-8")
