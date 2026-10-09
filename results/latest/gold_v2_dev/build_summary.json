@@ -1,0 +1,78 @@
+{
+  "protocol": "gold_v2_dev",
+  "file": "dev_master_qa_480.jsonl",
+  "images": 240,
+  "questions": 480,
+  "by_asset_defect": {
+    "glass-insulator:missing-cap": 25,
+    "glass-insulator:normal": 25,
+    "lightning-rod-suspension:normal": 25,
+    "lightning-rod-suspension:rust": 25,
+    "polymer-insulator-upper-shackle:normal": 25,
+    "vari-grip:bird-nest": 20,
+    "vari-grip:normal": 25,
+    "vari-grip:rust": 20,
+    "yoke-suspension:normal": 25,
+    "yoke-suspension:rust": 25
+  },
+  "quota": {
+    "glass-insulator:missing-cap": 25,
+    "glass-insulator:normal": 25,
+    "lightning-rod-suspension:normal": 25,
+    "lightning-rod-suspension:rust": 25,
+    "polymer-insulator-upper-shackle:normal": 25,
+    "vari-grip:bird-nest": 20,
+    "vari-grip:normal": 25,
+    "vari-grip:rust": 20,
+    "yoke-suspension:normal": 25,
+    "yoke-suspension:rust": 25
+  },
+  "selection": {
+    "excluded": {
+      "in_unsupervised_test": 557,
+      "is_fixed_reference": 2,
+      "duplicate_content": 15,
+      "class_not_used:polymer-insulator-upper-shackle:corrosao": 740
+    },
+    "eligible": {
+      "glass-insulator:missing-cap": 623,
+      "glass-insulator:normal": 555,
+      "lightning-rod-suspension:normal": 283,
+      "lightning-rod-suspension:rust": 307,
+      "polymer-insulator-upper-shackle:normal": 595,
+      "vari-grip:bird-nest": 346,
+      "vari-grip:normal": 275,
+      "vari-grip:rust": 283,
+      "yoke-suspension:normal": 238,
+      "yoke-suspension:rust": 289
+    },
+    "eligible_also_in_reference_pool": {
+      "glass-insulator:normal": 555,
+      "lightning-rod-suspension:normal": 282,
+      "polymer-insulator-upper-shackle:normal": 595,
+      "vari-grip:normal": 275,
+      "yoke-suspension:normal": 238
+    },
+    "shortfall": {}
+  },
+  "fixed_reference_by_asset": {
+    "glass-insulator": "glass-insulator/train/good/Fotos 30-11-2020_DJI_0407_cadeia_isolador_vidro_2742.jpg",
+    "lightning-rod-suspension": "lightning-rod-suspension/train/good/Fotos 03-12-2020_DJI_0576_suspensao_para_raio_57.jpg",
+    "polymer-insulator-upper-shackle": "polymer-insulator-upper-shackle/train/good/Fotos 20-11-2020_DJI_0138_manilha_isolador_superior_1316.jpg",
+    "vari-grip": "vari-grip/train/good/Fotos 01-12-2020_DJI_0078_vari_grip_49.jpg",
+    "yoke-suspension": "yoke-suspension/train/good/Fotos 16-12-2020_DJI_0403_amarra_balancim_2995.jpg"
+  },
+  "retrieval": {
+    "model_id": "facebook/dinov2-base",
+    "model_revision": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+    "embedding": "last_hidden_state_cls_l2",
+    "method": "cosine top-1 among same-asset leakage-safe unsupervised train normals",
+    "cosine_min": 0.3721,
+    "cosine_mean": 0.8349
+  },
+  "seed": 42,
+  "source_split": "supervised train",
+  "excluded_from_dev": "unsupervised test, gold v2 images, the fixed reference images, duplicates; retrieval never returns the target's own content",
+  "note": "Method selection only. Paper numbers come from gold v2. No Q3 (no location labels).",
+  "quality_status": "FROZEN"
+}
