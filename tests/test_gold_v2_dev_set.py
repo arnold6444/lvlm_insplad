@@ -77,11 +77,11 @@ def test_dev_set_selection_rules_and_rows(tmp_path):
         "glass-insulator:missing-cap": 3, "glass-insulator:normal": 3, "lightning-rod-suspension:normal": 3,
         "lightning-rod-suspension:rust": 3, "polymer-insulator-upper-shackle:normal": 3, "vari-grip:bird-nest": 2,
         "vari-grip:normal": 3, "vari-grip:rust": 2, "yoke-suspension:normal": 3, "yoke-suspension:rust": 3}
-    assert summary["selection"]["excluded"]["in_reference_pool"] == 1          # shared normal
+    assert "in_reference_pool" not in summary["selection"]["excluded"]        # pool normals stay eligible
     assert "class_not_used:polymer-insulator-upper-shackle:corrosao" in summary["selection"]["excluded"]
     rows = [json.loads(x) for x in (out / summary["file"]).read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 2 * summary["images"]
-    assert not any("shared.png" in r["image"] or "/val/" in r["image"] for r in rows)
+    assert not any("/val/" in r["image"] for r in rows)
     for r in rows:
         assert r["options"][r["answer"]] == r["answer_text"]
         assert r["normal_reference_image"] == summary["fixed_reference_by_asset"][r["asset_category"]]
@@ -142,3 +142,34 @@ def test_dev_notebook_builds_checks_and_publishes_frozen_only():
     code = "\n".join(cells)
     assert "build_gold_v2_dev_set.py" in code and "고정 reference 검증" in code
     assert 'summary.get("quality_status") == "FROZEN"' in code and '"--prefix", "gold_v2_dev"' in code
+
+
+
+def test_pool_normal_can_be_selected_but_never_retrieves_itself(tmp_path):
+    sup, unsup, gold = _zips(tmp_path)
+    out = tmp_path / "dev"
+    # vari-grip normals: 4 regular + shared.png (also an unsupervised train normal); take all 5
+    assert DEV.main(["--sup-zip", str(sup), "--unsup-zip", str(unsup), "--gold-qa-dir", str(gold), "--out-dir", str(out),
+                     "--defect-per-class", "2", "--normal-per-asset", "4", "--vari-grip-per-defect", "2"],
+                    embed_factory=_shared_closest_embed) == 0
+    summary = json.loads((out / "build_summary.json").read_text(encoding="utf-8"))
+    assert summary["selection"]["eligible_also_in_reference_pool"] == {"vari-grip:normal": 1}
+    import csv as _csv
+    with (out / "dev_images.csv").open(encoding="utf-8") as h:
+        dev = list(_csv.DictReader(h))
+    shared = [r for r in dev if r["image"].endswith("vari-grip/train/good/shared.png")]
+    if shared:                                     # selected by the seed: its reference must be another image
+        assert shared[0]["retrieved_reference_image"] != "unsup/vari-grip/train/good/shared.png"
+
+
+def _shared_closest_embed():
+    """Every vector identical except shared.png in both zips -> the query's own copy would win without the mask."""
+    def embed(rows, which):
+        out = {}
+        for r in rows:
+            v = np.ones(4, dtype=np.float32)
+            if str(r["relative_path"]).endswith("shared.png"):
+                v = np.array([1, 0, 0, 0], dtype=np.float32)
+            out[str(r["relative_path"])] = v / np.linalg.norm(v)
+        return out
+    return embed

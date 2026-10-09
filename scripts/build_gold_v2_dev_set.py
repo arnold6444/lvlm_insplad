@@ -7,8 +7,10 @@ gold v2 took every anomalous Aligned Core image, so development images come from
 - per asset: defect images per class (default 25; vari-grip 20 + 20) and 25 normal images
 - polymer-insulator-upper-shackle train defects are ``corrosão`` (kept separate from ``rust`` by the data
   contract), so polymer contributes normal images only
-- excluded: any image whose content fingerprint (size + CRC32) appears in the unsupervised test split, in the
-  leakage-safe normal-reference pool (unsupervised train normals) or among the gold v2 images; duplicates
+- excluded: any image whose content fingerprint (size + CRC32) appears in the unsupervised test split or among
+  the gold v2 images, the per-asset fixed reference images themselves, and duplicates. Most supervised train
+  normals are also unsupervised train normals (the reference pool), so they stay eligible; what must never
+  happen is a target shown next to itself, so retrieval skips candidates with the query's own fingerprint
 
 Questions use the gold v2 wording and option sets (Q1 normal/anomalous, Q2 defect type); there is no Q3.
 Each image carries the gold-style fixed normal reference (one per asset, ``select_reference_by_asset`` seed 42)
@@ -75,10 +77,13 @@ def quotas(defect_per_class: int, normal_per_asset: int, vari_grip_per_defect: i
 
 
 def select_dev_images(sup_rows: Sequence[Mapping], unsup_rows: Sequence[Mapping], gold_images: set[str],
-                      quota: Mapping[tuple[str, str], int], seed: int = 42) -> tuple[list[dict], dict]:
+                      quota: Mapping[tuple[str, str], int], seed: int = 42,
+                      fixed_refs: Mapping[str, Mapping] | None = None) -> tuple[list[dict], dict]:
     test_fp = {str(r["content_fingerprint"]) for r in unsup_rows if r["split"] == "test"}
     pool_fp = {str(r["content_fingerprint"]) for rows in
                leakage_safe_train_normal_candidates(unsup_rows, ASSETS).values() for r in rows}
+    fixed_fp = {str(r["content_fingerprint"]) for r in (fixed_refs or {}).values()}
+    also_in_pool: Counter = Counter()
     sup_by_path = {str(r["relative_path"]): r for r in sup_rows}
     gold_fp = {str(sup_by_path[p]["content_fingerprint"]) for p in gold_images if p in sup_by_path}
     reasons: Counter = Counter()
@@ -96,13 +101,15 @@ def select_dev_images(sup_rows: Sequence[Mapping], unsup_rows: Sequence[Mapping]
             reasons["in_gold_v2"] += 1
         elif fp in test_fp:
             reasons["in_unsupervised_test"] += 1
-        elif fp in pool_fp:
-            reasons["in_reference_pool"] += 1
+        elif fp in fixed_fp:
+            reasons["is_fixed_reference"] += 1
         elif fp in seen:
             reasons["duplicate_content"] += 1
         else:
             seen.add(fp)
             eligible.setdefault(key, []).append(r)
+            if fp in pool_fp:
+                also_in_pool[f"{key[0]}:{key[1]}"] += 1
             continue
     selected = []
     shortfall = {}
@@ -113,7 +120,7 @@ def select_dev_images(sup_rows: Sequence[Mapping], unsup_rows: Sequence[Mapping]
         pick = random.Random(f"{seed}:dev:{key[0]}:{key[1]}").sample(pool, min(n, len(pool)))
         selected.extend(sorted(pick, key=lambda x: str(x["relative_path"])))
     stats = {"excluded": dict(reasons), "eligible": {f"{a}:{d}": len(v) for (a, d), v in sorted(eligible.items())},
-             "shortfall": shortfall}
+             "eligible_also_in_reference_pool": dict(also_in_pool), "shortfall": shortfall}
     return selected, stats
 
 
@@ -128,9 +135,11 @@ def retrieve_similar_normals(dev_rows: Sequence[Mapping], unsup_rows: Sequence[M
         cand = np.stack([c_emb[str(r["relative_path"])] for r in rows])
         for q in (r for r in dev_rows if r["asset_category"] == asset):
             scores = cand @ q_emb[str(q["relative_path"])]
+            own = np.array([r["content_fingerprint"] == q["content_fingerprint"] for r in rows])
+            scores = np.where(own, -np.inf, scores)            # never retrieve the target itself
             best = int(np.argmax(scores))
-            if rows[best]["content_fingerprint"] == q["content_fingerprint"]:
-                raise RuntimeError(f"{q['relative_path']}: retrieved reference is the query itself")
+            if not np.isfinite(scores[best]):
+                raise RuntimeError(f"{q['relative_path']}: no reference candidate other than itself")
             out[str(q["relative_path"])] = {"retrieved_reference_image": str(rows[best]["relative_path"]),
                                             "retrieval_cosine": round(float(scores[best]), 6)}
     return out
@@ -200,8 +209,8 @@ def main(argv: Sequence[str] | None = None, *, embed_factory=None) -> int:
         raise RuntimeError(f"no gold images found under {args.gold_qa_dir}")
 
     quota = quotas(args.defect_per_class, args.normal_per_asset, args.vari_grip_per_defect)
-    dev_rows, stats = select_dev_images(sup_rows, unsup_rows, gold_images, quota, args.seed)
     fixed = select_reference_by_asset(unsup_rows, ASSETS, seed=42)
+    dev_rows, stats = select_dev_images(sup_rows, unsup_rows, gold_images, quota, args.seed, fixed)
     if embed_factory is None:
         embed, provenance = dino_embedder(args.sup_zip, args.unsup_zip, args.out_dir / "_dino_cache", args.device)
         provenance = {"model_id": provenance.model_id, "model_revision": provenance.model_revision,
@@ -228,7 +237,8 @@ def main(argv: Sequence[str] | None = None, *, embed_factory=None) -> int:
         "retrieval": {**provenance, "method": "cosine top-1 among same-asset leakage-safe unsupervised train normals",
                       "cosine_min": round(min(cos), 4), "cosine_mean": round(sum(cos) / len(cos), 4)},
         "seed": args.seed, "source_split": "supervised train",
-        "excluded_from_dev": "unsupervised test, reference pool (unsupervised train normals), gold v2 images, duplicates",
+        "excluded_from_dev": "unsupervised test, gold v2 images, the fixed reference images, duplicates; "
+                             "retrieval never returns the target's own content",
         "note": "Method selection only. Paper numbers come from gold v2. No Q3 (no location labels).",
         "quality_status": "FROZEN" if not stats["shortfall"] else "SHORTFALL",
     }
