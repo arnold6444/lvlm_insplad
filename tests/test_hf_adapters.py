@@ -189,3 +189,22 @@ def test_internvl_tile_budget_is_distributed_across_images(total, count, expecte
 def test_internvl_tile_budget_rejects_zero_images():
     with pytest.raises(ValueError):
         hf_adapters._internvl_per_image_tile_budget(6, 0)
+
+
+def test_minicpm_decodes_greedily_like_the_other_models(tmp_path):
+    from PIL import Image
+
+    image = tmp_path / 'x.png'
+    Image.new('RGB', (4, 4)).save(image)
+    seen = {}
+
+    class FakeModel:
+        def chat(self, **kwargs):
+            seen.update(kwargs)
+            return ' B '
+
+    out = hf_adapters._infer_minicpm({'model': FakeModel(), 'tokenizer': object()}, [image], 'prompt')
+    assert out == 'B'
+    # chat() samples at temperature 0.7 by default and uses 3-beam search when sampling=False
+    assert seen['sampling'] is False and seen['num_beams'] == 1 and seen['repetition_penalty'] == 1.0
+    assert seen['max_new_tokens'] == 80 and seen['enable_thinking'] is False
