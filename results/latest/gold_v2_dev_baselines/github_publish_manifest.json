@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-09T16:19:17.546036+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_dev_baselines",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_dev_baselines",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_dev_baselines/leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/leaderboard.csv",
+      "commit_sha": "8cc4f2f5e744601b93afcb5163b67e6baabdd9e5",
+      "size_bytes": 706,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "remote_path": "results/latest/gold_v2_dev_baselines/metrics_by_asset.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/metrics_by_asset.csv",
+      "commit_sha": "cdbb58317758d4e33186271a400fd3766ff19e7f",
+      "size_bytes": 3162,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "significance.csv",
+      "remote_path": "results/latest/gold_v2_dev_baselines/significance.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/significance.csv",
+      "commit_sha": "de02371fb8c9d7a8e0d4c031d6abbb7a2193e8aa",
+      "size_bytes": 3562,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "run_status.json",
+      "remote_path": "results/latest/gold_v2_dev_baselines/run_status.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/run_status.json",
+      "commit_sha": "e402dbdd99c65a468561bf4ecc3d364dccf9bd41",
+      "size_bytes": 1091,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_dev_baselines/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/run_metadata.json",
+      "commit_sha": "c4cd3e1921369bf1ccd0617f148132572b871e5f",
+      "size_bytes": 737,
+      "mime_type": "application/json"
+    }
+  ],
+  "missing": []
+}
