@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "published_at_utc": "2026-10-09T08:12:55.207454+00:00",
+  "published_at_utc": "2026-10-09T15:25:02.181442+00:00",
   "source_dir": "/content/drive/MyDrive/lvlm_insplad_qa/gold_v2_dev",
   "repo": "arnold6444/lvlm_insplad",
   "branch": "main",
@@ -11,7 +11,7 @@
       "name": "build_summary.json",
       "remote_path": "results/latest/gold_v2_dev/build_summary.json",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev/build_summary.json",
-      "commit_sha": "49e6991451fea814f7c2a9d432938bd149986cc0",
+      "commit_sha": "018dcc7b1c9b2a3f83534755cfa12282360dfe3c",
       "size_bytes": 3007,
       "mime_type": "application/json"
     },
@@ -19,7 +19,7 @@
       "name": "dev_images.csv",
       "remote_path": "results/latest/gold_v2_dev/dev_images.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev/dev_images.csv",
-      "commit_sha": "06062988473f0c89adb76eed5d515acff3214fe8",
+      "commit_sha": "df32531afa576db9803019bfd87dfcae20bb885f",
       "size_bytes": 87732,
       "mime_type": "text/csv"
     },
@@ -27,7 +27,7 @@
       "name": "dev_master_qa_480.jsonl",
       "remote_path": "results/latest/gold_v2_dev/dev_master_qa_480.jsonl",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev/dev_master_qa_480.jsonl",
-      "commit_sha": "8b1633130a2351ae1e0c0967f06c9e556f97b555",
+      "commit_sha": "f5fc9ca0a538934cec6e829781a73aab31d0e01a",
       "size_bytes": 435500,
       "mime_type": null
     }
