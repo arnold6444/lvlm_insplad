@@ -481,11 +481,17 @@ def _infer_minicpm(adapter: Mapping[str, Any], image_paths: Sequence[Path], prom
 
     images = [Image.open(path).convert("RGB") for path in image_paths]
     msgs = [{"role": "user", "content": [*images, prompt]}]
+    # MiniCPM-V chat() samples by default (temperature 0.7) and switches to 3-beam search with
+    # repetition_penalty 1.2 when sampling=False. Override both so it decodes greedily like the other models.
     answer = adapter["model"].chat(
         msgs=msgs,
         tokenizer=adapter["tokenizer"],
         enable_thinking=False,
         stream=False,
+        sampling=False,
+        num_beams=1,
+        repetition_penalty=1.0,
+        max_new_tokens=80,
     )
     if isinstance(answer, str):
         return answer.strip()
