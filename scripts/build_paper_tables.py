@@ -10,7 +10,8 @@ consistency, plus ``significance_main.csv`` when present) and writes CSV + Markd
 - table3_vision_expert: 4 experts x 5 evidence types, mean over models
 - table4_q3_baselines: Q3 against constant answers (the set is small and centre/none heavy)
 - table5_significance: paired bootstrap deltas with 95% CI for the main comparisons
-- all_conditions: every model x condition row
+- table6_score_baselines: score-only Q1 baselines (PatchCore, retrieval cosine) from gold_v2_main_rerun
+- all_conditions: every model x condition row (``@original`` = run replaced by the greedy re-run)
 """
 from __future__ import annotations
 
@@ -24,7 +25,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL_NAMES = {"qwen3_5_4b": "Qwen3.5-4B", "internvl3_5_8b": "InternVL3.5-8B",
                "minicpm_v_4_5": "MiniCPM-V-4.5", "llava_onevision_7b": "LLaVA-OneVision-7B"}
 MAIN = {"image_only": "Image only", "normal_reference": "+ Normal ref",
-        "vx:patchcore:score": "+ Expert score", "ref+patchcore:score": "+ Normal ref + Expert score"}
+        "vx:patchcore:score": "+ Expert score", "ref+patchcore:score": "+ Normal ref + Expert score",
+        "normal_ref_retrieved": "+ Similar normal ref", "normal_ref_retrieved_diffdate": "+ Similar normal ref (other flight)"}
 REFERENCE = {"image_only": "Image only", "normal_reference": "+ Normal ref", "positive_reference": "+ Defect ref",
              "normal_positive_reference": "+ Normal ref + Defect ref"}
 METRICS = [("q1_anomaly_f1", "Q1 F1", True), ("q2_defect_macro_f1", "Q2 macro-F1", True),
@@ -172,6 +174,20 @@ def build(results_dir: Path, out_dir: Path) -> dict:
                markdown(t5, [("Model", "Model"), ("Comparison", "Comparison")] + metric_cols), ""]
     else:
         md += ["## Table 5. Paired bootstrap", "", "_significance_main.csv not published yet_", ""]
+
+    score_path = results_dir / "gold_v2_main_rerun" / "score_baselines.csv"
+    if score_path.is_file():
+        t6 = [{"Method": r["method"], "q1_anomaly_f1": num(r.get("q1_anomaly_f1")), "AUROC": num(r.get("auroc")),
+               "Threshold": r.get("threshold", ""), "Threshold source": r.get("threshold_source", "")}
+              for r in read_csv(score_path)]
+        write_csv(out_dir / "table6_score_baselines.csv", t6)
+        md += ["## Table 6. Score-only Q1 baselines (no LVLM)", "",
+               "An LVLM condition should beat these; otherwise its Q1 gain may come from the score or retrieval "
+               "similarity alone.", "",
+               markdown(t6, [("Method", "Method"), ("q1_anomaly_f1", "Q1 F1"), ("AUROC", "AUROC"),
+                             ("Threshold", "Threshold"), ("Threshold source", "Threshold source")]), ""]
+    else:
+        md += ["## Table 6. Score-only Q1 baselines", "", "_gold_v2_main_rerun/score_baselines.csv not published yet_", ""]
 
     full = [{"Model": MODEL_NAMES.get(r["model_key"], r["model_key"]), "Condition": r["condition"],
              **{k: num(r.get(k)) for k, _, _ in METRICS}} for r in rows]
