@@ -1,0 +1,7 @@
+model_key,condition,images,q1_anomaly_f1,q2_defect_macro_f1,consistency_error,contradictions,valid_pairs,joint_accuracy,false_defect_rate,q1_invalid_rate,q2_invalid_rate
+internvl3_5_8b,image_only,240,0.645833,0.470942,0.233333,56,240,0.525,0.248,0.0,0.0
+internvl3_5_8b,normal_ref_fixed,240,0.834646,0.49391,0.229167,55,240,0.504167,0.544,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved,240,0.816901,0.536836,0.204167,49,240,0.6375,0.248,0.0,0.0
+qwen3_5_4b,image_only,240,0.663866,0.534344,0.241667,58,240,0.5125,0.368,0.0,0.0
+qwen3_5_4b,normal_ref_fixed,240,0.713333,0.648448,0.320833,77,240,0.4875,0.328,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved,240,0.718861,0.651104,0.325,78,240,0.529167,0.216,0.0,0.0
