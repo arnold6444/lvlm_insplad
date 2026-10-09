@@ -6,6 +6,8 @@ Three conditions with the gold v2 prompt builders, so dev numbers line up with t
 - ``image_only``          : ``run_gold_baselines.prompt_for``, images ``[target]``
 - ``normal_ref_fixed``    : ``prompt_for_condition(..., "normal_reference")``, ``[fixed normal, target]``
 - ``normal_ref_retrieved``: same prompt, ``[DINOv2 top-1 normal, target]``
+- ``normal_ref_retrieved_diffdate``: same prompt, top-1 among normals from another flight date
+  (needs ``--refs-csv`` from ``scripts/build_retrieved_refs.py``)
 
 Reports Q1 anomaly F1, Q2 defect macro-F1, Q1-Q2 contradiction, joint accuracy and FDR overall and per asset,
 plus image-level paired bootstrap CIs for fixed vs retrieved reference and image-only vs each reference.
@@ -13,6 +15,7 @@ plus image-level paired bootstrap CIs for fixed vs retrieved reference and image
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 import time
@@ -30,9 +33,11 @@ import run_gold_v2_consistency_metrics as cons  # noqa: E402
 import run_gold_v2_reference_ablation as ref  # noqa: E402
 
 MODELS = ("internvl3_5_8b", "qwen3_5_4b")
-CONDITIONS = ("image_only", "normal_ref_fixed", "normal_ref_retrieved")
+CONDITIONS = ("image_only", "normal_ref_fixed", "normal_ref_retrieved", "normal_ref_retrieved_diffdate")
+DEFAULT_CONDITIONS = ("image_only", "normal_ref_fixed", "normal_ref_retrieved")
 COMPARISONS = (("image_only", "normal_ref_fixed"), ("image_only", "normal_ref_retrieved"),
-               ("normal_ref_fixed", "normal_ref_retrieved"))
+               ("normal_ref_fixed", "normal_ref_retrieved"), ("normal_ref_retrieved", "normal_ref_retrieved_diffdate"),
+               ("normal_ref_fixed", "normal_ref_retrieved_diffdate"), ("image_only", "normal_ref_retrieved_diffdate"))
 PROMPT_VERSION = 1
 
 
@@ -43,18 +48,23 @@ def read_jsonl(path: Path) -> list[dict]:
 def build_prompt(row: Mapping, condition: str) -> str:
     if condition == "image_only":
         return base.prompt_for(dict(row))
-    if condition in ("normal_ref_fixed", "normal_ref_retrieved"):
+    if condition in ("normal_ref_fixed", "normal_ref_retrieved", "normal_ref_retrieved_diffdate"):
         return ref.prompt_for_condition(dict(row), "normal_reference")
     raise ValueError(condition)
 
 
-def images_for(condition: str, target: Path, fixed: Path | None, retrieved: Path | None) -> list[Path]:
+def images_for(condition: str, target: Path, fixed: Path | None, retrieved: Path | None,
+               retrieved_diffdate: Path | None = None) -> list[Path]:
     if condition == "image_only":
         return [target]
     if condition == "normal_ref_fixed":
         return [fixed, target]
     if condition == "normal_ref_retrieved":
         return [retrieved, target]
+    if condition == "normal_ref_retrieved_diffdate":
+        if retrieved_diffdate is None:
+            raise RuntimeError("normal_ref_retrieved_diffdate needs --refs-csv")
+        return [retrieved_diffdate, target]
     raise ValueError(condition)
 
 
@@ -71,9 +81,10 @@ def main(argv: Sequence[str] | None = None, *, loader: Callable | None = None, i
     p.add_argument("--unsup-zip", type=Path, required=True)
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--models", nargs="+", default=list(MODELS))
-    p.add_argument("--conditions", nargs="+", default=list(CONDITIONS), choices=list(CONDITIONS))
+    p.add_argument("--conditions", nargs="+", default=list(DEFAULT_CONDITIONS), choices=list(CONDITIONS))
     p.add_argument("--checkpoint-every", type=int, default=20)
     p.add_argument("--n-boot", type=int, default=2000)
+    p.add_argument("--refs-csv", type=Path, help="retrieved_refs.csv for the diffdate condition")
     args = p.parse_args(argv)
 
     if infer is None:
@@ -82,10 +93,19 @@ def main(argv: Sequence[str] | None = None, *, loader: Callable | None = None, i
     if not rows or any(r.get("protocol") != "gold_v2_dev" for r in rows):
         raise RuntimeError("expected a gold_v2_dev question file")
 
+    diffdate: dict[str, str] = {}
+    if args.refs_csv:
+        with args.refs_csv.open(newline="", encoding="utf-8-sig") as h:
+            diffdate = {r["image"]: r["retrieved_diffdate"] for r in csv.DictReader(h)}
+    if "normal_ref_retrieved_diffdate" in args.conditions:
+        missing = sorted({str(r["image"]) for r in rows} - set(diffdate))
+        if missing:
+            raise RuntimeError(f"--refs-csv lacks {len(missing)} dev images, e.g. {missing[:2]}")
+
     args.out_dir.mkdir(parents=True, exist_ok=True)
     targets = base.prepare_images(rows, args.sup_zip, args.out_dir / "_images" / "target")
     ref_members = sorted({str(r["normal_reference_image"]) for r in rows} |
-                         {str(r["retrieved_reference_image"]) for r in rows})
+                         {str(r["retrieved_reference_image"]) for r in rows} | set(diffdate.values()))
     refs = {m: base.safe_extract(args.unsup_zip, m, args.out_dir / "_images" / "normal") for m in ref_members}
 
     statuses: list[dict] = []
@@ -105,8 +125,9 @@ def main(argv: Sequence[str] | None = None, *, loader: Callable | None = None, i
                         out_rows.append(old)
                         reused += 1
                         continue
+                    dd = diffdate.get(str(row["image"]))
                     images = images_for(condition, targets[str(row["image"])], refs[str(row["normal_reference_image"])],
-                                        refs[str(row["retrieved_reference_image"])])
+                                        refs[str(row["retrieved_reference_image"])], refs[dd] if dd else None)
                     adapter = holder.get()
                     started = time.time()
                     output, error = "", ""
@@ -142,6 +163,14 @@ def main(argv: Sequence[str] | None = None, *, loader: Callable | None = None, i
     for pair in pairs:
         by_asset[str(pair[0]["asset_category"])].append(pair)
     leaderboard, per_asset = [], []
+    # include predictions already on disk (earlier runs of other conditions)
+    for model_key in args.models:
+        for condition in CONDITIONS:
+            f = args.out_dir / "predictions" / model_key / f"{condition}.jsonl"
+            if (model_key, condition) not in preds and f.is_file():
+                got = {str(r["id"]): r.get("predicted_choice") for r in read_jsonl(f)}
+                if all(str(r["id"]) in got for r in rows):
+                    preds[(model_key, condition)] = got
     for (model_key, condition), choice in preds.items():
         leaderboard.append({"model_key": model_key, "condition": condition, **cons.consistency_row(pairs, choice)})
         for asset, subset in sorted(by_asset.items()):

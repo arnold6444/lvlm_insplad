@@ -105,7 +105,8 @@ def test_dev_baselines_end_to_end(tmp_path):
     assert float(lb[("qwen3_5_4b", "image_only")]["q1_anomaly_f1"]) == 0.0
     with (out / "significance.csv").open(encoding="utf-8") as h:
         sig = list(csv.DictReader(h))
-    assert {(r["baseline"], r["condition"]) for r in sig} == set(RUN.COMPARISONS)
+    ran = set(RUN.DEFAULT_CONDITIONS)
+    assert {(r["baseline"], r["condition"]) for r in sig} == {c for c in RUN.COMPARISONS if set(c) <= ran}
     assert "q3_accuracy" not in {r["metric"] for r in sig}
     with (out / "metrics_by_asset.csv").open(encoding="utf-8") as h:
         assert {r["asset_category"] for r in csv.DictReader(h)} == {"vari-grip", "yoke-suspension"}
@@ -123,3 +124,41 @@ def test_dev_baselines_notebook():
     assert "run_gold_v2_dev_baselines.py" in code and "CHECKPOINT_EVERY = 20" in code
     assert 'MODELS = ["internvl3_5_8b","qwen3_5_4b"]' in code
     assert '"--prefix", "gold_v2_dev_baselines"' in code and "torch.cuda.is_available()" in code
+
+
+def test_diffdate_condition_uses_refs_csv_and_reuses_earlier_conditions(tmp_path):
+    rows = _rows(4)
+    qa = tmp_path / "dev_master_qa_8.jsonl"
+    qa.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    sup, unsup = tmp_path / "sup.zip", tmp_path / "unsup.zip"
+    with zipfile.ZipFile(sup, "w") as z:
+        for name in sorted({r["image"] for r in rows}):
+            z.writestr(name, _png(10))
+    with zipfile.ZipFile(unsup, "w") as z:
+        for name in ("unsup/fixed.png", "unsup/near0.png", "unsup/near1.png", "unsup/other.png"):
+            z.writestr(name, _png(200))
+    refs = tmp_path / "retrieved_refs.csv"
+    with refs.open("w", newline="", encoding="utf-8") as h:
+        w = csv.DictWriter(h, fieldnames=["image", "retrieved_diffdate"])
+        w.writeheader()
+        for img in sorted({r["image"] for r in rows}):
+            w.writerow({"image": img, "retrieved_diffdate": "unsup/other.png"})
+    seen = []
+
+    def infer(adapter, images, prompt):
+        seen.append(Path(images[0]).name if len(images) == 2 else "")
+        return "A"
+
+    out = tmp_path / "out"
+    base_args = ["--dev-qa", str(qa), "--sup-zip", str(sup), "--unsup-zip", str(unsup), "--out-dir", str(out),
+                 "--models", "qwen3_5_4b", "--n-boot", "50"]
+    assert RUN.main(base_args, loader=lambda s: {}, infer=infer) == 0
+    seen.clear()
+    assert RUN.main(base_args + ["--conditions", "normal_ref_retrieved_diffdate", "--refs-csv", str(refs)],
+                    loader=lambda s: {}, infer=infer) == 0
+    assert set(seen) == {"other.png"}
+    with (out / "leaderboard.csv").open(encoding="utf-8") as h:
+        conds = {r["condition"] for r in csv.DictReader(h)}
+    assert conds == set(RUN.CONDITIONS)                    # earlier conditions picked up from disk
+    with (out / "significance.csv").open(encoding="utf-8") as h:
+        assert ("normal_ref_retrieved", "normal_ref_retrieved_diffdate") in {(r["baseline"], r["condition"]) for r in csv.DictReader(h)}

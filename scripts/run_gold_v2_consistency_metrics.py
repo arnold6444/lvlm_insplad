@@ -35,6 +35,12 @@ Q1, Q2, Q3 = "anomaly_detection", "defect_classification", "defect_localization"
 NONE_TEXT = "No localized defect region is present."
 CENTER_TEXT = "Center region."
 STEM = re.compile(r"^[a-z0-9_]+__[a-z0-9_]+$")   # skips Drive duplicates such as "x__score (1)"
+# file slug -> condition for scripts/run_gold_v2_main_conditions.py outputs (MiniCPM greedy re-run, retrieved refs)
+RERUN_SLUG_TO_CONDITION = {
+    "image_only": "image_only", "normal_reference": "normal_reference", "vx_patchcore_score": "vx:patchcore:score",
+    "ref_patchcore_score": "ref+patchcore:score", "normal_ref_retrieved": "normal_ref_retrieved",
+    "normal_ref_retrieved_diffdate": "normal_ref_retrieved_diffdate",
+}
 MODELS = ("qwen3_5_4b", "internvl3_5_8b", "minicpm_v_4_5", "llava_onevision_7b")
 REFERENCE_CONDITIONS = ("normal_reference", "positive_reference", "normal_positive_reference")
 
@@ -60,8 +66,12 @@ def _choice(value: object) -> str | None:
 
 
 def discover(models: Sequence[str], image_only_csv: Path | None, reference_dir: Path | None,
-             vx_pred_dir: Path | None, combined_dir: Path | None) -> dict[tuple[str, str], dict[str, str | None]]:
-    """(model, condition) -> {question id: predicted letter} for every prediction file that exists."""
+             vx_pred_dir: Path | None, combined_dir: Path | None,
+             rerun_dir: Path | None = None) -> dict[tuple[str, str], dict[str, str | None]]:
+    """(model, condition) -> {question id: predicted letter} for every prediction file that exists.
+
+    Predictions under ``rerun_dir`` (scripts/run_gold_v2_main_conditions.py) take the plain condition name; a
+    replaced original run stays available as ``<condition>@original`` (e.g. MiniCPM sampled at T=0.7)."""
     found: dict[tuple[str, str], dict[str, str | None]] = {}
     if image_only_csv and Path(image_only_csv).is_file():
         with Path(image_only_csv).open(newline="", encoding="utf-8-sig") as handle:
@@ -83,6 +93,18 @@ def discover(models: Sequence[str], image_only_csv: Path | None, reference_dir: 
                 expert, _, cond = p.stem.partition("__")
                 name = f"vx:{expert}:{cond}" if prefix == "vx" else f"ref+{expert}:{cond}"
                 found[(model, name)] = {str(r["id"]): _choice(r.get("predicted_choice")) for r in read_jsonl(p)}
+    if rerun_dir:
+        for model in models:
+            model_dir = Path(rerun_dir) / "predictions" / model
+            if not model_dir.is_dir():
+                continue
+            for p in sorted(model_dir.glob("*.jsonl")):
+                cond = RERUN_SLUG_TO_CONDITION.get(p.stem)
+                if cond is None:
+                    continue
+                if (model, cond) in found:
+                    found[(model, f"{cond}@original")] = found.pop((model, cond))
+                found[(model, cond)] = {str(r["id"]): _choice(r.get("predicted_choice")) for r in read_jsonl(p)}
     return found
 
 
@@ -183,6 +205,10 @@ MAIN_PAIRS = (
     ("image_only", "vx:patchcore:score"),
     ("image_only", "ref+patchcore:score"),
     ("normal_reference", "ref+patchcore:score"),
+    ("normal_reference", "normal_ref_retrieved"),
+    ("normal_reference", "normal_ref_retrieved_diffdate"),
+    ("normal_ref_retrieved", "normal_ref_retrieved_diffdate"),
+    ("image_only", "normal_ref_retrieved_diffdate"),
 )
 BOOT_METRICS = ("q1_anomaly_f1", "q2_defect_macro_f1", "joint_accuracy", "consistency_error",
                 "false_defect_rate", "q3_accuracy", "q1q3_contradiction")
@@ -292,6 +318,7 @@ def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> in
     p.add_argument("--reference-dir", type=Path, help="gold_reference_v2 folder (condition/predictions/model.jsonl)")
     p.add_argument("--vx-pred-dir", type=Path, help="vision expert full eval/predictions")
     p.add_argument("--combined-dir", type=Path, help="reference+expert predictions")
+    p.add_argument("--rerun-dir", type=Path, help="run_gold_v2_main_conditions.py output (preferred over originals)")
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--models", nargs="+", default=list(MODELS))
     p.add_argument("--n-boot", type=int, default=2000)
@@ -300,7 +327,8 @@ def main(argv: Sequence[str] | None = None, *, load_qa=v2.load_gold_qa_v2) -> in
     rows = load_qa(args.qa_dir)
     pairs = image_pairs(rows)
     loc_pairs = q3_pairs(rows)
-    found = discover(args.models, args.image_only_csv, args.reference_dir, args.vx_pred_dir, args.combined_dir)
+    found = discover(args.models, args.image_only_csv, args.reference_dir, args.vx_pred_dir, args.combined_dir,
+                     args.rerun_dir)
     out, skipped = [], []
     for (model, cond), choice in sorted(found.items()):
         missing = sum(str(q["id"]) not in choice for pair in pairs for q in pair)
