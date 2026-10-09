@@ -1,0 +1,23 @@
+{
+  "protocol": "gold_v2_dev_baselines",
+  "prompt_version": 1,
+  "dev_qa": "dev_master_qa_480.jsonl",
+  "images": 240,
+  "questions": 480,
+  "models": [
+    "internvl3_5_8b",
+    "qwen3_5_4b"
+  ],
+  "conditions": [
+    "image_only",
+    "normal_ref_fixed",
+    "normal_ref_retrieved"
+  ],
+  "prompt_sources": {
+    "image_only": "run_gold_baselines.prompt_for, [target]",
+    "normal_ref_fixed": "prompt_for_condition normal_reference, [fixed normal, target]",
+    "normal_ref_retrieved": "prompt_for_condition normal_reference, [retrieved normal, target]"
+  },
+  "significance": "image-level paired bootstrap, 2000 resamples, two-sided 95% CI",
+  "purpose": "method selection on the development set; paper numbers come from gold v2"
+}
