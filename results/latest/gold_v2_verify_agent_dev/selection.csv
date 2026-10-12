@@ -1,0 +1,9 @@
+variant,models,delta_q1_anomaly_f1,delta_q2_defect_macro_f1,score,avg_lvlm_calls_per_q,delta_consistency_error_not_scored,rank
+define@disagreement,2,-0.101895,0.03732,-0.032288,1.2843,0.022917,1
+zoom_define@disagreement,2,-0.080742,0.009532,-0.035605,1.2843,0.004167,2
+reask@disagreement,2,-0.146896,0.014755,-0.06607,1.2843,0.008334,3
+zoom@disagreement,2,-0.145577,-0.007178,-0.076377,1.2843,0.014584,4
+define@all,2,-0.215136,0.020148,-0.097494,2.0,0.089584,5
+zoom_define@all,2,-0.203231,-0.069531,-0.136381,2.0,0.064584,6
+reask@all,2,-0.495769,-0.086031,-0.2909,2.0,0.23125,7
+zoom@all,2,-0.438836,-0.160641,-0.299739,2.0,0.185417,8
