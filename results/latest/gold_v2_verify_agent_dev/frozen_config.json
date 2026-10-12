@@ -1,0 +1,18 @@
+{
+  "protocol": "gold_v2_verify_agent_independent",
+  "selected_on": "dev",
+  "dev_qa": "dev_master_qa_480.jsonl",
+  "dev_models": [
+    "internvl3_5_8b",
+    "qwen3_5_4b"
+  ],
+  "dev_benchmark_commit": "5c903ce229fec663859ad6b71d8b55369610f933",
+  "variant": "define@disagreement",
+  "tool": "define",
+  "route": "disagreement",
+  "stage1_condition": "normal_ref_retrieved_diffdate",
+  "rule": "diffdate",
+  "prompt_version": 2,
+  "selection_criterion": "mean over the dev models of the change vs stage 1 in (Q1 anomaly F1 + Q2 defect macro-F1) / 2; ties go to fewer LVLM calls per question. Contradiction is reported, not used.",
+  "selection_rank": 1
+}
