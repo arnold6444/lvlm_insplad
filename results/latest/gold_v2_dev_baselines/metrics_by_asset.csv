@@ -14,6 +14,11 @@ internvl3_5_8b,normal_ref_retrieved,lightning-rod-suspension,50,0.731707,0.82978
 internvl3_5_8b,normal_ref_retrieved,polymer-insulator-upper-shackle,25,0.0,0.75,0.32,8,25,0.6,0.4,0.0,0.0
 internvl3_5_8b,normal_ref_retrieved,vari-grip,65,0.897436,0.686002,0.169231,11,65,0.6,0.36,0.0,0.0
 internvl3_5_8b,normal_ref_retrieved,yoke-suspension,50,0.90566,0.915033,0.08,4,50,0.84,0.2,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved_diffdate,glass-insulator,50,0.772727,0.485907,0.3,15,50,0.4,0.2,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved_diffdate,lightning-rod-suspension,50,0.75,0.787755,0.3,15,50,0.64,0.28,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved_diffdate,polymer-insulator-upper-shackle,25,0.0,0.648649,0.36,9,25,0.48,0.52,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved_diffdate,vari-grip,65,0.897436,0.665156,0.2,13,65,0.569231,0.44,0.0,0.0
+internvl3_5_8b,normal_ref_retrieved_diffdate,yoke-suspension,50,0.872727,0.880143,0.08,4,50,0.8,0.28,0.0,0.0
 qwen3_5_4b,image_only,glass-insulator,50,0.457143,0.504574,0.2,10,50,0.5,0.08,0.0,0.0
 qwen3_5_4b,image_only,lightning-rod-suspension,50,0.666667,0.894781,0.3,15,50,0.64,0.24,0.0,0.0
 qwen3_5_4b,image_only,polymer-insulator-upper-shackle,25,0.0,0.780488,0.48,12,25,0.4,0.36,0.0,0.0
@@ -29,3 +34,8 @@ qwen3_5_4b,normal_ref_retrieved,lightning-rod-suspension,50,0.727273,0.899639,0.
 qwen3_5_4b,normal_ref_retrieved,polymer-insulator-upper-shackle,25,0.0,0.888889,0.6,15,25,0.32,0.2,0.0,0.0
 qwen3_5_4b,normal_ref_retrieved,vari-grip,65,0.835165,0.618493,0.261538,17,65,0.476923,0.36,0.0,0.0
 qwen3_5_4b,normal_ref_retrieved,yoke-suspension,50,0.741935,0.937291,0.24,12,50,0.68,0.16,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved_diffdate,glass-insulator,50,0.7,0.667438,0.36,18,50,0.4,0.32,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved_diffdate,lightning-rod-suspension,50,0.701754,0.858586,0.28,14,50,0.62,0.24,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved_diffdate,polymer-insulator-upper-shackle,25,0.0,0.863636,0.68,17,25,0.24,0.24,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved_diffdate,vari-grip,65,0.817204,0.59425,0.261538,17,65,0.446154,0.44,0.0,0.0
+qwen3_5_4b,normal_ref_retrieved_diffdate,yoke-suspension,50,0.754098,0.894781,0.22,11,50,0.68,0.24,0.0,0.0
