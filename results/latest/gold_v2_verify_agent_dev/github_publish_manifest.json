@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-12T05:21:03.159800+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_verify_agent_dev",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_verify_agent_dev",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "leaderboard.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/leaderboard.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/leaderboard.csv",
+      "commit_sha": "eceba9c15c848ae711f2731b1032c2231fff3386",
+      "size_bytes": 2944,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "per_question.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/per_question.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/per_question.csv",
+      "commit_sha": "ab4d6488d306e6d29c14c7e750ea859190dc7914",
+      "size_bytes": 3155,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/metrics_by_asset.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/metrics_by_asset.csv",
+      "commit_sha": "2035086b90c8699302ea40af8e2f295bd1ba490b",
+      "size_bytes": 12667,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "answers.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/answers.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/answers.csv",
+      "commit_sha": "14152095dd35e38af96811d92ce69e98438f2719",
+      "size_bytes": 1108566,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "significance.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/significance.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/significance.csv",
+      "commit_sha": "4e6c50dc2d6f8ed84e30a310e36b97c0675d4594",
+      "size_bytes": 8625,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "selection.csv",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/selection.csv",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/selection.csv",
+      "commit_sha": "af820607e660778f167d917a4ef6bd3d4c2479f2",
+      "size_bytes": 643,
+      "mime_type": "text/csv"
+    },
+    {
+      "name": "route_stats.json",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/route_stats.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/route_stats.json",
+      "commit_sha": "d74c1e633de91105d0c7288e9bc12f03920d9a31",
+      "size_bytes": 499,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_status.json",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/run_status.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/run_status.json",
+      "commit_sha": "4edc98a54de0928342c078092b4f1f588bab271f",
+      "size_bytes": 1519,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "run_metadata.json",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/run_metadata.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/run_metadata.json",
+      "commit_sha": "13afa138a3bdc3aa85a551593b244886e085167d",
+      "size_bytes": 4666,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "frozen_config.json",
+      "remote_path": "results/latest/gold_v2_verify_agent_dev/frozen_config.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_verify_agent_dev/frozen_config.json",
+      "commit_sha": "8f275359cbab1e345bff884e69605b5afb200a9a",
+      "size_bytes": 656,
+      "mime_type": "application/json"
+    }
+  ],
+  "missing": []
+}
