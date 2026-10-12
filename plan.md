@@ -1,5 +1,17 @@
 # Plan
 
+## Requirement Delta — dev part-crop diagnostic (2026-10-12)
+
+- Goal: test whether showing matching physical part regions improves Q1/Q2 before investing in automatic ROI selection.
+- Scope: same deterministic dev 40 images / 80 questions as the prompt diagnosis; a paired normal/target box UI; a full-image vs part-crop runner and Colab notebook; InternVL default, 160 calls maximum. User authorized PR publication and merge.
+- Preserve: original QA, predictions, gold and frozen configuration; question independence, baseline prompt, reference-first image order, no quantization. Separate `gold_v2_part_crop_diagnostic_v1` output. No gold run or automatic setting selection.
+- Decisions: draw one physical inspection-part box on both images, not defect-only boxes; hide labels, source paths and model answers; mark unavailable pairs explicitly and exclude them from both conditions while reporting coverage. This is a manually assisted diagnostic, not automatic deployment evidence.
+- Steps: implement annotation/store and resume guards → paired inference/report → Colab UI → fixture, browser, notebook and main-baseline checks → PR/merge → synchronize latest folder.
+- Done when: annotation persists each pair and resumes; wrong/missing/stale boxes block inference; paired inputs and fresh baseline are identical across conditions except cropping; raw outputs/prompts/image hashes retained; errors retried and excluded from comparison; notebook opens from merged main.
+- Verification: synthetic images/ZIPs, failure/retry and preserved-result tests, actual UI drag/save/reset/resume preview, notebook compile and target adapter/agent tests. GPU inference remains for the user's Colab.
+- Completed: annotation/store, paired inference, Colab notebook, 35 diagnostic/agent/adapter tests; browser drag/save/unavailable/reset/resume and 390px layout verified with the actual Python storage backend; notebook compilation and CLI help passed. GPU inference not run locally.
+- Remaining: PR/merge and latest-folder sync, then user annotations and Colab inference.
+
 ## Plan — expert-evidence verification agent (2026-10-12, not implemented)
 
 **Goal.** Vision-expert evidence (score, ROI, heatmap, combinations) is often wrong. Test whether checking each piece
