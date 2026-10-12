@@ -1,5 +1,95 @@
 # Plan
 
+## Plan — expert-evidence verification agent (2026-10-12, not implemented)
+
+**Goal.** Vision-expert evidence (score, ROI, heatmap, combinations) is often wrong. Test whether checking each piece
+of evidence, per question, before the LVLM relies on it improves Q1/Q2 accuracy, and how often the check accepts
+wrong evidence. Same contract as `docs/verify_agent_independent.md`: each question on its own, contradiction only
+reported, choose on dev, gold once.
+
+**Why.** Gold, 4-model mean Q1 F1: normal reference .758 vs PatchCore score .674 / heatmap .502 / ROI .402;
+ref+score has the highest Q1-Q2 contradiction (.430). Maps are min-max normalised per image
+(`vision_expert.py:59-69`), so every normal image shows a hot spot; an earlier analysis put the ROI-centre hit rate
+on the 20 gold rust boxes at .40 (PatchCore) / .30 (AnomalyCLIP) — PR #50 re-measures it. The team's vari-grip
+report also lost 8.1%p when the map was added (CI excludes 0).
+
+**Code constraints to fix before any dev run.**
+1. Leakage: expert training normals exclude only unsupervised-test fingerprints (`dataset.py:265`). Every dev normal
+   is in that pool (`results/latest/gold_v2_dev/build_summary.json`), so an unchanged rebuild puts many dev normal
+   targets in the PatchCore / ReConPatch-lite memory banks (up to 200 of 238–595 per asset) or in Dinomaly's
+   training set, making them look normal. AnomalyCLIP (zero-shot, VisA checkpoint) is unaffected.
+2. Transductive percentile: `add_score_percentiles` ranks within the evaluated cohort
+   (`run_gold_v2_vision_expert_full.py:79-87`). Use a train-normal calibration instead (rank of the raw score among
+   held-out same-asset train normals), the same on dev and gold.
+3. Per-image heatmap normalisation: the agent's evidence uses a fixed per-asset scale from held-out train normals.
+4. The gold expert path assumes 246 cores, the `master_qa_*` glob and unsupervised-ZIP query paths; dev images are
+   supervised-train paths (dev defects are not in the unsupervised ZIP) → needs a dev workspace builder.
+5. The heatmap prompt still mentions a yellow box (`run_gold_v2_vision_expert_full.py:109-111`); new prompts must not.
+
+**Decisions to confirm (recommendation first).**
+- D1 experts: PatchCore (best expert so far) + AnomalyCLIP (other family, no InsPLAD normals → independent check).
+- D2 evidence: score and ROI (peak crop); heatmap overlay only as an ablation.
+- D3 check, per question: the question's own text and options asked about the evidence (Q1 "is the marked region
+  normal or anomalous?", Q2 "which condition best describes the marked region?"; score: score sentence +
+  [reference, target]). Accepted when the answer agrees with the evidence's claim, rejected otherwise. No shared
+  "is there a defect" call across questions.
+- D4 final rule (fixed): majority of {stage-1 answer} ∪ {answers backed by accepted evidence}; tie → stage 1.
+  An LLM orchestrator is only an ablation.
+- D5 dev models: InternVL3.5-8B + Qwen3.5-4B.
+
+**Flow per question Qk** (Q1, Q2 on dev; Q3 auxiliary on gold)
+```
+stage 1: [diffdate normal reference, target] -> a0             (reuse dev baseline)
+for e in {PatchCore score, PatchCore ROI, AnomalyCLIP score}:
+    check(Qk, e) -> accept / reject, plus the evidence-backed answer
+final(Qk) = fixed rule over a0 and accepted answers
+after all questions: Q1-Q2 (-Q3) contradiction, reported only
+```
+
+**Evaluation.**
+- Evidence level (is the check trustworthy): score evidence is correct iff (calibrated score above the train-normal
+  threshold) == GT anomalous → accept rate on correct vs wrong evidence. ROI on normal images is always wrong →
+  rejection rate. ROI on anomalous dev images has no location label → accept rate only.
+- Answer level: Q1 F1, Q2 macro-F1, per-question accuracy, FDR, contradiction new/resolved, calls, latency.
+- Dev comparisons: stage 1 / independent verifier / evidence without the check / evidence with the check / ROI
+  location controls (centre crop = existing `zoom`, random crop) / compute-matched re-ask.
+- Adoption rule (set before the run): adopt only if the agent beats both the independent verifier and the
+  compute-matched control on Q1 F1 or Q2 macro-F1 with the paired-bootstrap CI excluding 0; otherwise report it as
+  a negative result.
+
+**Steps.**
+- [ ] P0 (CPU, no LVLM): merge PR #50 and run the heatmap check on gold — analysis only, chooses nothing.
+- [ ] P1 code: dev expert workspace from the supervised ZIP; drop every dev and gold target fingerprint from the
+  training normals; hold out train normals for calibration. Tests: no target fingerprint among training normals,
+  calibration does not depend on the evaluated cohort.
+- [ ] P1 run (Colab L4, experts only): PatchCore per asset + AnomalyCLIP on dev 240 and on the held-out normals;
+  report dev expert AUROC per asset, with and without same-flight-date normals in the bank. Gold evidence gets the
+  same calibration (decide in P1: score held-out normals with the existing models or refit).
+- [ ] P2 code: extend `run_gold_v2_verify_agent.py` with evidence tools and controls so the independence test,
+  `answers.csv`, frozen config and cost columns carry over; add an evidence-level metrics file.
+- [ ] P2 run (dev): ~480 questions × 3 evidence × 2 models ≈ 2,900 check calls + ~1,900 control calls, ~2–3 h L4.
+- [ ] P3: choose on dev → `frozen_config.json` → gold once (needs calibrated gold evidence and the gold re-run's
+  stage 1).
+
+**Done when.** Dev expert outputs are leakage-safe and calibrated (tests); evidence- and answer-level tables on dev
+with controls; one frozen config; one gold run; the independence test passes for the new tools.
+
+**Unknowns.** Expert runtimes are undocumented; held-out calibration size per asset is set in P1.
+
+## Requirement Delta — question-independent verification agent (2026-10-11)
+
+- **Goal**: test whether re-checking each question on its own improves accuracy, and measure the contradictions that
+  remain. Protocol: `docs/verify_agent_independent.md`.
+- **Changed**: `scripts/run_gold_v2_verify_agent.py` rewritten (PR #49 routed on Q1-Q2 contradiction and rewrote
+  Q1/Q2/Q3 from one Q2 re-check). Now per question: prompt, routing, tool and final answer use only that question's
+  own answers; contradiction is computed afterwards and reported only. Dev notebook updated; gold notebook added
+  (runs only the dev-frozen variant).
+- **Dropped**: `rule_q1_first` and the contradiction trigger.
+- **Kept**: stage 1 = `normal_ref_retrieved_diffdate`, dev for selection, gold once; existing results untouched.
+- **Done when**: independence test passes for Q1/Q2/Q3 (done locally); Colab runs below are done by the user.
+- **Remaining (Colab, not run)**: dev baselines `normal_ref_retrieved_diffdate` → dev agent → publish
+  `frozen_config.json` → gold re-run (gold refs + stage 1) → gold agent once. Q3 has no dev labels.
+
 ## Requirement Delta — DINOv2 Retrieved 1-shot+
 
 ### Goal
