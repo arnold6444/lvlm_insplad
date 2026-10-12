@@ -1,0 +1,87 @@
+{
+  "protocol": "gold_v2_verify_agent_independent",
+  "prompt_version": 2,
+  "split": "dev",
+  "qa": "dev_master_qa_480.jsonl",
+  "questions": 480,
+  "question_types": [
+    "anomaly_detection",
+    "defect_classification"
+  ],
+  "stage1_condition": "normal_ref_retrieved_diffdate",
+  "rule": "diffdate",
+  "tools": [
+    "reask",
+    "zoom",
+    "define",
+    "zoom_define"
+  ],
+  "routes": [
+    "all",
+    "disagreement"
+  ],
+  "variants": [
+    "reask@all",
+    "reask@disagreement",
+    "zoom@all",
+    "zoom@disagreement",
+    "define@all",
+    "define@disagreement",
+    "zoom_define@all",
+    "zoom_define@disagreement"
+  ],
+  "models": [
+    "internvl3_5_8b",
+    "qwen3_5_4b"
+  ],
+  "model_ids": {
+    "internvl3_5_8b": "OpenGVLab/InternVL3_5-8B",
+    "qwen3_5_4b": "Qwen/Qwen3.5-4B"
+  },
+  "backend": "hf",
+  "benchmark_commit": "5c903ce229fec663859ad6b71d8b55369610f933",
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "independence": "each question is re-checked on its own: the prompt holds only that question, its options and its own stage-1 answer; routing uses only that question's own stage-1 and image-only answers; a re-check changes only that question's answer; every call is a fresh single-turn chat",
+  "decision": "routed question with a valid re-check answer -> that answer; otherwise the stage-1 answer",
+  "contradiction_policy": "computed after all final answers are stored; never used for routing or editing",
+  "recheck_sharing": "a re-check is computed once per question and tool (greedy decoding, same prompt and images) and shared by the routes; a route's cost counts only the questions it re-checks",
+  "cost": "rechecks = re-check calls counted for the variant; avg_lvlm_calls_per_q = 1 + rechecks / questions (stage 1 is one call per question); recheck_latency_s / stage1_latency_s = model-call seconds",
+  "zoom": {
+    "box": [
+      0.2,
+      0.2,
+      0.8,
+      0.8
+    ],
+    "scale": 2.0,
+    "max_side": 1344,
+    "applied_to": [
+      "anomaly_detection",
+      "defect_classification"
+    ]
+  },
+  "definitions": {
+    "Normal.": "all parts are present and intact; surfaces keep their usual uniform colour without orange-brown stains, gaps or foreign material.",
+    "Anomalous.": "at least one visible defect, such as rust or corrosion stains, a missing component that leaves a gap, or foreign nesting material on the hardware.",
+    "Normal / no defect.": "all parts are present and intact; surfaces keep their usual uniform colour without orange-brown stains, gaps or foreign material.",
+    "Rust / corrosion.": "orange, reddish-brown or dark-brown discoloration, scaling or pitting on metal hardware such as clamps, shackles, bolts or caps.",
+    "Missing cap / missing insulator component.": "a disc, cap or other component that belongs to the regular repeated structure is absent, leaving a visible gap or an exposed pin.",
+    "Bird nest / foreign nesting material.": "a mass of twigs, straw, grass or other debris lodged on or around the hardware.",
+    "No localized defect region is present.": "the asset shows no visible defect anywhere in the target image.",
+    "Upper-left region.": "the centre of the defect area falls in the top-left cell of a 3 x 3 grid over the target image.",
+    "Upper-center region.": "the centre of the defect area falls in the top-middle cell of a 3 x 3 grid over the target image.",
+    "Upper-right region.": "the centre of the defect area falls in the top-right cell of a 3 x 3 grid over the target image.",
+    "Middle-left region.": "the centre of the defect area falls in the middle-left cell of a 3 x 3 grid over the target image.",
+    "Center region.": "the centre of the defect area falls in the central cell of a 3 x 3 grid over the target image.",
+    "Middle-right region.": "the centre of the defect area falls in the middle-right cell of a 3 x 3 grid over the target image.",
+    "Lower-left region.": "the centre of the defect area falls in the bottom-left cell of a 3 x 3 grid over the target image.",
+    "Lower-center region.": "the centre of the defect area falls in the bottom-middle cell of a 3 x 3 grid over the target image.",
+    "Lower-right region.": "the centre of the defect area falls in the bottom-right cell of a 3 x 3 grid over the target image."
+  },
+  "significance": "image-level paired bootstrap vs stage1, 2000 resamples, two-sided 95% CI",
+  "selection_criterion": "mean over the dev models of the change vs stage 1 in (Q1 anomaly F1 + Q2 defect macro-F1) / 2; ties go to fewer LVLM calls per question. Contradiction is reported, not used.",
+  "purpose": "choose one variant on dev; gold runs only that frozen variant"
+}
