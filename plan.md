@@ -1,5 +1,19 @@
 # Plan
 
+## Requirement Delta — question-independent verification agent (2026-10-11)
+
+- **Goal**: test whether re-checking each question on its own improves accuracy, and measure the contradictions that
+  remain. Protocol: `docs/verify_agent_independent.md`.
+- **Changed**: `scripts/run_gold_v2_verify_agent.py` rewritten (PR #49 routed on Q1-Q2 contradiction and rewrote
+  Q1/Q2/Q3 from one Q2 re-check). Now per question: prompt, routing, tool and final answer use only that question's
+  own answers; contradiction is computed afterwards and reported only. Dev notebook updated; gold notebook added
+  (runs only the dev-frozen variant).
+- **Dropped**: `rule_q1_first` and the contradiction trigger.
+- **Kept**: stage 1 = `normal_ref_retrieved_diffdate`, dev for selection, gold once; existing results untouched.
+- **Done when**: independence test passes for Q1/Q2/Q3 (done locally); Colab runs below are done by the user.
+- **Remaining (Colab, not run)**: dev baselines `normal_ref_retrieved_diffdate` → dev agent → publish
+  `frozen_config.json` → gold re-run (gold refs + stage 1) → gold agent once. Q3 has no dev labels.
+
 ## Requirement Delta — DINOv2 Retrieved 1-shot+
 
 ### Goal
