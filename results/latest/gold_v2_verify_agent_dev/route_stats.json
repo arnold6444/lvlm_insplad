@@ -1,0 +1,32 @@
+[
+  {
+    "model_key": "internvl3_5_8b",
+    "questions": 480,
+    "image_only_available": true,
+    "routed": {
+      "all": {
+        "q1": 240,
+        "q2": 240
+      },
+      "disagreement": {
+        "q1": 63,
+        "q2": 79
+      }
+    }
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "questions": 480,
+    "image_only_available": true,
+    "routed": {
+      "all": {
+        "q1": 240,
+        "q2": 240
+      },
+      "disagreement": {
+        "q1": 72,
+        "q2": 59
+      }
+    }
+  }
+]
