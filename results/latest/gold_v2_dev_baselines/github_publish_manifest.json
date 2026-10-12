@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "published_at_utc": "2026-10-09T16:19:17.546036+00:00",
+  "published_at_utc": "2026-10-12T03:42:19.974188+00:00",
   "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_dev_baselines",
   "repo": "arnold6444/lvlm_insplad",
   "branch": "main",
@@ -11,40 +11,40 @@
       "name": "leaderboard.csv",
       "remote_path": "results/latest/gold_v2_dev_baselines/leaderboard.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/leaderboard.csv",
-      "commit_sha": "8cc4f2f5e744601b93afcb5163b67e6baabdd9e5",
-      "size_bytes": 706,
+      "commit_sha": "58c5ddcf604429455304610f5f4f1a34cea4137c",
+      "size_bytes": 909,
       "mime_type": "text/csv"
     },
     {
       "name": "metrics_by_asset.csv",
       "remote_path": "results/latest/gold_v2_dev_baselines/metrics_by_asset.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/metrics_by_asset.csv",
-      "commit_sha": "cdbb58317758d4e33186271a400fd3766ff19e7f",
-      "size_bytes": 3162,
+      "commit_sha": "adb710ae8ed750cbbd85a26e88a42b223aff8075",
+      "size_bytes": 4283,
       "mime_type": "text/csv"
     },
     {
       "name": "significance.csv",
       "remote_path": "results/latest/gold_v2_dev_baselines/significance.csv",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/significance.csv",
-      "commit_sha": "de02371fb8c9d7a8e0d4c031d6abbb7a2193e8aa",
-      "size_bytes": 3562,
+      "commit_sha": "25192c642d6f45281fab1e8db1632a2566925f37",
+      "size_bytes": 7454,
       "mime_type": "text/csv"
     },
     {
       "name": "run_status.json",
       "remote_path": "results/latest/gold_v2_dev_baselines/run_status.json",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/run_status.json",
-      "commit_sha": "e402dbdd99c65a468561bf4ecc3d364dccf9bd41",
-      "size_bytes": 1091,
+      "commit_sha": "762535c5299f199f6ee8f1e8ffe33d294a6609d5",
+      "size_bytes": 1481,
       "mime_type": "application/json"
     },
     {
       "name": "run_metadata.json",
       "remote_path": "results/latest/gold_v2_dev_baselines/run_metadata.json",
       "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_dev_baselines/run_metadata.json",
-      "commit_sha": "c4cd3e1921369bf1ccd0617f148132572b871e5f",
-      "size_bytes": 737,
+      "commit_sha": "20828ecc52a05a025ce169acaf3e12cf92dd91fc",
+      "size_bytes": 774,
       "mime_type": "application/json"
     }
   ],
