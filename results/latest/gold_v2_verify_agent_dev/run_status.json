@@ -1,0 +1,74 @@
+[
+  {
+    "model_key": "internvl3_5_8b",
+    "tool": "reask",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "tool": "zoom",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "tool": "define",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "internvl3_5_8b",
+    "tool": "zoom_define",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "tool": "reask",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "tool": "zoom",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "tool": "define",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  },
+  {
+    "model_key": "qwen3_5_4b",
+    "tool": "zoom_define",
+    "questions": 480,
+    "called_this_run": 480,
+    "reused_predictions": 0,
+    "row_errors": 0,
+    "status": "complete"
+  }
+]
