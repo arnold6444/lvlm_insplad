@@ -1,5 +1,16 @@
 # Plan
 
+## Requirement Delta — Q1 fixed, Q2/Q3 independent dev agent (2026-10-13)
+
+- Goal: a no-manual-work Colab comparing Q2 definition and Q3 independent presence/position tools while retaining Q1 stage-1 answers exactly. User authorizes publication/merge; existing outputs and gold remain untouched.
+- Scope: deterministic dev40 by default, InternVL (Qwen optional). Q2 uses the existing own-question define tool; Q3 sees only its images/question, never Q1/Q2 answers. The baseline and equal-call reask control use the same images and decoding.
+- Q3 contract: generated 9-region+none options, shuffled without GT; normal rows have a none answer, anomalous rows have no location answer. Score only none-vs-region presence, normal false-region rate, anomaly false-none rate, invalids, and presence-only joint correctness. Location accuracy is null, never inferred from defect labels. Always-none/always-region baselines expose trivial policies.
+- Flow: reuse Q1/Q2 stage1 → Q2 reask/define → fresh Q3 direct → independent Q3 presence → optional whole-image position tool → final answers → evaluation. A matched reask control uses the same additional call count per image as the Q3 agent. No automatic setting selection/frozen config or gold run.
+- Preserve: question independence, ref-first images, greedy HF/no quantization, immutable original QA/results, distinct output folder, 20-call checkpoints. Resume binds prompts, own answers, input image hashes and model specs. Failures persist, retry and exclude affected policies from comparisons.
+- Done: executable all-run notebook with no annotation/UI interaction, fresh metrics/CI and raw responses, fixture independence/preservation/retry/partial-label checks, notebook compilation, PR merge and latest-folder sync. Actual LVLM execution remains in user Colab.
+- Completed: independent runner, all-run Colab notebook and protocol documentation. Targeted Q2/Q3, prompt-diagnostic, legacy independent-agent and HF-adapter checks: 43 passed. Notebook code cells compile and the results display cell executes against fixture outputs. CLI help and diff check pass. Actual dev QA selects 40 images (24 normal / 16 anomalous); positive location answers remain null.
+- Remaining: PR/merge and latest-folder sync, then user Colab inference. GPU effect/time and anomalous localization remain unverified.
+
 ## Requirement Delta — dev part-crop diagnostic (2026-10-12)
 
 - Goal: test whether showing matching physical part regions improves Q1/Q2 before investing in automatic ROI selection.
@@ -10,7 +21,8 @@
 - Done when: annotation persists each pair and resumes; wrong/missing/stale boxes block inference; paired inputs and fresh baseline are identical across conditions except cropping; raw outputs/prompts/image hashes retained; errors retried and excluded from comparison; notebook opens from merged main.
 - Verification: synthetic images/ZIPs, failure/retry and preserved-result tests, actual UI drag/save/reset/resume preview, notebook compile and target adapter/agent tests. GPU inference remains for the user's Colab.
 - Completed: annotation/store, paired inference, Colab notebook, 35 diagnostic/agent/adapter tests; browser drag/save/unavailable/reset/resume and 390px layout verified with the actual Python storage backend; notebook compilation and CLI help passed. GPU inference not run locally.
-- Remaining: PR/merge and latest-folder sync, then user annotations and Colab inference.
+- Publication: PR #53 squash merged; latest folder synchronized to main@9e0266c (2026-10-12).
+- Remaining: user physical-part annotations and Colab inference; no automatic localization/gold claim.
 
 ## Plan — expert-evidence verification agent (2026-10-12, not implemented)
 
