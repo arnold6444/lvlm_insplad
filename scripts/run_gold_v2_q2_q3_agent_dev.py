@@ -116,11 +116,11 @@ def presence_metrics(rows, choices, q12_correct=None):
             "q3_location_accuracy": None, "q3_anomalous_location_labels": 0}
 
 
-def q3_bootstrap(rows, found, joint, models, n_boot=2000):
+def q3_bootstrap(rows, found, joint, models, n_boot=2000, comparisons=None):
     out = []
     metrics = ("q3_presence_balanced_accuracy", "q3_normal_false_region_rate", "q3_anomaly_false_none_rate", "q1_q2_q3_presence_joint")
     for model in models:
-        for base_policy, policy in COMPARISONS:
+        for base_policy, policy in COMPARISONS if comparisons is None else comparisons:
             baseline = (model, base_policy)
             key = (model, policy)
             if key not in found or baseline not in found:
@@ -146,21 +146,30 @@ def q3_bootstrap(rows, found, joint, models, n_boot=2000):
     return out
 
 
-def main(argv=None, *, loader=None, infer=None):
+def main(argv=None, *, loader=None, infer=None, refinement=None):
+    protocol = refinement.PROTOCOL if refinement else PROTOCOL
+    version = refinement.VERSION if refinement else VERSION
+    policies = refinement.POLICIES if refinement else POLICIES
+    comparisons = refinement.COMPARISONS if refinement else COMPARISONS
+    prefix = refinement.FOLDER_PREFIX if refinement else "gold_v2_q2_q3_independent_dev"
     p = argparse.ArgumentParser(description=__doc__)
     for name in ("dev-qa", "stage1-dir", "refs-csv", "sup-zip", "unsup-zip", "out-dir"):
         p.add_argument("--"+name, type=Path, required=True)
     p.add_argument("--models", nargs="+", choices=list(diagnostic.dev.MODELS), default=["internvl3_5_8b"])
-    p.add_argument("--n-images", type=int, default=40)
+    p.add_argument("--n-images", type=int, default=240 if refinement else 40)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--checkpoint-every", type=int, default=20)
     p.add_argument("--n-boot", type=int, default=2000)
     args = p.parse_args(argv)
-    if not args.out_dir.name.startswith("gold_v2_q2_q3_independent_dev"):
-        raise ValueError("use a separate gold_v2_q2_q3_independent_dev* output directory")
+    if not args.out_dir.name.startswith(prefix):
+        raise ValueError(f"use a separate {prefix}* output directory")
     if len(set(args.models)) != len(args.models) or args.n_boot <= 0:
         raise ValueError("duplicate models or invalid bootstrap count")
-    rows = diagnostic.select_subset(agent.read_jsonl(args.dev_qa), args.n_images, args.seed)
+    if refinement:
+        rows, cohorts = refinement.select_rows(agent.read_jsonl(args.dev_qa), args.n_images, args.seed)
+    else:
+        rows = diagnostic.select_subset(agent.read_jsonl(args.dev_qa), args.n_images, args.seed)
+        cohorts = {}
     for i in range(0, len(rows), 2):
         if any(rows[i].get(k) != rows[i+1].get(k) for k in ("asset_category", "anomaly_gt", "defect_gt")):
             raise ValueError("Q1/Q2 image labels disagree")
@@ -189,9 +198,16 @@ def main(argv=None, *, loader=None, infer=None):
         for r in q3:
             for step, prompt in (("q3_direct", direct_prompt(r)), ("q3_presence", presence_task(r)[1]), ("q3_position", position_prompt(r))):
                 prompt_audit.append({"model_key": m, "id": r["id"], "step": step, "prompt": prompt})
-    signature = diagnostic.digest({"protocol": PROTOCOL, "version": VERSION, "rows": rows, "q3": q3,
+    if refinement:
+        prompt_audit = refinement.audit_prompts(rows, q3, first, args.models)
+    signature_data = {"protocol": protocol, "version": version, "rows": rows, "q3": q3,
                                     "first": first, "seed": args.seed, "refs": {r["image"]: refs[r["image"]] for r in rows},
-                                    "prompts": prompt_audit, "specs": {m: agent.base.MODEL_REGISTRY[m] for m in args.models}})
+                                    "prompts": prompt_audit, "specs": {m: agent.base.MODEL_REGISTRY[m] for m in args.models}}
+    if refinement:
+        signature_data["code_sha256"] = {Path(p).name: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                                          for p in (__file__, refinement.__file__)}
+        signature_data["cohorts"] = {k: sorted(v) for k, v in cohorts.items()}
+    signature = diagnostic.digest(signature_data)
     meta_path = args.out_dir / "run_metadata.json"
     previous = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
     if previous and previous["input_signature"] != signature:
@@ -204,10 +220,10 @@ def main(argv=None, *, loader=None, infer=None):
     identity = diagnostic.digest([signature, [{k: r[k] for k in ("role", "member", "sha256")} for r in manifest]])
     if previous and previous["prediction_identity"] != identity:
         raise ValueError("input image bytes changed: use a new output folder")
-    meta = {"protocol": PROTOCOL, "version": VERSION, "input_signature": signature, "prediction_identity": identity,
+    meta = {"protocol": protocol, "version": version, "input_signature": signature, "prediction_identity": identity,
             "benchmark_commit": agent.git_commit(), "models": args.models, "model_specs": {m: agent.base.MODEL_REGISTRY[m] for m in args.models},
             "images": args.n_images, "questions_q12": len(rows), "questions_q3": len(q3), "seed": args.seed,
-            "policies": POLICIES, "q1": "exact cached stage1 answers; zero Q1 inference calls",
+            "policies": policies, "q1": "exact cached stage1 answers; zero Q1 inference calls",
             "q2": "own-question reask/define, valid output replaces own Q2; invalid keeps cached own Q2",
             "q3": "independent presence task -> optional position task; invalid keeps own direct Q3, no Q1/Q2 answers used",
             "q3_schema": "nine original-frame grid regions plus no-region, order shuffled without GT",
@@ -217,11 +233,22 @@ def main(argv=None, *, loader=None, infer=None):
             "cost": "incremental Q2/Q3 tool calls, cached Q1/Q2 baseline excluded; shared calls reported separately",
             "selection": "no automatic selection or frozen config; no gold execution", "gpu": None,
             "software": {}, "claim_limit": "exploratory dev validation; Q3 location accuracy remains unknown"}
+    if refinement:
+        meta.update({"q2": "fresh old-definition ablation and balanced revised definitions; no previous answer in fresh tools",
+                     "q3": "refined presence AND position on every image; disagree -> own-Q3 review; invalid -> valid own position/direct",
+                     "q3_control": "two/three direct Q3 repeats matching the refined presence/position/review budget",
+                     "cohorts": {k: sorted(v) for k, v in cohorts.items()}, "code_sha256": signature_data["code_sha256"],
+                     "primary_validation": "additional_dev (excluded from design40 diagnosis, still dev, not formal holdout)",
+                     "claim_limit": "exploratory development validation; all/design/additional separately; Q3 spatial accuracy unknown"})
     atomic_json(meta_path, meta)
     agent.base.write_jsonl(args.out_dir / "subset_qa_q12.jsonl", rows)
     agent.base.write_jsonl(args.out_dir / "dev_q3_partial_qa.jsonl", q3)
     agent.base.write_jsonl(args.out_dir / "prompts.jsonl", prompt_audit)
     agent.cons.write_csv(args.out_dir / "image_manifest.csv", manifest)
+    if refinement:
+        agent.cons.write_csv(args.out_dir / "cohort_manifest.csv", [
+            {"core_id": r["core_id"], "asset_category": r["asset_category"], "anomaly_gt": r["anomaly_gt"],
+             "cohort": "design_dev40" if r["core_id"] in cohorts["design_dev40"] else "additional_dev"} for r in q3])
     if infer is None:
         from insplad_benchmark.hf_adapters import infer_hf as infer
     q3_by_core = {r["core_id"]: r for r in q3}
@@ -260,12 +287,19 @@ def main(argv=None, *, loader=None, infer=None):
                 print(f"[{model}] {len(used)} Q2/Q3 calls saved", flush=True)
             return rec
 
-        finals = {policy: dict(first[model]) for policy in POLICIES}
-        q3_final = {policy: {} for policy in POLICIES}
-        deps = {policy: [] for policy in POLICIES}
+        finals = {policy: dict(first[model]) for policy in policies}
+        q3_final = {policy: {} for policy in policies}
+        deps = {policy: [] for policy in policies}
         try:
             for core, qs in rows_by_core.items():
                 q2, r3 = qs[agent.Q2], q3_by_core[core]
+                if refinement:
+                    results = refinement.run_image(q2, r3, first[model][q2["id"]], call)
+                    for policy, (choice2, choice3, dependencies) in results.items():
+                        finals[policy][q2["id"]] = choice2
+                        q3_final[policy][r3["id"]] = choice3
+                        deps[policy].extend(dependencies)
+                    continue
                 reask = call(q2, agent.build_prompt(q2, first[model][q2["id"]], "reask"), "q2_reask")
                 define = call(q2, agent.build_prompt(q2, first[model][q2["id"]], "define"), "q2_define")
                 direct = call(r3, direct_prompt(r3), "q3_direct")
@@ -297,7 +331,7 @@ def main(argv=None, *, loader=None, infer=None):
         finally:
             holder.release()
         run_errors += sum(bool(r["error"]) for r in used.values())
-        for policy in POLICIES:
+        for policy in policies:
             final, loc = finals[policy], q3_final[policy]
             if any(final[r["id"]] != first[model][r["id"]] for r in rows if r["question_type"] == agent.Q1):
                 raise AssertionError("Q1 changed")
@@ -339,9 +373,41 @@ def main(argv=None, *, loader=None, infer=None):
                                   "q2_correct": sum(final[r["id"]] == r["answer"] for r in subset),
                                   "q2_accuracy": sum(final[r["id"]] == r["answer"] for r in subset)/len(subset)})
     sig = agent.cons.significance_rows(agent.cons.image_pairs(rows), [], all_found, args.models,
-                                       COMPARISONS, n_boot=args.n_boot)
+                                       comparisons, n_boot=args.n_boot)
     sig = [r for r in sig if r["metric"] not in ("q3_accuracy", "q1q3_contradiction")]
-    sig += q3_bootstrap(q3, q3_found, joint, args.models, args.n_boot)
+    sig += q3_bootstrap(q3, q3_found, joint, args.models, args.n_boot, comparisons)
+    if refinement:
+        cohort_metrics, cohort_sig, cohort_assets, cohort_defects = [], [], [], []
+        for cohort, cores in cohorts.items():
+            subset = [r for r in rows if r["core_id"] in cores]
+            subset3 = [r for r in q3 if r["core_id"] in cores]
+            if not subset:
+                continue
+            for (model, policy), final in all_found.items():
+                metrics = {**agent.summary_row(subset, first[model], final, set(), {}),
+                           **presence_metrics(subset3, q3_found[(model, policy)], joint[(model, policy)])}
+                cohort_metrics.append({"cohort": cohort, "model_key": model, "policy": policy, **metrics})
+                for asset in sorted({r["asset_category"] for r in subset}):
+                    asset12 = [r for r in subset if r["asset_category"] == asset]
+                    asset3 = [r for r in subset3 if r["asset_category"] == asset]
+                    cohort_assets.append({"cohort": cohort, "model_key": model, "policy": policy, "asset_category": asset,
+                        **agent.summary_row(asset12, first[model], final, set(), {}),
+                        **presence_metrics(asset3, q3_found[(model, policy)], joint[(model, policy)])})
+                for defect in sorted({r["defect_gt"] for r in subset if r["question_type"] == agent.Q2}):
+                    defect_rows = [r for r in subset if r["question_type"] == agent.Q2 and r["defect_gt"] == defect]
+                    correct = sum(final[r["id"]] == r["answer"] for r in defect_rows)
+                    cohort_defects.append({"cohort": cohort, "model_key": model, "policy": policy, "defect": defect,
+                                          "images": len(defect_rows), "q2_correct": correct, "q2_accuracy": correct/len(defect_rows)})
+            if cohort == "all_dev":
+                stats = sig  # This is the same cohort as the main paired comparisons.
+            else:
+                stats = agent.cons.significance_rows(agent.cons.image_pairs(subset), [], all_found, args.models, comparisons, n_boot=args.n_boot)
+                stats = [s for s in stats if s["metric"] not in ("q3_accuracy", "q1q3_contradiction")]
+                stats += q3_bootstrap(subset3, q3_found, joint, args.models, args.n_boot, comparisons)
+            cohort_sig.extend({"cohort": cohort, **s} for s in stats)
+        for filename, records in (("cohort_metrics.csv", cohort_metrics), ("cohort_significance.csv", cohort_sig),
+                                  ("cohort_metrics_by_asset.csv", cohort_assets), ("cohort_q2_by_defect.csv", cohort_defects)):
+            agent.cons.write_csv(args.out_dir / filename, records)
     for filename, records in (("leaderboard.csv", leaderboard), ("answers.csv", answers), ("metrics_by_asset.csv", by_asset),
                               ("q2_by_defect.csv", by_defect), ("significance.csv", sig)):
         agent.cons.write_csv(args.out_dir / filename, records)
