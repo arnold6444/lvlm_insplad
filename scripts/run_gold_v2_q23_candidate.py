@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "src")]
 import run_gold_v2_q2_q3_refined_dev as refined
 import build_retrieved_refs as retrieval
+from insplad_benchmark.metrics import anomaly_classification_summary, balanced_accuracy
 
 old = refined.old
 agent = old.agent
@@ -24,6 +25,21 @@ PREFIX = "gold_v2_q23_candidate"
 CONFIG = ROOT / "configs/q1_fixed_q2_cues_q3_legacy_gold_v1.json"
 POLICIES = ("baseline", "previous_agent", "candidate")
 COMPARISONS = [("baseline", "candidate"), ("previous_agent", "candidate")]
+
+
+def q12_metrics(rows, choices):
+    pairs = agent.cons.image_pairs(rows)
+    q1_true = [a["anomaly_gt"] for a, _ in pairs]
+    q1_pred = [agent.base.predicted_semantic(a, choices.get(a["id"])) or "invalid" for a, _ in pairs]
+    q2_true = [b["defect_gt"] for _, b in pairs]
+    q2_pred = [agent.base.predicted_semantic(b, choices.get(b["id"])) or "invalid" for _, b in pairs]
+    summary = anomaly_classification_summary(q1_true, q1_pred)
+    return {**agent.cons.consistency_row(pairs, choices),
+        **{f"q1_{key}": summary[key] for key in ("balanced_accuracy", "precision", "recall", "tp", "fp", "tn", "fn", "has_both_classes")},
+        "q1_normal_images": summary["normal_n"], "q1_anomalous_images": summary["anomalous_n"],
+        "q1_accuracy": sum(a == b for a, b in zip(q1_true, q1_pred))/len(pairs),
+        "q2_accuracy": sum(a == b for a, b in zip(q2_true, q2_pred))/len(pairs),
+        "q2_defect_balanced_accuracy": balanced_accuracy(q2_true, q2_pred)}
 
 
 def save_records(path, records):
@@ -121,9 +137,7 @@ def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_b
         pairs = agent.cons.image_pairs(rows)
         joint[model, policy] = {a["core_id"]: final[a["id"]] == a["answer"] and final[b["id"]] == b["answer"] for a, b in pairs}
         def metrics(sub12, sub3):
-            return {**agent.cons.consistency_row(agent.cons.image_pairs(sub12), final),
-                "q1_accuracy": sum(final[r["id"]] == r["answer"] for r in sub12 if r["question_type"] == agent.Q1) / (len(sub12)/2),
-                "q2_accuracy": sum(final[r["id"]] == r["answer"] for r in sub12 if r["question_type"] == agent.Q2) / (len(sub12)/2),
+            return {**q12_metrics(sub12, final),
                 **old.presence_metrics(sub3, loc, joint[model, policy])}
         leaderboard.append({"model_key": model, "policy": policy, **metrics(rows, q3),
             "incremental_tool_calls": len(deps[policy]), "tool_latency_s": sum(p["latency_s"] for p in deps[policy])})
@@ -138,7 +152,9 @@ def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_b
                 "q2_correct": correct, "q2_accuracy": correct/len(sub)})
     sig = agent.cons.significance_rows(agent.cons.image_pairs(rows), [], found, [model], COMPARISONS, n_boot)
     sig = [r for r in sig if r["metric"] not in ("q3_accuracy", "q1q3_contradiction")]
-    sig += old.q3_bootstrap(q3, loc_found, joint, [model], n_boot, COMPARISONS)
+    sig += old.q3_bootstrap(q3, loc_found, joint, [model], n_boot, COMPARISONS,
+                            scope=f"gold{len(q3)} presence only, no localization claim")
+    sig = [{**r, "scope": r.get("scope") or f"gold{len(q3)} Q1/Q2 image-level paired comparison"} for r in sig]
     for name, records in (("leaderboard.csv", leaderboard), ("answers.csv", answers),
                           ("metrics_by_asset.csv", assets), ("q2_by_defect.csv", defects), ("significance.csv", sig)):
         agent.cons.write_csv(out/name, records)
@@ -147,6 +163,15 @@ def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_b
         choices = {r["id"]: r["none_choice"] if none else next(k for k in r["options"] if k != r["none_choice"]) for r in q3}
         controls.append({"control": control, **old.presence_metrics(q3, choices)})
     agent.cons.write_csv(out/"q3_constant_baselines.csv", controls)
+    macro = []
+    for policy in POLICIES:
+        sub = [r for r in assets if r["policy"] == policy]
+        if sub:
+            keys = ("q1_balanced_accuracy", "q1_anomaly_f1", "q1_precision", "q1_recall", "q1_invalid_rate",
+                    "q2_defect_balanced_accuracy", "q2_defect_macro_f1", "q2_invalid_rate", "joint_accuracy")
+            macro.append({"model_key": model, "policy": policy, "assets": len(sub),
+                          **{k: sum(r[k] for r in sub)/len(sub) for k in keys}})
+    agent.cons.write_csv(out/"metrics_asset_macro.csv", macro)
 
 
 def main(argv=None, *, loader=None, infer=None, load_qa=None):
