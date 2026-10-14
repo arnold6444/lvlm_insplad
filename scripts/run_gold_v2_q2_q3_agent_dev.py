@@ -116,7 +116,8 @@ def presence_metrics(rows, choices, q12_correct=None):
             "q3_location_accuracy": None, "q3_anomalous_location_labels": 0}
 
 
-def q3_bootstrap(rows, found, joint, models, n_boot=2000, comparisons=None):
+def q3_bootstrap(rows, found, joint, models, n_boot=2000, comparisons=None,
+                 scope="dev presence only, no localization claim"):
     out = []
     metrics = ("q3_presence_balanced_accuracy", "q3_normal_false_region_rate", "q3_anomaly_false_none_rate", "q1_q2_q3_presence_joint")
     for model in models:
@@ -142,7 +143,7 @@ def q3_bootstrap(rows, found, joint, models, n_boot=2000, comparisons=None):
                     out.append({"model_key": model, "baseline": base_policy, "condition": policy, "metric": metric,
                                 "base": base[metric], "new": new[metric], "delta": new[metric]-base[metric],
                                 "ci_low": float(low), "ci_high": float(high), "significant": bool(low > 0 or high < 0),
-                                "n_boot": n_boot, "scope": "dev presence only, no localization claim"})
+                                "n_boot": n_boot, "scope": scope})
     return out
 
 

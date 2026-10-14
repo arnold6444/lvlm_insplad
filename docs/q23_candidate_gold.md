@@ -2,9 +2,11 @@
 
 ## Run
 
-Open `notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb` from merged main in a **fresh L4/A100 Colab runtime**. Allow the existing `GITHUB_TOKEN` Secret, choose **Runtime → Run all**, authorize Drive, then return `gold_q23_candidate_results.zip`. No boxes, labels, manual configuration or GitHub result publication. Dependencies use the existing pinned Transformers/Accelerate versions. No quantization; VRAM must be at least 20 GiB.
+Open `notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb` in a **fresh L4/A100 Colab runtime**. The notebook fetches its full immutable `EXECUTION_COMMIT`, checks exact HEAD and a clean tracked tree, and checks again before inference. It never executes moving main. Allow the existing `GITHUB_TOKEN` Secret, choose **Runtime → Run all**, authorize Drive, then return `gold_q23_candidate_results.zip`. No boxes, labels, manual configuration or GitHub result publication. Dependencies use the existing pinned Transformers/Accelerate versions. No quantization; VRAM must be at least 20 GiB.
 
-Default output: `MyDrive/lvlm_insplad_results/gold_v2_q23_candidate_v1/`. Original gold QA, dev answers and other result folders are read-only. Repeating the inference cell resumes this same run; it is not an independent repetition.
+Corrected pinned execution output: `MyDrive/lvlm_insplad_results/gold_v2_q23_candidate_v2/`. The candidate config remains v1: only reporting and execution-version control changed. Original gold QA, dev answers and other result folders are read-only. Repeating the inference cell resumes this same run; it is not an independent repetition. For saved PR56 v1 predictions, use CPU reaggregation below; do not rerun GPU to repair tables.
+
+Pinned inference/report commit: `792c9eac45eafdedda2013cc31ab969b7df7e041`. The notebook-only follow-up fetches this object directly; its existence is retained in the PR branch history.
 
 ## Pre-gold lock
 
@@ -40,4 +42,12 @@ Raw per-step prompts, reference-first image paths, outputs, parsed choices, erro
 
 Results: `leaderboard.csv`, `answers.csv`, `metrics_by_asset.csv`, `q2_by_defect.csv`, `significance.csv` (paired bootstrap2,000), `q3_constant_baselines.csv`, partial-Q3 and Q1/Q2 QA snapshots, image manifest, metadata/status/protocol lock and raw step predictions. Baseline imports, newly generated baseline calls, tool calls and reused calls are separate; shared counts must not be summed across policies.
 
+Both leaderboard and per-asset tables contain Q1 balanced accuracy, precision/recall, TP/FP/TN/FN, normal/anomalous support and class-presence flag, in addition to existing F1/invalid rates. Q2 includes defect balanced accuracy (mean recall of GT-present classes) and existing macro-F1/accuracy. `metrics_asset_macro.csv` reports equal-asset means. All paired rows explicitly label their gold scope; the shared dev helper retains its original default dev scope.
+
 Stop on non-FROZEN QA, wrong image/QA/ref/schema/model identity, unsafe archive paths, inconsistent resume, invalid/errors or missing coverage. Retry the inference cell for transient failures. Inspect the summary before treating the experiment as complete. No further setting search after reading gold.
+
+## CPU-only reporting repair for saved predictions
+
+Open `notebooks/lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb` on a standard CPU runtime, allow the same Secret, and run all. It discovers saved v1/v2 runs, reads their QA snapshots, raw steps and image manifest, and writes corrected reports to each source run's `aggregation_v2/`. It requires neither original images/ZIPs nor a GPU and never loads an adapter. It preserves old predictions, reports, metadata and inference identities byte-for-byte.
+
+CLI: `python scripts/reaggregate_gold_v2_q23_candidate.py --run-dir <saved-run>`. This is deliberately separate from inference/resume: report edits must not bypass inference code-identity guards. Recorded source benchmark commit and prediction SHA stay distinct from the aggregation commit. Missing/error/invalid dependencies remain excluded and block complete status; aggregation never invents a missing response. Prompt/choice/model/manifest identities must match.
