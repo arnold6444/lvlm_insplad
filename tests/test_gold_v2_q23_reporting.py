@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import ast
 import json
 import subprocess
 import sys
@@ -153,3 +154,95 @@ def test_exact_revision_rejects_moving_main_and_dirty_code(tmp_path):
     source.write_text("uncommitted prompt change")
     with pytest.raises(RuntimeError, match="modified"):
         revision.verify(tmp_path, pinned)
+
+
+def test_notebook_checkout_fetches_old_sha_even_after_main_advances(tmp_path):
+    repo = tmp_path/"upstream"
+    repo.mkdir()
+    subprocess.run(["git", "init", str(repo)], check=True, capture_output=True)
+    git(repo, "config", "user.email", "fixture@example.invalid")
+    git(repo, "config", "user.name", "Fixture")
+    source = repo/"runner.py"
+    source.write_text("locked code")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "gold lock")
+    locked = git(repo, "rev-parse", "HEAD")
+    source.write_text("later main code")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "advance main")
+    future = git(repo, "rev-parse", "HEAD")
+    for name in ("lvlm_gold_v2_q23_candidate_colab.ipynb", "lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb"):
+        notebook = json.loads((runner.ROOT/"notebooks"/name).read_text(encoding="utf-8"))
+        config = {}
+        exec("".join(notebook["cells"][1]["source"]), config)
+        assert len(config["EXECUTION_COMMIT"]) == 40 and "REPO_REF" not in config
+        code = "".join(notebook["cells"][2]["source"])
+        checkout = code[code.index("# Fetch exactly"):code.index("del auth, git_env")]
+        dest = tmp_path/name.removesuffix(".ipynb")
+        commands = []
+        def run(cmd, **kwargs):
+            cmd = list(map(str, cmd))
+            commands.append(cmd)
+            if "remote" in cmd and "add" in cmd:
+                cmd[-1] = str(repo)
+            subprocess.run(cmd, check=True, capture_output=True)
+        context = {"REPO_DIR": dest, "REPO": "fixture/repo", "EXECUTION_COMMIT": locked,
+                   "subprocess": subprocess, "git_env": {}, "run": run}
+        exec(checkout, context)
+        assert git(dest, "rev-parse", "HEAD") == locked
+        assert any(cmd[-1] == locked and "fetch" in cmd for cmd in commands)
+        git(dest, "remote", "set-url", "origin", "https://github.com/fixture/repo.git")
+        # Cached exact revision is checked without fetching a later main.
+        commands.clear()
+        exec(checkout, context)
+        assert not commands
+        git(dest, "fetch", str(repo), future)
+        git(dest, "checkout", "--detach", future)
+        with pytest.raises(RuntimeError, match="고정 커밋"):
+            exec(checkout, context)
+
+
+def test_cpu_notebook_aggregation_and_display_from_saved_fixture(tmp_path, monkeypatch):
+    rows, _, args, out = fixtures.setup(tmp_path)
+    assert fixtures.run(rows, args, []) == 0
+    before = original_hashes(out)
+    notebook = json.loads((runner.ROOT/"notebooks/lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb").read_text(encoding="utf-8"))
+    import pandas as pd
+    for name in ("lvlm_gold_v2_q23_candidate_colab.ipynb", "lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb"):
+        n = json.loads((runner.ROOT/"notebooks"/name).read_text(encoding="utf-8"))
+        for i, c in enumerate(n["cells"]):
+            if c["cell_type"] == "code":
+                compile("".join(c["source"]), f"cell{i}", "exec")
+    cpu_source = "\n".join("".join(c["source"]) for c in notebook["cells"] if c["cell_type"] == "code")
+    assert not any(s in cpu_source for s in ("import torch", "build_retrieved_refs", "run_gold_v2_q23_candidate.py", "SUP_ZIP"))
+    def never_load(*args, **kwargs):
+        raise AssertionError("CPU notebook must not infer")
+    monkeypatch.setattr(runner.agent.base, "LazyHFAdapter", never_load)
+    commands = []
+    def run(cmd, **kwargs):
+        commands.append(list(map(str, cmd)))
+        return aggregate.main([*map(str, cmd[2:]), "--n-boot", "10"])
+    context = {"DRIVE_ROOT": tmp_path, "SAVED_RUN_FOLDERS": [out.name], "REPO_DIR": runner.ROOT,
+        "EXECUTION_COMMIT": "792c9eac45eafdedda2013cc31ab969b7df7e041", "verify_gold_revision": lambda *args: None,
+        "run": run, "sys": sys, "pd": pd, "json": json, "display": lambda obj: None}
+    exec("".join(notebook["cells"][3]["source"]), context)
+    exec("".join(notebook["cells"][4]["source"]), context)
+    assert len(commands) == 1 and original_hashes(out) == before
+
+
+def test_cpu_notebook_reporter_error_stops_before_stale_completed_tables(tmp_path):
+    rows, _, args, out = fixtures.setup(tmp_path)
+    assert fixtures.run(rows, args, []) == 0
+    assert aggregate.main(["--run-dir", str(out), "--n-boot", "10"]) == 0
+    manifest = fixtures.fixtures._csv(out/"image_manifest.csv")
+    manifest[0]["sha256"] = "corrupt after earlier successful reaggregation"
+    runner.agent.cons.write_csv(out/"image_manifest.csv", manifest)
+    notebook = json.loads((runner.ROOT/"notebooks/lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb").read_text(encoding="utf-8"))
+    boot = ast.parse("".join(notebook["cells"][2]["source"]))
+    run_func = next(n for n in boot.body if isinstance(n, ast.FunctionDef) and n.name == "run")
+    context = {"DRIVE_ROOT": tmp_path, "SAVED_RUN_FOLDERS": [out.name], "REPO_DIR": runner.ROOT,
+        "EXECUTION_COMMIT": "792c9eac45eafdedda2013cc31ab969b7df7e041", "verify_gold_revision": lambda *args: None,
+        "sys": sys, "subprocess": subprocess}
+    exec(compile(ast.Module(body=[run_func], type_ignores=[]), "actual_cpu_run_helper", "exec"), context)
+    with pytest.raises(RuntimeError, match="command failed"):
+        exec("".join(notebook["cells"][3]["source"]), context)

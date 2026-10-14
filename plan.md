@@ -8,7 +8,8 @@
 - Preserve: no prompt/routing/model/candidate changes, no new GPU run, original gold QA/results and local guards retained. Existing PR56 raw predictions remain reportable without inference.
 - Pin strategy: commit inference/report fixes first; notebook-only follow-up pins that reachable full SHA, avoiding a self-referential commit. New GPU run uses a separate v2 folder; CPU notebook discovers saved v1/v2 runs.
 - Verify: hand-calculated required metrics, actual Git checkout with main advancement/wrong HEAD/dirty tree, zero-inference recomputation and raw-byte preservation, corrupt/missing/failed cache gates, notebook code/display/prepare, legacy default scope.
-- Checkpoint: reporting/reaggregation/revision-helper and legacy regression tests44 passed. Immutable inference/report commit is prepared first; notebook pin follows. Actual gold inference remains unrun.
+- Completed: immutable execution/report commit792c9ea, full-SHA fetch/detached checkout and clean-HEAD checks in both notebooks, CPU discovery/reporting, required metrics and gold scopes. Review/new/legacy tests46 passed; added stale-report error gate and notebook integration checks3 passed. No GPU inference.
+- Remaining: correction PR merge/latest-folder sync, then user evaluates once or repairs complete saved predictions on CPU.
 
 ## Requirement Delta — locked Q1/Q2/Q3 candidate gold Colab (2026-10-14)
 

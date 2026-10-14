@@ -6,6 +6,8 @@ Open `notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb` in a **fresh L4/A100 Col
 
 Corrected pinned execution output: `MyDrive/lvlm_insplad_results/gold_v2_q23_candidate_v2/`. The candidate config remains v1: only reporting and execution-version control changed. Original gold QA, dev answers and other result folders are read-only. Repeating the inference cell resumes this same run; it is not an independent repetition. For saved PR56 v1 predictions, use CPU reaggregation below; do not rerun GPU to repair tables.
 
+Pinned inference/report commit: `792c9eac45eafdedda2013cc31ab969b7df7e041`. The notebook-only follow-up fetches this object directly; its existence is retained in the PR branch history.
+
 ## Pre-gold lock
 
 `configs/q1_fixed_q2_cues_q3_legacy_gold_v1.json` commits the InternVL-only candidate before gold. No automatic ranking or `frozen_config.json` is produced. `protocol_lock.json` binds inputs/code/images before inference and is explicitly **not** a completion or successful-selection file. `run_status.json.complete` requires all three prespecified policies with complete Q1/Q2/Q3 answer coverage, zero inference/load errors and zero invalid dependency outputs. Failed policies do not enter leaderboard or paired comparisons, even if a valid fallback final exists.

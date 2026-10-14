@@ -6,7 +6,9 @@ For the dev-selected **Q1 fixed + revised Q2 + previous Q3** gold candidate, ope
 [`lvlm_gold_v2_q23_candidate_colab.ipynb`](notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb)
 in a fresh L4/A100 Colab runtime and run all cells. It prepares missing inputs automatically,
 preserves previous results, and reports Q3 **presence only**, with spatial accuracy unknown.
-The candidate is locked before gold; see [protocol, failure gates and recovery](docs/q23_candidate_gold.md).
+The notebook fetches and verifies an immutable code commit. For saved PR56 predictions,
+[`CPU reaggregation`](notebooks/lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb) repairs metrics
+without another GPU run. See [protocol, failure gates and recovery](docs/q23_candidate_gold.md).
 
 ## Benchmark design
 
