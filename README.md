@@ -2,6 +2,12 @@
 
 InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple VLMs under the same QA, prompt, and scoring contract.
 
+For the dev-selected **Q1 fixed + revised Q2 + previous Q3** gold candidate, open
+[`lvlm_gold_v2_q23_candidate_colab.ipynb`](notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb)
+in a fresh L4/A100 Colab runtime and run all cells. It prepares missing inputs automatically,
+preserves previous results, and reports Q3 **presence only**, with spatial accuracy unknown.
+The candidate is locked before gold; see [protocol, failure gates and recovery](docs/q23_candidate_gold.md).
+
 ## Benchmark design
 
 ### Track A — General Anomaly Detection

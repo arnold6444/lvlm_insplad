@@ -1,0 +1,27 @@
+{
+  "protocol": "gold_v2_q1_fixed_q2_cues_q3_legacy",
+  "version": 1,
+  "models": ["internvl3_5_8b"],
+  "policies": ["baseline", "previous_agent", "candidate"],
+  "reference_condition": "normal_ref_retrieved_diffdate",
+  "q1": "unchanged direct baseline answer; no candidate Q1 inference",
+  "q2": "PR55 revised fresh definitions, no prior-answer framing",
+  "q3": "PR54 presence followed by optional full-frame position; own direct fallback",
+  "q3_schema": "separate nine-region-plus-none auxiliary questions on all gold images",
+  "q3_evaluation": "image-label presence only; spatial accuracy null",
+  "selection": "posthoc dev240 choice locked before gold; no gold-based selection",
+  "dev_evidence": {
+    "commit": "bb661447b5a23ea1d7d8ee69de8c9d68a782a64d",
+    "archive_sha256_prefix": "d348a43771e9",
+    "additional_dev_images": 200,
+    "q2_macro_f1_baseline": 0.514010,
+    "q2_macro_f1_previous": 0.653941,
+    "q2_macro_f1_revised": 0.697842,
+    "q3_anomalous_false_none_previous": 15,
+    "q3_anomalous_false_none_revised": 29,
+    "q3_anomalous_images": 99,
+    "limit": "revised Q2 extra gain vs previous CI crosses zero; hybrid is posthoc stored-answer recombination"
+  },
+  "gold_limit": "existing gold246 has prior exploratory use; not a new untouched holdout",
+  "failure_gate": "all planned policies and dependencies must have full coverage, zero errors and zero invalids"
+}
