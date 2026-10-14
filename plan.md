@@ -1,5 +1,19 @@
 # Plan
 
+## Requirement Delta — locked Q1/Q2/Q3 candidate gold Colab (2026-10-14)
+
+- Goal: prepare and merge an all-run gold notebook for Q1 baseline unchanged + revised fresh-definition Q2 + previous presence/optional-position Q3. User authorizes push/merge; actual GPU execution is in user Colab.
+- Preserve: original QA/results and local guard edits; per-question independence; ref-first images, greedy unquantized InternVL; gold246 remains FROZEN. No manual labels, automatic selection, expert integration or new-Q3-review route.
+- Lock: InternVL only, dev240 posthoc choice stated explicitly. Same diffdate retrieved normals as dev. Reuse verified stored gold Q1/Q2 predictions when available; otherwise generate the direct baseline in the new folder, then hold its Q1 fixed. Baseline and previous-agent are predeclared controls, never gold-based selection.
+- Q3: generate separate 9-region+none auxiliary questions for all246, score image-label presence only, spatial accuracy null. Original gold42 four-option QA untouched; do not merge its localization accuracy with this proxy. Gold has already been explored, not a new unseen holdout.
+- Flow: preflight QA/config/refs/archive identities → immutable protocol lock → validated baseline cache or new direct calls → revised Q2 and legacy Q3 → dependency-complete comparisons, per-asset/defect support and paired CI → status and result ZIP. Invalid/error calls retry; failed policies excluded; complete flag requires every planned policy, coverage and valid calls. No frozen_config/selection/publish.
+- Review: reuse existing prompt/metric/extraction/adapter utilities instead of generalizing dev runner or invoking all seven dev ablations. Code/config/image/prompt identities bind resume; persistent prediction tails survive interruption. Test failures, invalids, model-load exceptions, independent prompts, tampering and Q1 preservation.
+- Steps: runner/config → Colab/protocol documentation → CPU fixtures + legacy prompt/adapter tests + notebook compile/display → PR merge → fresh-folder fast-forward with local changes and research hashes preserved.
+- Done: runnable merged notebook with automatic Drive asset discovery/reference preparation, explicit stop conditions, original result preservation, meaningful fixture verification and clear user filename/runtime instructions. No local LVLM performance claim.
+- Completed: committed pre-gold config, candidate runner, automatic Colab, protocol and README. Twelve candidate tests pass (cached/new baseline, Q1 preservation, GT/answer independence, failures/invalids/load failures, resume/tail, immutable input and notebook preparation/display). Existing related runner/prompt/adapter tests: 52 passed. Notebook code cells compile, CLI help and diff checks pass. Actual GPU gold inference is not run locally.
+- Publication: user explicitly authorizes PR merge after verification; latest-folder sync must preserve local guard edits and research artifacts.
+- Remaining: user runs the prepared notebook once and returns ZIP; actual GPU gold results are pending.
+
 ## Requirement Delta — Q2 rust / Q3 missed-defect refinement (2026-10-13)
 
 - Goal: diagnose the three rust regressions and five Q3 false-none cases, implement an independently testable refinement, and merge an all-run larger-dev Colab. User explicitly authorizes merge. Keep Q1, original results and gold unchanged; no annotations.
