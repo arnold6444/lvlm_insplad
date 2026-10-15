@@ -171,7 +171,8 @@ def test_notebook_checkout_fetches_old_sha_even_after_main_advances(tmp_path):
     git(repo, "add", ".")
     git(repo, "commit", "-m", "advance main")
     future = git(repo, "rev-parse", "HEAD")
-    for name in ("lvlm_gold_v2_q23_candidate_colab.ipynb", "lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb"):
+    for name in ("lvlm_gold_v2_q23_candidate_colab.ipynb", "lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb",
+                 "lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb"):
         notebook = json.loads((runner.ROOT/"notebooks"/name).read_text(encoding="utf-8"))
         config = {}
         exec("".join(notebook["cells"][1]["source"]), config)
