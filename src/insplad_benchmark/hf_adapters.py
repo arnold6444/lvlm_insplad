@@ -419,17 +419,27 @@ def _internvl_per_image_tile_budget(max_total_tiles: int, image_count: int) -> i
     return max(1, max_total_tiles // image_count)
 
 
+def _internvl_image_tile_budgets(adapter: Mapping[str, Any], image_count: int) -> list[int]:
+    """Explicit per-image budgets are opt-in; legacy equal splitting is unchanged."""
+    default = _internvl_per_image_tile_budget(int(adapter["max_total_tiles"]), image_count)
+    budgets = adapter.get("image_tile_budgets")
+    if budgets is None:
+        return [default] * image_count
+    if len(budgets) != image_count or any(type(n) is not int or n < 1 for n in budgets):
+        raise ValueError("image_tile_budgets must contain one positive integer per image")
+    return list(budgets)
+
+
 def _infer_internvl(adapter: Mapping[str, Any], image_paths: Sequence[Path], prompt: str) -> str:
     import torch
 
     if not image_paths:
         raise ValueError("InternVL inference requires at least one image.")
 
-    max_total_tiles = int(adapter["max_total_tiles"])
-    per_image_max = _internvl_per_image_tile_budget(max_total_tiles, len(image_paths))
+    budgets = _internvl_image_tile_budgets(adapter, len(image_paths))
     pixel_batches = [
-        _load_internvl_image(Path(path), max_num=per_image_max)
-        for path in image_paths
+        _load_internvl_image(Path(path), max_num=budget)
+        for path, budget in zip(image_paths, budgets)
     ]
     num_patches_list = [batch.size(0) for batch in pixel_batches]
     pixel_values = torch.cat(pixel_batches, dim=0).to(adapter["dtype"]).cuda()
