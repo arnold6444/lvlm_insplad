@@ -1,5 +1,18 @@
 # Plan
 
+## Requirement Delta — automatic zoom / prompt factorial dev (2026-10-15)
+
+- Goal: merge an all-run Colab comparing automatic native-image detail and short defect-evidence prompts separately; user authorizes push/merge. Existing Q1 answers remain identical with zero new Q1 calls.
+- Preserve: original dev/gold/results, current dirty guard edits in the fresh checkout, question independence, no manual boxes/labels, no gold retuning or policy selection. Existing dev240 is exploratory, already examined.
+- Design: cached direct baseline plus control/zoom_only/prompt_only/zoom_prompt 2x2 factorial. Control uses current fresh revised Q2 definitions and legacy Q3 presence→optional position. Prompt factor changes only wording; route/options identity/order and Q2 fresh framing stay fixed. Zoom factor changes only native target tile budget3→6, normal reference budget3 unchanged; no extra images or crop annotations. The same default greedy InternVL model is shared; model weights unchanged.
+- Flow: immutable code checkout → read-only dev/ref/cached baseline preflight → image hashes and actual tile-count manifest → per-condition Q2 and independent Q3 routes → complete-valid-policy reports and paired CI → download ZIP. Separate persistent output folder, identity-bound checkpoints, retry failed/invalid calls, retain interrupted cache tails. No GT-dependent prompt/routing.
+- Implementation: optional per-image InternVL budgets (default behavior unchanged); reuse candidate metrics/reporting with optional policy/scope arguments; new dedicated dev runner, notebook, protocol and focused tests. Avoid changing prior experiment defaults.
+- Review: four factorial conditions are needed to distinguish input, wording and interaction; no extra expert/disagreement policy or long-prompt re-run. Q3 remains presence-only because spatial GT is absent. No claims that a chosen grid cell is correct. Tile increase can cause OOM; record failure and stop rather than silently reduce budgets.
+- Done: complete merged notebook pinned to a full reachable implementation SHA; all-run setup/discovery/display/ZIP cells tested; Q1 fixed, unchanged prompts across zoom pairs, reference pixels/budget unchanged, invalid/error policies excluded, resume/preservation/tampering tests pass; prior adapter/reporting regressions pass; latest fresh checkout synced preserving local work.
+- Verification: CPU fixtures including actual large-image preprocessing, mocked inference/adapter boundary, notebook prepare/report/download cells, exact-revision checks, CLI help and diff audit. Real GPU effect/runtime remains for user Colab.
+- Completed: optional per-image budgets, four-factor dev runner, automatic Colab, protocol and README. Notebook pins implementation7faafeb63f80ada1b2d583929a309bb1931884d2. Related new/legacy/reporting/adapter tests77 passed, including exact-SHA checkout after main advancement, actual large-image tiling, no Q1 calls, failure/invalid/OOM exclusion/retry, interruption preservation, notebook preflight/display/ZIP. CLI help and diff checks pass. No GPU inference or accuracy/runtime claim.
+- Remaining: PR merge and fresh-folder sync with preservation hashes, then user runs the notebook and returns ZIP.
+
 ## Requirement Delta — PR56 review correction before gold (2026-10-14)
 
 - Fix: fetch an immutable execution commit and verify clean exact HEAD on fresh and cached Colab runtimes, before inference; moving main is not a gold lock.

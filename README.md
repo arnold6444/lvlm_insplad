@@ -2,6 +2,13 @@
 
 InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple VLMs under the same QA, prompt, and scoring contract.
 
+For the **Q1 fixed, automatic target zoom × prompt** exploratory dev comparison, open
+[`lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb`](notebooks/lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb)
+in a fresh L4/A100 Colab runtime and run all cells. Four factorial conditions isolate
+native-image detail and wording; Q1 stays cached, normal references stay unchanged,
+and no manual boxes or new labels are needed. It writes a separate folder and never
+retunes gold. See [design and run instructions](docs/q23_zoom_prompt_dev.md).
+
 For the dev-selected **Q1 fixed + revised Q2 + previous Q3** gold candidate, open
 [`lvlm_gold_v2_q23_candidate_colab.ipynb`](notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb)
 in a fresh L4/A100 Colab runtime and run all cells. It prepares missing inputs automatically,

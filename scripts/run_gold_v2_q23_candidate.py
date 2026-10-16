@@ -118,10 +118,14 @@ def cached_baseline(path, rows, refs, model):
     return found, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_boot):
+def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_boot,
+             *, policies=None, comparisons=None, scope=None):
+    policies = POLICIES if policies is None else policies
+    comparisons = COMPARISONS if comparisons is None else comparisons
+    scope = f"gold{len(q3)}" if scope is None else scope
     found, loc_found, joint = {}, {}, {}
     leaderboard, answers, assets, defects = [], [], [], []
-    for policy in POLICIES:
+    for policy in policies:
         final, loc = finals[policy], locations[policy]
         for r in [*rows, *q3]:
             choice = loc.get(r["id"]) if r["question_type"] == agent.Q3 else final.get(r["id"])
@@ -150,11 +154,11 @@ def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_b
             correct = sum(final[r["id"]] == r["answer"] for r in sub)
             defects.append({"model_key": model, "policy": policy, "defect": defect, "images": len(sub),
                 "q2_correct": correct, "q2_accuracy": correct/len(sub)})
-    sig = agent.cons.significance_rows(agent.cons.image_pairs(rows), [], found, [model], COMPARISONS, n_boot)
+    sig = agent.cons.significance_rows(agent.cons.image_pairs(rows), [], found, [model], comparisons, n_boot)
     sig = [r for r in sig if r["metric"] not in ("q3_accuracy", "q1q3_contradiction")]
-    sig += old.q3_bootstrap(q3, loc_found, joint, [model], n_boot, COMPARISONS,
-                            scope=f"gold{len(q3)} presence only, no localization claim")
-    sig = [{**r, "scope": r.get("scope") or f"gold{len(q3)} Q1/Q2 image-level paired comparison"} for r in sig]
+    sig += old.q3_bootstrap(q3, loc_found, joint, [model], n_boot, comparisons,
+                            scope=f"{scope} presence only, no localization claim")
+    sig = [{**r, "scope": r.get("scope") or f"{scope} Q1/Q2 image-level paired comparison"} for r in sig]
     for name, records in (("leaderboard.csv", leaderboard), ("answers.csv", answers),
                           ("metrics_by_asset.csv", assets), ("q2_by_defect.csv", defects), ("significance.csv", sig)):
         agent.cons.write_csv(out/name, records)
@@ -164,7 +168,7 @@ def evaluate(rows, q3, first, finals, locations, eligible, deps, out, model, n_b
         controls.append({"control": control, **old.presence_metrics(q3, choices)})
     agent.cons.write_csv(out/"q3_constant_baselines.csv", controls)
     macro = []
-    for policy in POLICIES:
+    for policy in policies:
         sub = [r for r in assets if r["policy"] == policy]
         if sub:
             keys = ("q1_balanced_accuracy", "q1_anomaly_f1", "q1_precision", "q1_recall", "q1_invalid_rate",
