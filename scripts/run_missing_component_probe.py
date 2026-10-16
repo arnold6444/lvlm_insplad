@@ -354,6 +354,8 @@ def report(rows, scores, threshold, split):
 
 def execute(args, *, extractor=None, strict=True):
     out = Path(args.out_dir)
+    if out.exists() and any(out.iterdir()) and not (out / "input_lock.json").is_file():
+        raise ValueError("refusing nonempty output without this experiment's input lock; use a NEW directory")
     out.mkdir(parents=True, exist_ok=True)
     start = time.time()
     input_identity = {"protocol": PROTOCOL, "script_sha256": sha_file(__file__),
