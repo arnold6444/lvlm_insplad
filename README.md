@@ -262,3 +262,14 @@ python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_zero_shot.jsonl -
 python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_one_shot.jsonl --predictions predictions/anomaly_one_shot.jsonl --regime one_shot
 python scripts/evaluate.py --task explainability --qa data/qa/defect_qa.jsonl --predictions predictions/defect.jsonl
 ```
+
+
+## Standalone missing-component supervised probe
+
+`notebooks/missing_component_probe_colab.ipynb`: L4/A100 → existing `GITHUB_TOKEN` Secret → Run all.
+Automatically trains a frozen-DINOv2 + small classifier on existing glass-insulator train labels,
+excluding official val/test and all dev/gold targets, with date-disjoint internal splits.
+Dev is reported only after freezing; gold is not scored. Outputs use a fresh timestamp/UUID folder
+and `missing_component_probe_results.zip`; previous results and QA answers are preserved.
+This is a separate supervised-assisted condition; actual effectiveness requires the Colab run.
+See [protocol, leakage checks and outputs](docs/missing_component_probe.md).

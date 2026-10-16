@@ -275,3 +275,17 @@ Add a leakage-safe `1-shot+` Aligned Core regime that retrieves a query-specific
 - [ ] Review prediction validity, metrics, latency, and model-specific failures.
 - [ ] After smoke-test review, expand the same registry/contract to full 6,481 / 6,417 inference.
 - [ ] Analyze failure modes and design the first performance-improvement method.
+
+
+## 2026-10-16 standalone missing-component probe (current task)
+- Goal: automatic Colab for supervised glass-insulator good vs missing-cap; no agent integration or Q1/Q2/Q3 answer changes.
+- Preserve: frozen dev/gold, all previous results and dirty authoritative checkout. This is a new supervised-assisted research condition.
+- Decisions: frozen DINOv2-base features + fixed balanced logistic regression; exclude all official val/test and dev/gold targets by source/name, CRC+size, byte SHA and decoded RGB SHA. Group residual train by capture date into fit/calibration/internal_test. Fit normalization/head only on fit; threshold only on calibration (FPR <=5%); report dev only after saving frozen head. Gold never scored.
+- Flow: automatic ZIP/QA discovery -> leakage audit -> locked split -> resumable frozen features -> fit -> calibrate -> frozen artifact -> internal test/dev reports -> result ZIP.
+- Critical review: no boxes/new labels; classifier uses existing train labels, not a drop-in claim of LVLM improvement. No threshold/model selection on dev/test. Missing input, conflicting labels, overlap, incomplete features or convergence failure stops the run.
+- Steps: [x] implement data/model runner; [x] CPU fixture + real archive leakage checks; [x] notebook, protocol and static checks; [x] immutable execution SHA and publication prepared; merge/sync preservation evidence recorded in final implementation report.
+- Done when: all steps pass; fixed code/model versions; unique output run; leakage audit and manifests; both classes in each date-disjoint internal split; model frozen before evaluation; fail-closed status; merged Colab link.
+- Verification: targeted pytest with CPU injected features; actual archive split audit without GPU; notebook code compilation and frozen SHA ancestry; source/result preservation. Full training/effect remains for user Colab.
+
+- Checkpoint: new/related tests29 passed; final new tests11 passed. Actual archives: official val6417/test6481 + dev240/gold246 protected, 13138 files decoded and hashed; eligible1128, exact-byte/RGB/internal-date overlaps0. Fit723/cal210/test195; dev50 report only. GPU training has not run. Implementation pinned to cc75275dd69f3cf612c0d3295a06a0b9c8408c9f.
+- Remaining after code delivery: user executes Colab GPU training; assess internal_test/dev FP+FN before considering agent integration. No gold execution or agent adoption is authorized by a successful standalone run alone.
