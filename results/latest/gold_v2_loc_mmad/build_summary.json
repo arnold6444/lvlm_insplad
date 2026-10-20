@@ -1,0 +1,81 @@
+{
+  "protocol": "gold_v2_loc_mmad",
+  "question": "There is a defect in the target power-line asset. Where is the defect located in the target image?",
+  "anomalous_images": 139,
+  "questions": 133,
+  "excluded_unlocatable": [
+    {
+      "core_id": "core-7c8ff6a171b3d3d9",
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "rust",
+      "note": ""
+    },
+    {
+      "core_id": "core-87e50084a092ae08",
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "rust",
+      "note": ""
+    },
+    {
+      "core_id": "core-8a9cec5de5f5c23c",
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "rust",
+      "note": ""
+    },
+    {
+      "core_id": "core-8eb6ff6f0382e60e",
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "rust",
+      "note": ""
+    },
+    {
+      "core_id": "core-94e82079a8901a84",
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "rust",
+      "note": ""
+    },
+    {
+      "core_id": "core-722a6b810e50366b",
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "note": ""
+    }
+  ],
+  "missing_annotation": [],
+  "by_basis": {
+    "manual_box_annotation": 113,
+    "insplad_seg_instance_annotation": 20
+  },
+  "by_asset": {
+    "glass-insulator": 27,
+    "lightning-rod-suspension": 20,
+    "polymer-insulator-upper-shackle": 24,
+    "vari-grip": 43,
+    "yoke-suspension": 19
+  },
+  "by_defect": {
+    "missing-cap": 27,
+    "rust": 83,
+    "bird-nest": 23
+  },
+  "by_region": {
+    "center": 76,
+    "right": 8,
+    "lower": 2,
+    "upper-right": 3,
+    "upper": 37,
+    "left": 4,
+    "upper-left": 2,
+    "lower-right": 1
+  },
+  "by_answer_letter": {
+    "D": 41,
+    "A": 37,
+    "B": 31,
+    "C": 24
+  },
+  "seed": 42,
+  "note": "MMAD-style: anomalous images only, defect presence stated, 4 grid-region options, no 'none'. gold v2 files are unchanged.",
+  "file": "localization_mmad_qa_133.jsonl",
+  "quality_status": "FROZEN"
+}
