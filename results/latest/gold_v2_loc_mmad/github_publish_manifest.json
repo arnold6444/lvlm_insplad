@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "published_at_utc": "2026-10-20T14:19:07.218655+00:00",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_qa/gold_v2_loc_mmad",
+  "repo": "arnold6444/lvlm_insplad",
+  "branch": "main",
+  "prefix": "gold_v2_loc_mmad",
+  "target_root": "results/latest",
+  "uploaded": [
+    {
+      "name": "annotations.json",
+      "remote_path": "results/latest/gold_v2_loc_mmad/annotations.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_loc_mmad/annotations.json",
+      "commit_sha": "3e00266b9e68dafc594447520afc44aa453dbd83",
+      "size_bytes": 52751,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "build_summary.json",
+      "remote_path": "results/latest/gold_v2_loc_mmad/build_summary.json",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_loc_mmad/build_summary.json",
+      "commit_sha": "7bbcac45e48a18fbf28883148329faa0a77f80fb",
+      "size_bytes": 2015,
+      "mime_type": "application/json"
+    },
+    {
+      "name": "localization_mmad_qa_133.jsonl",
+      "remote_path": "results/latest/gold_v2_loc_mmad/localization_mmad_qa_133.jsonl",
+      "html_url": "https://github.com/arnold6444/lvlm_insplad/blob/main/results/latest/gold_v2_loc_mmad/localization_mmad_qa_133.jsonl",
+      "commit_sha": "fe5f125d7ee6c371e6a4c8a88f8a102d7add1889",
+      "size_bytes": 143085,
+      "mime_type": null
+    }
+  ],
+  "missing": []
+}
