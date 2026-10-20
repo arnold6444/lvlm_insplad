@@ -12,7 +12,7 @@ InsPLAD 데이터로 LVLM 이상탐지 · 구조화 결함 이해 QA 벤치마�
 - 모든 모델에 같은 QA · 프롬프트 · 출력 스키마 · 평가기. HF 오픈소스 모델을 몰래 양자화하지 않는다. VRAM 20 GB 미만이면 HF 러너가 실행을 거부한다
 - smoke/dev 코호트는 방법 선택용이다. 최종 holdout 은 프로토콜 고정 전에는 쓰지 않는다(실험별 holdout 크기는 해당 `docs/` 참고)
 - gold v2 세트(246장 / 534문항)는 `FROZEN`. 수정하지 않는다
-- 원본 ZIP 과 이미지는 커밋하지 않는다(`.gitignore`). `insplad_google_drive` 는 Drive 링크 텍스트 파일이니 수정하지 않는다
+- 원본 ZIP 과 이미지는 커밋하지 않는다(`.gitignore`). `insplad_google_drive` 는 공식 Mendeley 다운로드 링크 텍스트 파일이다. 개인 Drive 링크를 다시 넣지 않는다
 - 비용이 큰 full LVLM 추론(1,378행 이상)은 사용자가 명시적으로 요청할 때만 돌린다
 
 ## 보고 규칙

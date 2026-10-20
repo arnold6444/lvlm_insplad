@@ -1,4 +1,8 @@
 insplad
 
-https://drive.google.com/file/d/1lO3YorIGnnAwrrTzYR_9i-WJAobOjpTB/view?usp=sharing
-https://drive.google.com/file/d/1Oy096xsjryzU5FPaq07B9iKv72GbjHeA/view?usp=sharing
+Official download (Mendeley Data): https://data.mendeley.com/datasets/5n3fjgvfyz/1
+Official repository: https://github.com/andreluizbvs/InsPLAD
+
+This benchmark uses two ZIPs from that archive:
+- unsupervised_anomaly_detection.zip
+- supervised_fault_classification.zip
