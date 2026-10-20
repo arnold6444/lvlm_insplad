@@ -1,0 +1,2311 @@
+{
+ "core-056d8ecc56d08755": {
+  "core_id": "core-056d8ecc56d08755",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 08-12-2020_DJI_0378_cadeia_isolador_vidro_1422.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.132706,
+    0.58198,
+    0.121412,
+    0.247286
+   ],
+   [
+    0.907294,
+    0.082394,
+    0.082824,
+    0.222224
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:43:34+0000"
+ },
+ "core-06035bdc38dd3482": {
+  "core_id": "core-06035bdc38dd3482",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0539_cadeia_isolador_vidro_1618.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.688525,
+    0.47123,
+    0.305574,
+    0.318689
+   ],
+   [
+    0.552131,
+    0.0,
+    0.18623,
+    0.148197
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:43:43+0000"
+ },
+ "core-097e8e8b6d1d6dc1": {
+  "core_id": "core-097e8e8b6d1d6dc1",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0361_cadeia_isolador_vidro_911.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.464762,
+    0.267951,
+    0.115556,
+    0.136393
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:02+0000"
+ },
+ "core-0f341fe7e1fbf590": {
+  "core_id": "core-0f341fe7e1fbf590",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0334_cadeia_isolador_vidro_885.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.45347,
+    0.500082,
+    0.086375,
+    0.10623
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:09+0000"
+ },
+ "core-264cc4a2fe252ecd": {
+  "core_id": "core-264cc4a2fe252ecd",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 07-12-2020_DJI_0134_cadeia_isolador_vidro_1338.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.423607,
+    0.628607,
+    0.162623,
+    0.149508
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:13+0000"
+ },
+ "core-30be542d7e1937d5": {
+  "core_id": "core-30be542d7e1937d5",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 08-12-2020_DJI_0377_cadeia_isolador_vidro_1421.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.48433,
+    0.506639,
+    0.14245,
+    0.190164
+   ],
+   [
+    0.217664,
+    0.548607,
+    0.1151,
+    0.156066
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:20+0000"
+ },
+ "core-30f5b262327e26c5": {
+  "core_id": "core-30f5b262327e26c5",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0364_cadeia_isolador_vidro_915.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.644678,
+    0.303361,
+    0.071391,
+    0.119344
+   ],
+   [
+    0.106004,
+    0.334836,
+    0.074636,
+    0.135082
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:27+0000"
+ },
+ "core-3bb96b357b8e685a": {
+  "core_id": "core-3bb96b357b8e685a",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0363_cadeia_isolador_vidro_914.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.548706,
+    0.332642,
+    0.069647,
+    0.12275
+   ],
+   [
+    0.094118,
+    0.355324,
+    0.059294,
+    0.129421
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:35+0000"
+ },
+ "core-3f8490271dce7708": {
+  "core_id": "core-3f8490271dce7708",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0630_cadeia_isolador_vidro_1547.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.579135,
+    0.253525,
+    0.078372,
+    0.098361
+   ],
+   [
+    0.184224,
+    0.477787,
+    0.091603,
+    0.10623
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:45+0000"
+ },
+ "core-3ff385e696b565db": {
+  "core_id": "core-3ff385e696b565db",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0072_cadeia_isolador_vidro_23.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.379367,
+    0.393852,
+    0.105264,
+    0.198033
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:44:51+0000"
+ },
+ "core-50b0afe8e7a47455": {
+  "core_id": "core-50b0afe8e7a47455",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0365_cadeia_isolador_vidro_916.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.078793,
+    0.48959,
+    0.108998,
+    0.154754
+   ],
+   [
+    0.938956,
+    0.45418,
+    0.060408,
+    0.123279
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:06+0000"
+ },
+ "core-5780ab2f29006b45": {
+  "core_id": "core-5780ab2f29006b45",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0074_cadeia_isolador_vidro_25.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.384978,
+    0.420082,
+    0.095984,
+    0.196721
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:11+0000"
+ },
+ "core-663e3a7f56431652": {
+  "core_id": "core-663e3a7f56431652",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 25-11-2020_DJI_0450_cadeia_isolador_vidro_1778.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.357566,
+    0.504016,
+    0.288148,
+    0.272787
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:15+0000"
+ },
+ "core-6de54da228c47b27": {
+  "core_id": "core-6de54da228c47b27",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0531_cadeia_isolador_vidro_1611.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.321311,
+    0.479098,
+    0.111475,
+    0.111475
+   ],
+   [
+    0.571803,
+    0.384672,
+    0.149508,
+    0.13377
+   ],
+   [
+    0.702951,
+    0.126311,
+    0.152131,
+    0.120656
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:22+0000"
+ },
+ "core-6fa9564922abd11a": {
+  "core_id": "core-6fa9564922abd11a",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0326_cadeia_isolador_vidro_878.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.427294,
+    0.227758,
+    0.128,
+    0.250628
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:26+0000"
+ },
+ "core-752543a389df2034": {
+  "core_id": "core-752543a389df2034",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0062_cadeia_isolador_vidro_2.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.686808,
+    0.121335,
+    0.15876,
+    0.176016
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:31+0000"
+ },
+ "core-9655d9797c31dd47": {
+  "core_id": "core-9655d9797c31dd47",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 16-11-2020_DJI_0007_cadeia_isolador_vidro_1491.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.552868,
+    0.372869,
+    0.172032,
+    0.165246
+   ],
+   [
+    0.676311,
+    0.104016,
+    0.137889,
+    0.135082
+   ],
+   [
+    0.287596,
+    0.47123,
+    0.1589,
+    0.121967
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:37+0000"
+ },
+ "core-a77a457b79443d82": {
+  "core_id": "core-a77a457b79443d82",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0435_cadeia_isolador_vidro_1573.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.289463,
+    0.060738,
+    0.139816,
+    0.153443
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:42+0000"
+ },
+ "core-b0c7f7013be0fbdf": {
+  "core_id": "core-b0c7f7013be0fbdf",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0557_cadeia_isolador_vidro_1629.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.733793,
+    0.581393,
+    0.10543,
+    0.104918
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:46+0000"
+ },
+ "core-bb120ed6aa3fc6a1": {
+  "core_id": "core-bb120ed6aa3fc6a1",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 30-11-2020_DJI_0144_cadeia_isolador_vidro_2921.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.803934,
+    0.41877,
+    0.190164,
+    0.156066
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:49+0000"
+ },
+ "core-bc76b1f6b437721e": {
+  "core_id": "core-bc76b1f6b437721e",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0555_cadeia_isolador_vidro_1625.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.380835,
+    0.334836,
+    0.225875,
+    0.16
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:52+0000"
+ },
+ "core-c3a33daff82c1ff5": {
+  "core_id": "core-c3a33daff82c1ff5",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 25-11-2020_DJI_0449_cadeia_isolador_vidro_1776.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.392654,
+    0.295492,
+    0.24032,
+    0.178361
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:55+0000"
+ },
+ "core-c4d0aed59e3bb533": {
+  "core_id": "core-c4d0aed59e3bb533",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 07-12-2020_DJI_0181_cadeia_isolador_vidro_1320.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.432222,
+    0.812213,
+    0.184677,
+    0.132459
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:45:58+0000"
+ },
+ "core-ce04bd738cde28a8": {
+  "core_id": "core-ce04bd738cde28a8",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0561_cadeia_isolador_vidro_1633.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.542691,
+    0.388607,
+    0.071779,
+    0.112787
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:03+0000"
+ },
+ "core-e1807fb09f25823f": {
+  "core_id": "core-e1807fb09f25823f",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0518_cadeia_isolador_vidro_1609.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.216471,
+    0.443947,
+    0.098824,
+    0.13614
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:13+0000"
+ },
+ "core-e9fa5d3e0e52f7ef": {
+  "core_id": "core-e9fa5d3e0e52f7ef",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0538_cadeia_isolador_vidro_1616.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.564508,
+    0.41877,
+    0.100852,
+    0.097049
+   ],
+   [
+    0.715131,
+    0.156475,
+    0.096923,
+    0.094426
+   ],
+   [
+    0.351017,
+    0.483033,
+    0.098232,
+    0.108852
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:20+0000"
+ },
+ "core-fd12044fda93f960": {
+  "core_id": "core-fd12044fda93f960",
+  "image": "defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0537_cadeia_isolador_vidro_1615.jpg",
+  "asset_category": "glass-insulator",
+  "defect_gt": "missing-cap",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.495282,
+    0.270608,
+    0.261439,
+    0.235295
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:24+0000"
+ },
+ "core-0228fafc380359f0": {
+  "core_id": "core-0228fafc380359f0",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/10-06-2021_DJI_0034_619.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.43755,
+    0.032139,
+    0.227368,
+    0.19432
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:34+0000"
+ },
+ "core-1259d15d7934e5fd": {
+  "core_id": "core-1259d15d7934e5fd",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0210_489.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.499025,
+    0.039754,
+    0.145768,
+    0.158689
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:40+0000"
+ },
+ "core-1649058f31adda54": {
+  "core_id": "core-1649058f31adda54",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0335_100.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.438033,
+    0.045,
+    0.166557,
+    0.156066
+   ],
+   [
+    0.247869,
+    0.32041,
+    0.540328,
+    0.647869
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:51+0000"
+ },
+ "core-1aa2ea34dae047cd": {
+  "core_id": "core-1aa2ea34dae047cd",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0274_380.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.435336,
+    0.013163,
+    0.089046,
+    0.093286
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:46:57+0000"
+ },
+ "core-224fd90754834523": {
+  "core_id": "core-224fd90754834523",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0294_249.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.366555,
+    0.012458,
+    0.2301,
+    0.094983
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:06+0000"
+ },
+ "core-2e7ae5a3c54051f2": {
+  "core_id": "core-2e7ae5a3c54051f2",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0547_159.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.403621,
+    0.021312,
+    0.171191,
+    0.107168
+   ],
+   [
+    0.303412,
+    0.199462,
+    0.169799,
+    0.254699
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:12+0000"
+ },
+ "core-3492b3946cda8909": {
+  "core_id": "core-3492b3946cda8909",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/Fotos 23-10-2020_DJI_0118_manilha_isolador_superior_1401.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.442834,
+    0.04917,
+    0.087593,
+    0.085971
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:17+0000"
+ },
+ "core-3aac769971f3e583": {
+  "core_id": "core-3aac769971f3e583",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0007_4.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.48258,
+    0.005887,
+    0.080658,
+    0.077816
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:20+0000"
+ },
+ "core-4eafbc569a47da83": {
+  "core_id": "core-4eafbc569a47da83",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0273_85.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.358033,
+    0.005656,
+    0.31082,
+    0.156066
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:24+0000"
+ },
+ "core-57f8c8a4e58bb5bb": {
+  "core_id": "core-57f8c8a4e58bb5bb",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0101_23.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.414652,
+    0.012198,
+    0.168498,
+    0.134999
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:27+0000"
+ },
+ "core-66e9206471993380": {
+  "core_id": "core-66e9206471993380",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0081_320.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.437304,
+    0.008279,
+    0.108998,
+    0.085246
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:32+0000"
+ },
+ "core-71ef59627ba1d01a": {
+  "core_id": "core-71ef59627ba1d01a",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0548_160.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.380835,
+    0.014836,
+    0.186478,
+    0.577049
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:38+0000"
+ },
+ "core-7c8ff6a171b3d3d9": {
+  "core_id": "core-7c8ff6a171b3d3d9",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0456_560.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:48+0000"
+ },
+ "core-81e04d8a83b65b75": {
+  "core_id": "core-81e04d8a83b65b75",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0072_12.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.455373,
+    0.036549,
+    0.144147,
+    0.096644
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:53+0000"
+ },
+ "core-87e50084a092ae08": {
+  "core_id": "core-87e50084a092ae08",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0102_24.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:47:55+0000"
+ },
+ "core-8a9cec5de5f5c23c": {
+  "core_id": "core-8a9cec5de5f5c23c",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0568_277.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:01+0000"
+ },
+ "core-8c246f56a57b6a15": {
+  "core_id": "core-8c246f56a57b6a15",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0294_95.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.467891,
+    0.008413,
+    0.364797,
+    0.51466
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:07+0000"
+ },
+ "core-8c7d377d7fd7c954": {
+  "core_id": "core-8c7d377d7fd7c954",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0248_73.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.378623,
+    0.030347,
+    0.245404,
+    0.163018
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:11+0000"
+ },
+ "core-8eb6ff6f0382e60e": {
+  "core_id": "core-8eb6ff6f0382e60e",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0404_540.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:13+0000"
+ },
+ "core-94e82079a8901a84": {
+  "core_id": "core-94e82079a8901a84",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0275_510.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:16+0000"
+ },
+ "core-aab2b676f5537727": {
+  "core_id": "core-aab2b676f5537727",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0272_84.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.209811,
+    0.021604,
+    0.567547,
+    0.501132
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:20+0000"
+ },
+ "core-abe693e3798e688e": {
+  "core_id": "core-abe693e3798e688e",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0454_140.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.388136,
+    0.066413,
+    0.303297,
+    0.188766
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:23+0000"
+ },
+ "core-b0c1931cd3fee2f2": {
+  "core_id": "core-b0c1931cd3fee2f2",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0587_166.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.707273,
+    0.052869,
+    0.210872,
+    0.196721
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:27+0000"
+ },
+ "core-b1edf610f06f5fd4": {
+  "core_id": "core-b1edf610f06f5fd4",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/Fotos 19-10-2020_DJI_0090_manilha_isolador_superior_21.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.431621,
+    0.022665,
+    0.162846,
+    0.08868
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:31+0000"
+ },
+ "core-c6bf9596afdfca15": {
+  "core_id": "core-c6bf9596afdfca15",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0335_256.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.406725,
+    0.022291,
+    0.157952,
+    0.147783
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:36+0000"
+ },
+ "core-d87e2dd5e260d259": {
+  "core_id": "core-d87e2dd5e260d259",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0302_528.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.419672,
+    0.020082,
+    0.211148,
+    0.135082
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:40+0000"
+ },
+ "core-e985af29447f7591": {
+  "core_id": "core-e985af29447f7591",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0336_101.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.334426,
+    0.013525,
+    0.325246,
+    0.617705
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:46+0000"
+ },
+ "core-f6a66c644477f585": {
+  "core_id": "core-f6a66c644477f585",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0036_8.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.418288,
+    0.023759,
+    0.170414,
+    0.110164
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:50+0000"
+ },
+ "core-ff55fa241d553536": {
+  "core_id": "core-ff55fa241d553536",
+  "image": "defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0244_349.jpg",
+  "asset_category": "polymer-insulator-upper-shackle",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.382148,
+    0.043689,
+    0.107684,
+    0.116721
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:53+0000"
+ },
+ "core-16c8d80125e38a15": {
+  "core_id": "core-16c8d80125e38a15",
+  "image": "defect_supervised/vari-grip/val/bird-nest/11-06-2021_DJI_0122_5.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.298876,
+    0.019064,
+    0.689872,
+    0.628459
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:48:58+0000"
+ },
+ "core-17e7144dde326086": {
+  "core_id": "core-17e7144dde326086",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0262_vari_grip_910.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.384136,
+    0.014333,
+    0.608215,
+    0.775547
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:04+0000"
+ },
+ "core-38f5f178bb82f2e5": {
+  "core_id": "core-38f5f178bb82f2e5",
+  "image": "defect_supervised/vari-grip/val/bird-nest/08-06-2021_DJI_0285_391.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.032383,
+    0.045201,
+    0.579803,
+    0.476487
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:09+0000"
+ },
+ "core-3df353cc203c9ed3": {
+  "core_id": "core-3df353cc203c9ed3",
+  "image": "defect_supervised/vari-grip/val/bird-nest/11-06-2021_DJI_0096_3.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.069565,
+    0.022665,
+    0.812648,
+    0.627094
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:13+0000"
+ },
+ "core-3eb58a1be437dc07": {
+  "core_id": "core-3eb58a1be437dc07",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 17-11-2020_DJI_0289_vari_grip_478.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.263854,
+    0.037489,
+    0.45207,
+    0.353564
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:17+0000"
+ },
+ "core-3f0c2611fdb971b8": {
+  "core_id": "core-3f0c2611fdb971b8",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0291_vari_grip_946.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.012336,
+    0.015902,
+    0.968394,
+    0.72938
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:20+0000"
+ },
+ "core-5dd4aa85ba3cf277": {
+  "core_id": "core-5dd4aa85ba3cf277",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 25-11-2020_DJI_0563_vari_grip_842.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.510701,
+    0.300092,
+    0.481181,
+    0.568266
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:30+0000"
+ },
+ "core-6141dccb026d1f01": {
+  "core_id": "core-6141dccb026d1f01",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0291_vari_grip_947.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.465716,
+    0.014101,
+    0.533457,
+    0.656497
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:35+0000"
+ },
+ "core-838f653fb25fdca7": {
+  "core_id": "core-838f653fb25fdca7",
+  "image": "defect_supervised/vari-grip/val/bird-nest/08-06-2021_DJI_0067_315.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.0,
+    0.588852,
+    0.708197
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T13:49:43+0000"
+ },
+ "core-87c1fb9083d94847": {
+  "core_id": "core-87c1fb9083d94847",
+  "image": "defect_supervised/vari-grip/val/bird-nest/15-06-2021_DJI_0017_720.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.208984,
+    0.999167,
+    0.73042
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:01+0000"
+ },
+ "core-bd196636c6760a5b": {
+  "core_id": "core-bd196636c6760a5b",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_570.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.006501,
+    0.041757,
+    0.775758,
+    0.780541
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:06+0000"
+ },
+ "core-bda2b0761bc3f09b": {
+  "core_id": "core-bda2b0761bc3f09b",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_572.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.0,
+    0.806088,
+    0.461132
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:12+0000"
+ },
+ "core-c4c3911124aac157": {
+  "core_id": "core-c4c3911124aac157",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_909.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.058175,
+    0.006645,
+    0.938824,
+    0.740226
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:21+0000"
+ },
+ "core-c89884fd0b28c33a": {
+  "core_id": "core-c89884fd0b28c33a",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0262_vari_grip_911.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.004689,
+    0.600155,
+    0.986575
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:42+0000"
+ },
+ "core-cce39bf9fdfcb0f6": {
+  "core_id": "core-cce39bf9fdfcb0f6",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0567_vari_grip_926.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.09342,
+    0.000442,
+    0.830875,
+    0.571025
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:06:57+0000"
+ },
+ "core-ce4708eccc039934": {
+  "core_id": "core-ce4708eccc039934",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0214_vari_grip_907.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.175587,
+    0.000857,
+    0.820319,
+    0.809345
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:06+0000"
+ },
+ "core-e0a191a2a7f249ae": {
+  "core_id": "core-e0a191a2a7f249ae",
+  "image": "defect_supervised/vari-grip/val/bird-nest/15-06-2021_DJI_0043_724.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.266766,
+    0.000461,
+    0.614595,
+    0.815038
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:14+0000"
+ },
+ "core-e13e13b5b3652e27": {
+  "core_id": "core-e13e13b5b3652e27",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 25-11-2020_DJI_0207_vari_grip_860.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.00041,
+    0.792131,
+    0.740984
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:21+0000"
+ },
+ "core-e14ed842830f8c8a": {
+  "core_id": "core-e14ed842830f8c8a",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 17-11-2020_DJI_0304_vari_grip_480.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.086188,
+    0.00732,
+    0.910497,
+    0.740331
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:34+0000"
+ },
+ "core-e7b8a56641e0d81d": {
+  "core_id": "core-e7b8a56641e0d81d",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0162_vari_grip_915.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.000551,
+    0.940891,
+    0.511013
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:40+0000"
+ },
+ "core-e9eb4eb2d30804bc": {
+  "core_id": "core-e9eb4eb2d30804bc",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 23-11-2020_DJI_0279_vari_grip_767.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.001394,
+    0.001829,
+    0.981185,
+    0.936585
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:48+0000"
+ },
+ "core-f0ff09826d314703": {
+  "core_id": "core-f0ff09826d314703",
+  "image": "defect_supervised/vari-grip/val/bird-nest/10-06-2021_DJI_0245_651.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.510189,
+    0.01559,
+    0.487547,
+    0.92368
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:07:56+0000"
+ },
+ "core-f53a45c043fe0a68": {
+  "core_id": "core-f53a45c043fe0a68",
+  "image": "defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0151_vari_grip_576.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "bird-nest",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.0,
+    0.001882,
+    0.728708,
+    0.4
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:08:05+0000"
+ },
+ "core-07f763ca4be991eb": {
+  "core_id": "core-07f763ca4be991eb",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0045_vari_grip_762.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.028819,
+    0.047638,
+    0.789643,
+    0.859637
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:09:31+0000"
+ },
+ "core-0e959385a74b789a": {
+  "core_id": "core-0e959385a74b789a",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0029_vari_grip_746.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.312977,
+    0.415253,
+    0.348745,
+    0.345765
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:09:36+0000"
+ },
+ "core-123610a6cea7e280": {
+  "core_id": "core-123610a6cea7e280",
+  "image": "defect_supervised/vari-grip/val/rust/10-06-2021_DJI_0018_610.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.250831,
+    0.211152,
+    0.447249,
+    0.491721
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:09:43+0000"
+ },
+ "core-190dd925063aed04": {
+  "core_id": "core-190dd925063aed04",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0048_vari_grip_765.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.296812,
+    0.038284,
+    0.499183,
+    0.544861
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:09:56+0000"
+ },
+ "core-28a24ec7956ea697": {
+  "core_id": "core-28a24ec7956ea697",
+  "image": "defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0118_741.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.230828,
+    0.256494,
+    0.387148,
+    0.336505
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:03+0000"
+ },
+ "core-3a43189275686dd3": {
+  "core_id": "core-3a43189275686dd3",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0075_vari_grip_740.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.34019,
+    0.217008,
+    0.379879,
+    0.392082
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:12+0000"
+ },
+ "core-49fb159875d150ce": {
+  "core_id": "core-49fb159875d150ce",
+  "image": "defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0117_739.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.23197,
+    0.18039,
+    0.407435,
+    0.394052
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:17+0000"
+ },
+ "core-5947a901b0e77027": {
+  "core_id": "core-5947a901b0e77027",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0032_vari_grip_749.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.197633,
+    0.276783,
+    0.553371,
+    0.452051
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:34+0000"
+ },
+ "core-60fa161c48c6eb51": {
+  "core_id": "core-60fa161c48c6eb51",
+  "image": "defect_supervised/vari-grip/val/rust/01-06-2021_DJI_0162_45.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.255404,
+    0.281066,
+    0.453178,
+    0.443279
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:39+0000"
+ },
+ "core-71b2adf393f94510": {
+  "core_id": "core-71b2adf393f94510",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0043_vari_grip_759.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.244179,
+    0.235473,
+    0.492799,
+    0.491711
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:43+0000"
+ },
+ "core-75a08301eedcc781": {
+  "core_id": "core-75a08301eedcc781",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0038_vari_grip_755.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.306309,
+    0.193857,
+    0.416993,
+    0.54312
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:10:56+0000"
+ },
+ "core-8dfd09a8227d7952": {
+  "core_id": "core-8dfd09a8227d7952",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0045_vari_grip_761.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.350899,
+    0.044106,
+    0.647213,
+    0.631617
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:17+0000"
+ },
+ "core-9dd98e00506b6d25": {
+  "core_id": "core-9dd98e00506b6d25",
+  "image": "defect_supervised/vari-grip/val/rust/10-06-2021_DJI_0019_612.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.261674,
+    0.280494,
+    0.386594,
+    0.414208
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:23+0000"
+ },
+ "core-c3ae2680e29f8d94": {
+  "core_id": "core-c3ae2680e29f8d94",
+  "image": "defect_supervised/vari-grip/val/rust/09-06-2021_DJI_0466_569.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.594098,
+    0.19582,
+    0.183607,
+    0.250492
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:27+0000"
+ },
+ "core-d9867edb1dacc0af": {
+  "core_id": "core-d9867edb1dacc0af",
+  "image": "defect_supervised/vari-grip/val/rust/09-06-2021_DJI_0467_571.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.25826,
+    0.213229,
+    0.491574,
+    0.509183
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:32+0000"
+ },
+ "core-d9d31ae2164edbfa": {
+  "core_id": "core-d9d31ae2164edbfa",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0041_vari_grip_757.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.282399,
+    0.265084,
+    0.37534,
+    0.443259
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:36+0000"
+ },
+ "core-e2acf125e277d026": {
+  "core_id": "core-e2acf125e277d026",
+  "image": "defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0118_740.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.330142,
+    0.174631,
+    0.425942,
+    0.485609
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:42+0000"
+ },
+ "core-e93ab564261bead3": {
+  "core_id": "core-e93ab564261bead3",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0035_vari_grip_754.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.287469,
+    0.366873,
+    0.448533,
+    0.512732
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:11:50+0000"
+ },
+ "core-eac371063c99b3ba": {
+  "core_id": "core-eac371063c99b3ba",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0041_vari_grip_758.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.271959,
+    0.197376,
+    0.45893,
+    0.526021
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:12:18+0000"
+ },
+ "core-f0185ce5c061299e": {
+  "core_id": "core-f0185ce5c061299e",
+  "image": "defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0048_vari_grip_766.jpg",
+  "asset_category": "vari-grip",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.059115,
+    0.195431,
+    0.62399,
+    0.602973
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:13:26+0000"
+ },
+ "core-147ed57ee838af31": {
+  "core_id": "core-147ed57ee838af31",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0351_106.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.391998,
+    0.223586,
+    0.155956,
+    0.35963
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:14:09+0000"
+ },
+ "core-1b83824f1222254f": {
+  "core_id": "core-1b83824f1222254f",
+  "image": "defect_supervised/yoke-suspension/val/rust/09-06-2021_DJI_0475_583.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.386831,
+    0.095831,
+    0.18107,
+    0.447004
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:14:27+0000"
+ },
+ "core-3882a62eee76920e": {
+  "core_id": "core-3882a62eee76920e",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0355_111.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.545015,
+    0.476165,
+    0.120564,
+    0.140383
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:14:51+0000"
+ },
+ "core-5c65177d638a5cae": {
+  "core_id": "core-5c65177d638a5cae",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0183_56.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.719647,
+    0.765,
+    0.063035,
+    0.072131
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:15:00+0000"
+ },
+ "core-5fc7ddf056ac27a8": {
+  "core_id": "core-5fc7ddf056ac27a8",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0144_38.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.449611,
+    0.030853,
+    0.136737,
+    0.122832
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:15:05+0000"
+ },
+ "core-6d4af90c129ea9cf": {
+  "core_id": "core-6d4af90c129ea9cf",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0262_75.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.397765,
+    0.083195,
+    0.239106,
+    0.523973
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:15:17+0000"
+ },
+ "core-722a6b810e50366b": {
+  "core_id": "core-722a6b810e50366b",
+  "image": "defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0217_771.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "unlocatable",
+  "boxes_xywh": [],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:15:55+0000"
+ },
+ "core-763429a84c8635c8": {
+  "core_id": "core-763429a84c8635c8",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0210_65.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.361137,
+    0.121066,
+    0.12607,
+    0.650492
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:16:09+0000"
+ },
+ "core-776fd76a364abd8b": {
+  "core_id": "core-776fd76a364abd8b",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0622_172.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.343796,
+    0.152069,
+    0.318243,
+    0.43307
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:16:14+0000"
+ },
+ "core-827073119f32c341": {
+  "core_id": "core-827073119f32c341",
+  "image": "defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0160_748.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.496732,
+    0.03219,
+    0.143791,
+    0.133333
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:16:19+0000"
+ },
+ "core-883c0e007a8f6817": {
+  "core_id": "core-883c0e007a8f6817",
+  "image": "defect_supervised/yoke-suspension/val/rust/09-06-2021_DJI_0474_581.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.345881,
+    0.022882,
+    0.304247,
+    0.561162
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:16:25+0000"
+ },
+ "core-94f44f87d6de00f5": {
+  "core_id": "core-94f44f87d6de00f5",
+  "image": "defect_supervised/yoke-suspension/val/rust/02-06-2021_DJI_0092_204.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.233443,
+    0.004344,
+    0.140328,
+    0.738361
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:16:33+0000"
+ },
+ "core-b1bc9ca65402a782": {
+  "core_id": "core-b1bc9ca65402a782",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0352_107.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.431475,
+    0.096148,
+    0.127213,
+    0.672787
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:17:08+0000"
+ },
+ "core-b38fd75d36fc7cc4": {
+  "core_id": "core-b38fd75d36fc7cc4",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0352_108.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.071022,
+    0.019,
+    0.19932,
+    0.317714
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:17:13+0000"
+ },
+ "core-b71998ba341a7152": {
+  "core_id": "core-b71998ba341a7152",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0444_131.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.467248,
+    0.199077,
+    0.228889,
+    0.307332
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:17:18+0000"
+ },
+ "core-b753ce854714bdf4": {
+  "core_id": "core-b753ce854714bdf4",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0144_37.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.269211,
+    0.11582,
+    0.131322,
+    0.653115
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:18:23+0000"
+ },
+ "core-ceba686ef79b8dac": {
+  "core_id": "core-ceba686ef79b8dac",
+  "image": "defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0172_757.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.468723,
+    0.010551,
+    0.293945,
+    0.182722
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:18:31+0000"
+ },
+ "core-dbbbac04a14e4311": {
+  "core_id": "core-dbbbac04a14e4311",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0385_114.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.25641,
+    0.19141,
+    0.196923,
+    0.418462
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:18:45+0000"
+ },
+ "core-e07764d9683feaac": {
+  "core_id": "core-e07764d9683feaac",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0355_110.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.312664,
+    0.01452,
+    0.232314,
+    0.195633
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:18:51+0000"
+ },
+ "core-edfc2b9bc8cc4b6f": {
+  "core_id": "core-edfc2b9bc8cc4b6f",
+  "image": "defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0626_178.jpg",
+  "asset_category": "yoke-suspension",
+  "defect_gt": "rust",
+  "status": "boxed",
+  "boxes_xywh": [
+   [
+    0.328438,
+    0.026424,
+    0.297323,
+    0.434863
+   ]
+  ],
+  "note": "",
+  "annotator": "",
+  "image_size": [],
+  "saved_at": "2026-10-20T14:18:55+0000"
+ }
+}
