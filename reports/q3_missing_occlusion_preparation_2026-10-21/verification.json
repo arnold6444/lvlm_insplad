@@ -1,0 +1,19 @@
+{
+  "source_bundle_sha256": "16efcbbc52b6921837217fdef5568c1d8ea3e13a7d1cc7031add85d221ab04b9",
+  "notebook_sha256": "e408f1c39c228d54628f9e74ac801686da32c4d2a1e5691c09075c8298e35376",
+  "source_files": 51,
+  "code_cells_compiled": 4,
+  "extracted_tests": "..............                                                           [100%]\n14 passed in 12.28s",
+  "actual_dev_images": 240,
+  "actual_routed_images": 23,
+  "synthetic_feature_calls": 414,
+  "synthetic_lvlm_calls": 46,
+  "resume_new_features": 0,
+  "resume_new_lvlm": 0,
+  "new_neural_calls": 0,
+  "location_accuracy_validated": false,
+  "all_target_exif_orientation": 1,
+  "definition_of_done": "source/build/test/real-input wiring complete; user neural run still required",
+  "related_tests": "76 passed",
+  "internvl_adapter_tests": "7 passed"
+}
