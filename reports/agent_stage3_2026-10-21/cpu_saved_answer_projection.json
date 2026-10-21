@@ -1,0 +1,233 @@
+{
+  "label": "CPU combination of saved cue answers and saved detector predictions; not online Agent/verification evidence",
+  "baseline": {
+    "images": 240,
+    "q1_anomaly_f1": 0.823529,
+    "q2_defect_macro_f1": 0.692612,
+    "consistency_error": 0.166667,
+    "contradictions": 40,
+    "valid_pairs": 240,
+    "joint_accuracy": 0.708333,
+    "false_defect_rate": 0.104,
+    "q1_invalid_rate": 0.0,
+    "q2_invalid_rate": 0.0,
+    "q1_balanced_accuracy": 0.8356521739130435,
+    "q1_precision": 0.8584905660377359,
+    "q1_recall": 0.7913043478260869,
+    "q1_tp": 91,
+    "q1_fp": 15,
+    "q1_tn": 110,
+    "q1_fn": 24,
+    "q1_has_both_classes": true,
+    "q1_normal_images": 125,
+    "q1_anomalous_images": 115,
+    "q1_accuracy": 0.8375,
+    "q2_accuracy": 0.7916666666666666,
+    "q2_defect_balanced_accuracy": 0.6929285714285713
+  },
+  "expert_override": {
+    "images": 240,
+    "q1_anomaly_f1": 0.823529,
+    "q2_defect_macro_f1": 0.838622,
+    "consistency_error": 0.1625,
+    "contradictions": 39,
+    "valid_pairs": 240,
+    "joint_accuracy": 0.758333,
+    "false_defect_rate": 0.112,
+    "q1_invalid_rate": 0.0,
+    "q2_invalid_rate": 0.0,
+    "q1_balanced_accuracy": 0.8356521739130435,
+    "q1_precision": 0.8584905660377359,
+    "q1_recall": 0.7913043478260869,
+    "q1_tp": 91,
+    "q1_fp": 15,
+    "q1_tn": 110,
+    "q1_fn": 24,
+    "q1_has_both_classes": true,
+    "q1_normal_images": 125,
+    "q1_anomalous_images": 115,
+    "q1_accuracy": 0.8375,
+    "q2_accuracy": 0.8666666666666667,
+    "q2_defect_balanced_accuracy": 0.8809285714285714
+  },
+  "changes": [
+    {
+      "id": "dev-2a9f66c0c1d49988-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-65b1682ed9bac3b3-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-ab35d50c75c215ff-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-f39dede62e606c7a-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-303182887e9677f5-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-54fb1c557a11f2c0-q2",
+      "defect_gt": "normal",
+      "before_correct": true,
+      "after_correct": false
+    },
+    {
+      "id": "dev-d1ef43a89c8b86b0-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-d70ccc1d817477d5-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-5d8b65f59480d260-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-3f1ef393e4238ae8-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-03c0ba2656835309-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-adb0de1a52fbdcb7-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-22b99456fec20a68-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-9ca99e2ac8fb1baf-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-586fc2ebb11fa743-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-b271f28f23168c20-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-173a805ee5cfa4b0-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-6382f905cac70bd1-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-33c9cf299ed1b30e-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    },
+    {
+      "id": "dev-26f757507b3c93c7-q2",
+      "defect_gt": "missing-cap",
+      "before_correct": false,
+      "after_correct": true
+    }
+  ],
+  "paired_ci": {
+    "q1_anomaly_f1": {
+      "base": 0.8235294117647058,
+      "new": 0.8235294117647058,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "significant": false
+    },
+    "q2_defect_macro_f1": {
+      "base": 0.6926124995295225,
+      "new": 0.8386222434103282,
+      "delta": 0.14600974388080568,
+      "ci_low": 0.09565359920637109,
+      "ci_high": 0.1945938400319335,
+      "significant": true
+    },
+    "joint_accuracy": {
+      "base": 0.7083333333333334,
+      "new": 0.7583333333333333,
+      "delta": 0.04999999999999993,
+      "ci_low": 0.02083333333333337,
+      "ci_high": 0.07916666666666672,
+      "significant": true
+    },
+    "consistency_error": {
+      "base": 0.16666666666666666,
+      "new": 0.1625,
+      "delta": -0.004166666666666652,
+      "ci_low": -0.033333333333333326,
+      "ci_high": 0.024999999999999994,
+      "significant": false
+    },
+    "false_defect_rate": {
+      "base": 0.104,
+      "new": 0.112,
+      "delta": 0.008000000000000007,
+      "ci_low": 0.0,
+      "ci_high": 0.025867691154422716,
+      "significant": false
+    },
+    "q3_accuracy": {
+      "base": 0.0,
+      "new": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "significant": false
+    },
+    "q1q3_contradiction": {
+      "base": 0.0,
+      "new": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "significant": false
+    }
+  }
+}
