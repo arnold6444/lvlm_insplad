@@ -1,0 +1,76 @@
+<div id="devmissing-ui" style="font:15px sans-serif;color:#17202a;background:#fff;padding:12px;max-width:1150px">
+ <b>dev 누락 위치 표시</b><div id="dm-head" style="margin:8px 0"></div>
+ <p>빠진 부품의 연결부·노출된 금속 몸통을 감싸 박스를 그리세요. 여러 누락이면 각각 표시합니다.<br>추측 위치 두 곳을 모두 정답으로 넣지 말고, 어렵다면 사유와 함께 ‘위치 판단 불가’를 선택하세요.</p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+  <button id="dm-fit">화면 맞춤</button><button id="dm-original">원본 크기</button><button id="dm-plus">확대 +</button><button id="dm-minus">축소 −</button>
+  <label><input type="checkbox" id="dm-grid">9칸 안내선</label><span id="dm-scale"></span>
+ </div>
+ <div id="dm-view" style="overflow:auto;max-height:650px;border:1px solid #888;background:#eee">
+  <canvas id="dm-canvas" tabindex="0" aria-label="누락 부위 박스 그리기" style="display:block;touch-action:none;cursor:crosshair"></canvas>
+ </div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+  <button id="dm-prev">이전</button><button id="dm-next">다음</button><button id="dm-undo">마지막 박스 지우기</button><button id="dm-clear">전체 지우기</button>
+  <button id="dm-save" style="font-weight:bold">저장 후 다음 (Enter)</button><button id="dm-unloc">위치 판단 불가</button><button id="dm-disputed">누락 라벨 이견</button><button id="dm-todo">첫 미완료</button><button id="dm-retry">초안 저장 재시도</button><button id="dm-reload">현재 다시 불러오기</button>
+ </div>
+ <textarea id="dm-note" aria-label="메모 또는 판단 불가 사유" placeholder="판단 불가/라벨 이견 사유 또는 메모 (자동 저장)" rows="2" style="width:98%"></textarea>
+ <p id="dm-msg" role="status" style="min-height:22px"></p>
+ <small>박스 추가·삭제 및 메모는 초안으로 자동 저장됩니다. ‘저장 후 다음’으로 확정하세요. ‘초안 저장됨’ 표시를 확인한 뒤 나가면 재개할 수 있습니다. 아직 그리는 중인 박스·응답을 받지 못한 변경은 저장되지 않을 수 있습니다.</small>
+</div>
+<script>
+(async()=>{
+ const root=document.getElementById('devmissing-ui'),get=id=>root.querySelector('#'+id),cv=get('dm-canvas'),ctx=cv.getContext('2d'),msg=get('dm-msg'),note=get('dm-note'),view=get('dm-view');
+ const call=async(name,args=[])=>{const v=await google.colab.kernel.invokeFunction(name,args,{});return v.data['application/json'];};
+ let item=null,img=null,boxes=[],drag=null,busy=false,scale=1,pending=Promise.resolve(),blocked=null,noteTimer=null,dirty=false;
+ const setBusy=v=>{busy=v;root.querySelectorAll('button,textarea').forEach(b=>b.disabled=v);};
+ const clone=v=>JSON.parse(JSON.stringify(v));
+ function header(){get('dm-head').textContent=`${item.index+1}/${item.total} · 확정 ${item.done}/${item.total} · 박스 ${item.boxed} / 판단 불가 ${item.unlocatable} / 이견 ${item.disputed} · 현재 ${item.status||'미표시'}`;}
+ function render(){
+  if(!img)return;ctx.drawImage(img,0,0);ctx.lineWidth=2/scale;
+  if(get('dm-grid').checked){ctx.strokeStyle='#ffff00';ctx.setLineDash([8/scale,6/scale]);for(let i=1;i<=2;i++){ctx.beginPath();ctx.moveTo(cv.width*i/3,0);ctx.lineTo(cv.width*i/3,cv.height);ctx.stroke();ctx.beginPath();ctx.moveTo(0,cv.height*i/3);ctx.lineTo(cv.width,cv.height*i/3);ctx.stroke();}ctx.setLineDash([]);}
+  const draw=(b,i,color)=>{ctx.strokeStyle=color;ctx.strokeRect(b[0]*cv.width,b[1]*cv.height,b[2]*cv.width,b[3]*cv.height);ctx.font=`${14/scale}px sans-serif`;ctx.fillStyle=color;ctx.fillText(String(i+1),b[0]*cv.width+3/scale,b[1]*cv.height+16/scale);};
+  boxes.forEach((b,i)=>draw(b,i,['#ff2424','#00bc62','#2979ff','#f28a00'][i%4]));
+  if(drag?.box)draw(drag.box,boxes.length,'#fff');
+ }
+ function zoom(value){if(!img)return;scale=Math.max(.1,Math.min(5,value));cv.style.width=(cv.width*scale)+'px';cv.style.height=(cv.height*scale)+'px';get('dm-scale').textContent=Math.round(scale*100)+'%';render();}
+ function update(result){Object.assign(item,result);header();}
+ function draft(force=false){
+  if(!item||(busy&&!force))return;dirty=true;const index=item.index,snapshot=clone(boxes),text=note.value;
+  msg.textContent='초안 저장 중...';
+  pending=pending.then(async()=>{if(blocked)return;const result=await call('devmissing.save',[index,snapshot,'draft',text,item.revision]);update(result);dirty=JSON.stringify(boxes)!==JSON.stringify(snapshot)||note.value!==text;msg.textContent='초안 저장됨 · 아직 확정 전';}).catch(e=>{blocked=e;dirty=true;msg.textContent='초안 저장 실패: '+e+' · 현재 화면을 유지하고 저장 재시도 또는 다시 불러오기를 선택하세요.';});
+ }
+ async function flush(){if(noteTimer){clearTimeout(noteTimer);noteTimer=null;draft(true);}await pending;if(blocked)throw blocked;}
+ async function load(index){
+  if(busy)return;setBusy(true);
+  try{await flush();msg.textContent='사진 불러오는 중...';item=await call('devmissing.item',[index]);boxes=clone(item.boxes);note.value=item.note||'';drag=null;
+   await new Promise((resolve,reject)=>{const next=new Image();next.onload=()=>{img=next;cv.width=next.naturalWidth;cv.height=next.naturalHeight;resolve();};next.onerror=()=>reject(new Error('사진 로딩 실패'));next.src=item.image_url;});
+   header();zoom(Math.min(1,(view.clientWidth-4)/cv.width));dirty=false;
+   msg.textContent=item.status==='draft'?'저장된 초안을 복원했습니다. 확인 후 확정하세요.':item.done===item.total?'전체 확정 완료. 아래 결과 저장 셀을 실행하세요.':item.status?'확정 기록을 불러왔습니다.':'누락 부위를 표시하세요.';
+  }catch(e){msg.textContent='불러오기 실패: '+e;}finally{setBusy(false);}
+ }
+ const point=e=>{const b=cv.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))];};
+ cv.onpointerdown=e=>{if(busy||!img)return;cv.focus({preventScroll:true});drag={start:point(e),box:null};cv.setPointerCapture(e.pointerId);};
+ cv.onpointermove=e=>{if(!drag)return;const [x,y]=drag.start,[u,v]=point(e);drag.box=[Math.min(x,u),Math.min(y,v),Math.abs(x-u),Math.abs(y-v)];render();};
+ cv.onpointerup=()=>{if(!drag)return;const b=drag.box;drag=null;if(b&&b[2]*cv.width>=2&&b[3]*cv.height>=2){boxes.push(b);draft();}render();};
+ cv.onpointercancel=()=>{drag=null;render();};
+ async function commit(status){
+  if(busy||!item)return;
+  if(status==='boxed'&&!boxes.length){msg.textContent='박스를 그리거나 판단 불가/라벨 이견 사유를 입력하세요.';return;}
+  if(status!=='boxed'&&!note.value.trim()){msg.textContent='판단 불가/라벨 이견 사유를 입력하세요.';note.focus();return;}
+  setBusy(true);
+  try{await flush();const result=await call('devmissing.save',[item.index,status==='boxed'?clone(boxes):[],status,note.value,item.revision]);update(result);dirty=false;setBusy(false);
+   await load(result.first_todo>=result.total?item.index:result.first_todo);
+  }catch(e){msg.textContent='확정 저장 실패: '+e;setBusy(false);}
+ }
+ note.oninput=()=>{dirty=true;if(noteTimer)clearTimeout(noteTimer);noteTimer=setTimeout(()=>{noteTimer=null;draft();},500);};
+ get('dm-save').onclick=()=>commit('boxed');get('dm-unloc').onclick=()=>commit('unlocatable');get('dm-disputed').onclick=()=>commit('disputed');
+ get('dm-undo').onclick=()=>{if(!busy){boxes.pop();render();draft();}};get('dm-clear').onclick=()=>{if(!busy){boxes=[];render();draft();}};
+ get('dm-prev').onclick=()=>{if(item)load(item.index-1);};get('dm-next').onclick=()=>{if(item)load(item.index+1);};
+ get('dm-todo').onclick=async()=>{try{await flush();const p=await call('devmissing.progress');load(p.first_todo>=p.total?0:p.first_todo);}catch(e){msg.textContent='저장 확인 실패: '+e;}};
+ get('dm-reload').onclick=()=>{if(busy)return;if((dirty||blocked)&&!window.confirm('저장 실패한 변경이 있으면 사라질 수 있습니다. Drive의 마지막 저장 상태를 불러올까요?'))return;blocked=null;pending=Promise.resolve();dirty=false;if(noteTimer)clearTimeout(noteTimer);noteTimer=null;load(item?item.index:0);};
+ get('dm-retry').onclick=()=>{if(!busy){blocked=null;draft();}};
+ get('dm-fit').onclick=()=>zoom(Math.min(1,(view.clientWidth-4)/cv.width));get('dm-original').onclick=()=>zoom(1);get('dm-plus').onclick=()=>zoom(scale*1.4);get('dm-minus').onclick=()=>zoom(scale/1.4);get('dm-grid').onchange=render;
+ root.addEventListener('keydown',e=>{if(e.target===note)return;if(e.key==='Enter'){e.preventDefault();commit('boxed');}else if(e.key.toLowerCase()==='z'){e.preventDefault();if(!busy){boxes.pop();render();draft();}}});
+ window.addEventListener('beforeunload',e=>{if(dirty||drag){e.preventDefault();e.returnValue='';}});
+ const p=await call('devmissing.progress');await load(p.first_todo>=p.total?0:p.first_todo);
+})();
+</script>
