@@ -1,0 +1,24 @@
+{
+  "source_bundle_sha256": "2ddb37fc4235fd00c881a3d6714a1378b78717983979a64f7bd1b2fd15cdf852",
+  "source_files": 497,
+  "real_originals_verified": 50,
+  "source_original_vectors": 49,
+  "source_mask_vectors": 414,
+  "source_candidate_sets_exact": 23,
+  "source_logits_max_abs_error": 3.552713678800501e-15,
+  "source_logits_atol": 1e-12,
+  "code_cells_compiled": 5,
+  "raw_fixture_features": 518,
+  "fixture_new_feature_calls": 55,
+  "fixture_canary_calls": 2,
+  "actual_dino_calls": 0,
+  "actual_lvlm_calls": 0,
+  "resume_new_calls": 0,
+  "export_originals_excluded": true,
+  "extracted_tests": "...............                                                          [100%]\n15 passed in 46.16s",
+  "effect": "UNRUN; fixture answers do not establish new route performance",
+  "callbacks": {
+    "seed_callbacks": 2,
+    "fixture_callbacks": 55
+  }
+}
