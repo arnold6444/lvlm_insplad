@@ -1,0 +1,17 @@
+{
+  "protocol": "gold_v2_matched_call_control",
+  "version": 1,
+  "models": ["internvl3_5_8b"],
+  "policies": ["baseline", "previous_agent", "candidate", "matched_reask"],
+  "primary_comparison": ["matched_reask", "previous_agent"],
+  "reference_condition": "normal_ref_retrieved_diffdate",
+  "q1": "unchanged direct baseline answer; no Q1 inference in any policy",
+  "existing_policies": "baseline, previous_agent and candidate are exactly the PR56/57 gold policies (configs/q1_fixed_q2_cues_q3_legacy_gold_v1.json); saved gold steps are reused when prompt and image bytes match",
+  "matched_reask_q2": "direct Q2 answer, then one own-answer re-check without definitions (2 calls, same as previous_agent direct + define)",
+  "matched_reask_q3": "direct Q3 answer, then k sequential own-answer re-checks, k = presence/position calls the staged Q3 made for the same image (1 or 2); last valid answer is final, otherwise direct",
+  "matched_reask_rationale": "repeating the identical greedy direct prompt is degenerate, so each re-check shows the question's own previous answer, as in the Q2 reask",
+  "q3_evaluation": "image-label presence only; spatial accuracy null",
+  "selection": "analysis-only control added after gold; no setting is chosen or changed from gold scores",
+  "gold_limit": "existing gold246 has prior exploratory use; not a new untouched holdout",
+  "failure_gate": "all planned policies and dependencies must have full coverage, zero errors and zero invalids"
+}
