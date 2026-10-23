@@ -1,0 +1,62 @@
+{
+  "source_bundle_sha256": "c7befa6f6be7c10045e74c06d5f221201f295284ff2ee9705311bce678f08974",
+  "source_files": 52,
+  "checks": [
+    {
+      "name": "initial working tests",
+      "passed": 20,
+      "seconds": 71.23
+    },
+    {
+      "name": "additional warning/mismatch preservation test",
+      "passed": 1,
+      "seconds": 3.69
+    },
+    {
+      "name": "existing IG and direct-expert tests",
+      "passed": 36,
+      "seconds": 175.25
+    },
+    {
+      "name": "final exact source tests",
+      "passed": 21,
+      "seconds": 30.1
+    }
+  ],
+  "actual_input_verification": {
+    "source_bundle_sha256": "c7befa6f6be7c10045e74c06d5f221201f295284ff2ee9705311bce678f08974",
+    "selected_cores": [
+      "dev-5b48853eb8226c7c",
+      "dev-26f757507b3c93c7",
+      "dev-3f1ef393e4238ae8",
+      "dev-54fb1c557a11f2c0"
+    ],
+    "source_files": 52,
+    "code_cells": 5,
+    "actual_image_wiring": true,
+    "fixture": true,
+    "conditions": 40,
+    "forward_passes": 6810,
+    "backward_passes": 6448,
+    "resume_model_loads": 0,
+    "resume_forward_passes": 0,
+    "success_failure_exact_export": true,
+    "pretrained_neural_calls": 0,
+    "native_diagnostic": "UNRUN"
+  },
+  "requirement_audit": {
+    "no_location_gt": true,
+    "hash_only_cohort": true,
+    "pinned_frozen_model": true,
+    "quadrature_precision_and_gradient_diagnostics": true,
+    "source_image_feature_canary_locks": true,
+    "condition_resume_and_corruption_rejection": true,
+    "warnings_not_execution_pass": true,
+    "success_failure_export": true
+  },
+  "scope": "10 additive files; no original archive/raw GPU output/user dirty files committed",
+  "actual_pretrained_neural_calls": 0,
+  "native_diagnostic": "UNRUN",
+  "backend_math_native_effect": "UNRUN",
+  "checkout_normalization": "New isolated clone only: newline-equivalent checkout files restored to exact HEAD bytes; notebook/receipt normalized LF without changing embedded source."
+}
