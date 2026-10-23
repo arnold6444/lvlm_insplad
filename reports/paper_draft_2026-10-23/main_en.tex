@@ -87,14 +87,14 @@ For Q1 we report F1, balanced accuracy (BAcc), precision, recall and TP/FP/TN/FN
 
 \section{Models and Baselines}\label{sec:baselines}
 \subsection{Setup}
-We keep one model per family: Qwen3.5-4B~\cite{qwen35} with thinking disabled, InternVL3.5-8B~\cite{wang2025internvl35} through its official chat path, MiniCPM-V-4.5~\cite{yao2024minicpmv} and LLaVA-OneVision-Qwen2-7B~\cite{li2024llavaov}. We also include a two-stage API pipeline (Luxia document vision followed by a 32B language model). All open models run unquantized with Transformers 5.14.0 on an NVIDIA L4 (22\,GB) using greedy decoding, with one exception. MiniCPM-V-4.5's chat interface samples by default (temperature 0.7), and we found this only after its gold baseline, reference and vision-expert runs. Its rows in Tables~\ref{tab:baseline} and~\ref{tab:conditions} are therefore single sampled runs. The decoding has since been fixed, and all agent experiments are greedy. InternVL uses a fixed total budget of six visual tiles per sample, so adding a reference halves the target's tiles. We treat this as a fixed visual-token budget rather than a free resolution increase.
+We keep one model per family: Qwen3.5-4B~\cite{qwen35} with thinking disabled, InternVL3.5-8B~\cite{wang2025internvl35} through its official chat path, MiniCPM-V-4.5~\cite{yao2024minicpmv} and LLaVA-OneVision-Qwen2-7B~\cite{li2024llavaov}. We also include a two-stage API pipeline (Luxia document vision followed by a 32B language model). All open models run unquantized with Transformers 5.14.0 on an NVIDIA L4 (22\,GB) using greedy decoding. MiniCPM-V-4.5's chat interface samples by default (temperature 0.7), and we found this only after its first gold runs. We therefore re-ran its image-only and three reference conditions greedily with unchanged prompts, images and references (2,136 calls, 0 errors, 0 invalid outputs). Its rows in Tables~\ref{tab:baseline} and~\ref{tab:conditions} are these greedy runs. Only its 20 vision-expert configurations remain single sampled runs (marked $^\dagger$). Greedy decoding changed 54 of 534 image-only answers. Sampling had inflated its image-only inconsistency: the consistency error drops from .341 to .280 and the false defect rate from .411 to .308 under greedy decoding. The reference conditions move by at most .05 (Appendix Table~\ref{tab:minicpm}). All agent experiments are greedy. InternVL uses a fixed total budget of six visual tiles per sample, so adding a reference halves the target's tiles. We treat this as a fixed visual-token budget rather than a free resolution increase.
 
 \subsection{Image-only baselines}
 Table~\ref{tab:baseline} shows that image-only Q1 F1 ranges from .555 to .718 and Q2 macro-F1 from .360 to .505. The original four-option Q3 is not informative. Its answers are only ``no region'' (22) or ``center'' (20), so a constant ``no region'' answer already scores .524. The best model (.667) beats it by just 6 of 42 questions. We therefore treat Q3 as auxiliary and later replace it with a presence-scored nine-region question.
 
 \begin{table}[t]
 \centering
-\caption{Image-only baselines on gold v2 (534 questions). Q3: 42 four-option localization questions. MiniCPM-V-4.5: single sampled run (see text).}
+\caption{Image-only baselines on gold v2 (534 questions). Q3: 42 four-option localization questions. All open models greedy (MiniCPM-V-4.5 re-run, see text).}
 \label{tab:baseline}
 \begin{tabular}{lrrrrrr}
 \toprule
@@ -108,11 +108,11 @@ Model & Valid & Q1 Acc & Q1 F1 & Q2 Acc & Q2 F1 & Q3 Acc \\
 \subsection{References and vision experts}
 Table~\ref{tab:conditions} adds three kinds of extra input. The first is the fixed normal reference. The second is a \emph{defect} reference, the DINOv2-nearest anomalous image of the same asset from supervised train, chosen without the target label. The third is 20 vision-expert cues: four detectors (PatchCore, Dinomaly, AnomalyCLIP and a light ReconPatch variant) crossed with five presentations (score, ROI, heatmap, score+ROI, score+heatmap).
 
-A normal reference raises Q1 F1 for all four open models, for example InternVL from .597 to .794. It does not make answers more coherent. For InternVL and MiniCPM the false defect rate rises (.346$\rightarrow$.617 and .411$\rightarrow$.841). For LLaVA the consistency error more than doubles (.244$\rightarrow$.593). A higher Q1 score therefore does not imply consistent fault understanding. With a defect reference, three of the four models detect no defect at all (Q1 F1 = 0) and call almost every target normal. One hypothesis is that they compare the target with the exemplar and answer ``normal'' when the specific defect shown is absent; we did not test this further. Averaged over the 20 configurations, vision-expert cues lower Q1 F1 for InternVL (.597$\rightarrow$.382) and MiniCPM (.583$\rightarrow$.417). Q2 changes by at most .04 for every model, so no expert configuration gives a consistent gain. Expert scores are percentiles within the 246-image cohort (transductive), which favours the expert condition, yet the conclusion still holds.
+A normal reference raises Q1 F1 for all four open models, for example InternVL from .597 to .794. It does not make answers more coherent. For InternVL and MiniCPM the false defect rate rises (.346$\rightarrow$.617 and .308$\rightarrow$.841; for MiniCPM $+.533$, paired CI $[+.430,+.634]$). For LLaVA the consistency error more than doubles (.244$\rightarrow$.593). A higher Q1 score therefore does not imply consistent fault understanding. With a defect reference, three of the four models detect almost no defect (Q1 F1 $\le$ .014) and call nearly every target normal. One hypothesis is that they compare the target with the exemplar and answer ``normal'' when the specific defect shown is absent; we did not test this further. Averaged over the 20 configurations, vision-expert cues lower Q1 F1 for InternVL (.597$\rightarrow$.382) and MiniCPM (.583$\rightarrow$.417, comparing its sampled runs). Q2 changes by at most .04 for every model, so no expert configuration gives a consistent gain. Expert scores are percentiles within the 246-image cohort (transductive), which favours the expert condition, yet the conclusion still holds.
 
 \begin{table}[t]
 \centering
-\caption{Effect of references and vision-expert cues on gold v2. Vision-expert values average 4 detectors $\times$ 5 presentations. CE: consistency error; FDR: false defect rate on normal images. MiniCPM-V-4.5: single sampled run.}
+\caption{Effect of references and vision-expert cues on gold v2. Vision-expert values average 4 detectors $\times$ 5 presentations. CE: consistency error; FDR: false defect rate on normal images. $^\dagger$MiniCPM-V-4.5 vision-expert row: single sampled run; its other rows are greedy re-runs.}
 \label{tab:conditions}
 \small
 \begin{tabular}{llrrrrr}
@@ -213,7 +213,7 @@ Together these results indicate that the failure lies in perception. In these im
 \section{Discussion and Limitations}
 \paragraph{A trade-off, not a free gain.} The verification agent makes the model more conservative. The matched-call control shows that part of this conservatism comes simply from asking again~\cite{huang2024cannotselfcorrect}, and the agent's definitions and staging channel it into a real gain. It removes most false alarms on normal images but increases misses, especially for the subtle ``something is absent'' class. In inspection, a missed defect usually costs more than a false alarm. A single accuracy number would hide this, so benchmarks should report normal false-alarm rate and per-class recall alongside macro-F1.
 
-\paragraph{Limitations.} (1) The agent was evaluated with one model (InternVL3.5-8B), so transfer to other models is untested. (2) Gold has 246 images and prior exploratory use, and dev was explored repeatedly, so dev gains are exploratory. (3) Missing caps occur in one asset only, which confounds defect and asset. (4) Q3 is scored for presence, not location. On a separately annotated subset with 133 spatially labelled defects, exact grid-cell localization was 12 of 133 for both direct and staged prompting. (5) Vision-expert scores are transductive percentiles. (6) No new untouched holdout exists, because the Aligned Core's defective images are all in gold. Unused defective images remain only in supervised train. (7) MiniCPM-V-4.5's gold baseline and condition results come from sampled decoding, so they may inflate its inconsistency.
+\paragraph{Limitations.} (1) The agent was evaluated with one model (InternVL3.5-8B), so transfer to other models is untested. (2) Gold has 246 images and prior exploratory use, and dev was explored repeatedly, so dev gains are exploratory. (3) Missing caps occur in one asset only, which confounds defect and asset. (4) Q3 is scored for presence, not location. On a separately annotated subset with 133 spatially labelled defects, exact grid-cell localization was 12 of 133 for both direct and staged prompting. (5) Vision-expert scores are transductive percentiles. (6) No new untouched holdout exists, because the Aligned Core's defective images are all in gold. Unused defective images remain only in supervised train. (7) MiniCPM-V-4.5's 20 vision-expert configurations come from sampled decoding. Its baseline and reference rows were re-run greedily.
 
 \section{Conclusion}
 InsPLAD-QA provides a hash-aligned, manually reviewed benchmark for LVLM power-line inspection with a shared prompt, schema and evaluator. Normal references help anomaly detection but not coherence, and anomaly-detector cues do not help consistently. A question-independent verification agent improves defect typing and region presence, while trading false alarms for misses. An equal-call re-ask does not reproduce this gain, so the gain comes from the agent's structure. Missing components resist every training-free intervention we tried, including oracle crops.
@@ -232,6 +232,21 @@ InsPLAD-QA provides a hash-aligned, manually reviewed benchmark for LVLM power-l
 Metric & Direct & Agent & Revised \\
 \midrule
 \input{tables/dev_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{MiniCPM-V-4.5: greedy versus sampled decoding}
+\begin{table}[h]
+\centering
+\caption{MiniCPM-V-4.5 on gold v2, greedy re-run / published sampled run (temperature 0.7). Same prompts, images and references; 2,136 greedy calls, 0 errors, 0 invalid outputs.}
+\label{tab:minicpm}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Q1 F1 & Q2 F1 & Joint & CE & FDR \\
+\midrule
+\input{tables/minicpm_greedy_rows}
 \bottomrule
 \end{tabular}
 \end{table}

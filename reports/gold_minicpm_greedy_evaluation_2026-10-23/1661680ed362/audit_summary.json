@@ -1,0 +1,139 @@
+{
+  "questions": {
+    "anomaly_detection": 246,
+    "defect_classification": 246,
+    "defect_localization": 42
+  },
+  "reference_manifest_sha256_matches_committed": true,
+  "q12_rows_equal_matched_run": true,
+  "images_by_role": {
+    "target": 246,
+    "normal": 5,
+    "positive": 196
+  },
+  "target_sha_equal_matched_run": true,
+  "steps": 2136,
+  "prompt_image_parse_mismatch": 0,
+  "leaderboard_max_abs_diff": 0.0,
+  "significance_rows": 21,
+  "significance_max_abs_diff": 0.0,
+  "comparison": {
+    "image_only": {
+      "q1_anomaly_f1": [
+        0.618,
+        0.583
+      ],
+      "q2_defect_macro_f1": [
+        0.483,
+        0.45
+      ],
+      "joint_accuracy": [
+        0.496,
+        0.431
+      ],
+      "consistency_error": [
+        0.28,
+        0.341
+      ],
+      "false_defect_rate": [
+        0.308,
+        0.411
+      ],
+      "q3_accuracy": [
+        0.667,
+        0.667
+      ]
+    },
+    "normal_reference": {
+      "q1_anomaly_f1": [
+        0.753,
+        0.752
+      ],
+      "q2_defect_macro_f1": [
+        0.461,
+        0.469
+      ],
+      "joint_accuracy": [
+        0.484,
+        0.48
+      ],
+      "consistency_error": [
+        0.11,
+        0.126
+      ],
+      "false_defect_rate": [
+        0.841,
+        0.841
+      ],
+      "q3_accuracy": [
+        0.31,
+        0.357
+      ]
+    },
+    "positive_reference": {
+      "q1_anomaly_f1": [
+        0.014,
+        0.0
+      ],
+      "q2_defect_macro_f1": [
+        0.328,
+        0.332
+      ],
+      "joint_accuracy": [
+        0.415,
+        0.415
+      ],
+      "consistency_error": [
+        0.142,
+        0.146
+      ],
+      "false_defect_rate": [
+        0.047,
+        0.047
+      ],
+      "q3_accuracy": [
+        0.524,
+        0.524
+      ]
+    },
+    "normal_positive_reference": {
+      "q1_anomaly_f1": [
+        0.648,
+        0.632
+      ],
+      "q2_defect_macro_f1": [
+        0.488,
+        0.5
+      ],
+      "joint_accuracy": [
+        0.447,
+        0.439
+      ],
+      "consistency_error": [
+        0.301,
+        0.317
+      ],
+      "false_defect_rate": [
+        0.607,
+        0.589
+      ],
+      "q3_accuracy": [
+        0.31,
+        0.357
+      ]
+    }
+  },
+  "image_only_accuracy": {
+    "anomaly_detection": 0.638211,
+    "defect_classification": 0.678862,
+    "defect_localization": 0.666667
+  },
+  "image_only_valid_rate": 1.0,
+  "image_only_answers_changed_vs_sampled": {
+    "total": 54,
+    "of": 534,
+    "anomaly_detection": 21,
+    "defect_classification": 27,
+    "defect_localization": 6
+  }
+}

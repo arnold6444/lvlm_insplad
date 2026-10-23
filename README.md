@@ -6,7 +6,7 @@ InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault
 
 **Matched-call control on gold (done):** the agent beats an equal-call re-ask by +.164 Q2 macro-F1 and +.203 Q3 presence BAcc (paired CIs exclude zero). Results: [`results/latest/gold_v2_matched_call/`](results/latest/gold_v2_matched_call/leaderboard.csv). Notebook: [`lvlm_gold_v2_matched_call_colab.ipynb`](notebooks/lvlm_gold_v2_matched_call_colab.ipynb); see the [protocol](docs/gold_matched_call.md).
 
-**MiniCPM greedy re-run (optional):** the published MiniCPM gold baseline/reference rows were sampled (temperature 0.7, before PR #47). Open [`lvlm_gold_v2_minicpm_greedy_colab.ipynb`](notebooks/lvlm_gold_v2_minicpm_greedy_colab.ipynb) in a fresh L4/A100 runtime and run all cells. It re-runs the same four reference conditions greedily (2,136 calls) and publishes nothing. See the [protocol](docs/gold_minicpm_greedy.md).
+**MiniCPM greedy re-run (done):** the published MiniCPM gold baseline/reference rows had been sampled (temperature 0.7, before PR #47). The greedy re-run (2,136 calls, 0 errors) lowers its image-only false defect rate from .411 to .308 and its consistency error from .341 to .280. The reference conditions move by ≤ .05. Results: [`results/latest/gold_v2_minicpm_greedy/`](results/latest/gold_v2_minicpm_greedy/leaderboard.csv). Notebook: [`lvlm_gold_v2_minicpm_greedy_colab.ipynb`](notebooks/lvlm_gold_v2_minicpm_greedy_colab.ipynb); see the [protocol](docs/gold_minicpm_greedy.md).
 
 For the **Q1 fixed, automatic target zoom × prompt** exploratory dev comparison, open
 [`lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb`](notebooks/lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb)

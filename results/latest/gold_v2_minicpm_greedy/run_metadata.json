@@ -1,0 +1,51 @@
+{
+  "protocol": "gold_v2_minicpm_greedy",
+  "model_key": "minicpm_v_4_5",
+  "model_spec": {
+    "backend": "hf",
+    "provider": "huggingface",
+    "model_id": "openbmb/MiniCPM-V-4_5",
+    "trust_remote_code": true,
+    "adapter": "minicpm_chat",
+    "role": "minicpm_family"
+  },
+  "decoding": "greedy (sampling=False, num_beams=1, repetition_penalty=1.0, max_new_tokens=80)",
+  "conditions": [
+    "image_only",
+    "normal_reference",
+    "positive_reference",
+    "normal_positive_reference"
+  ],
+  "questions_per_condition": 534,
+  "input_signature": "d8fbd885eb000ed74491263b81bc1abeea7ea619b7d93c42f0d2857dd2b9d3e5",
+  "prediction_identity": "6993c7d8817224765f73e14f732e073117c21d31b9e0e090b397ac8b4050b3dd",
+  "benchmark_commit": "49059c659eff5cf880c6117c26b7fa37f274a297",
+  "code_sha256": {
+    "scripts/run_gold_v2_minicpm_greedy.py": "1fad2a3dd5e91406a25575587115650ffcccb6b903050ad586e287eb25639962",
+    "scripts/run_gold_v2_reference_ablation.py": "25b52f00cbc7911149b2377bdf0129f46cd1575831ac7f8b83dc1665534f8e6d",
+    "scripts/run_gold_v2_consistency_metrics.py": "802267807ee16dfa5b700f8676f2d8c294e733c99fc1586884896e164c8b3ec6",
+    "scripts/run_gold_baselines.py": "c5b5507c317654504725cf1c3efa9ad1e09daf00fa62d4331cb228c531a76602",
+    "scripts/run_gold_v2_baselines.py": "0852ea87d20951713c3b98ca67f88472f41a29481767f8947f25efd6be37f650",
+    "src/insplad_benchmark/hf_adapters.py": "4e5e39fe437a3c7dcb52be598cbc1d1ac9acabb0b2414d8a259173a9b6d577dc"
+  },
+  "reference_manifest": "/content/lvlm_minicpm_greedy_code/results/latest/gold_v2_reference/reference_manifest.csv",
+  "reference_manifest_sha256": "40315bfa5d0cb1f94ea6a50a5b7da41f061b4d4acbe0a703d325d23581a560d0",
+  "replaces": "sampled (temperature 0.7) MiniCPM results in gold_v2_baseline / gold_v2_reference",
+  "published": false,
+  "software": {
+    "torch": "2.11.0+cu130",
+    "transformers": "5.14.0",
+    "numpy": "2.1.3",
+    "Pillow": "11.3.0"
+  },
+  "complete": true,
+  "called_this_run": 2136,
+  "reused_calls": 0,
+  "unique_steps": 2136,
+  "row_errors": 0,
+  "invalid_outputs": 0,
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  }
+}
