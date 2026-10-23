@@ -1,0 +1,20 @@
+{
+  "source_bundle_sha256": "66e7e6f5209af548428653e5c0c1a70c1eb4aa4a883f3e07704265bca1d34834",
+  "source_files": 90,
+  "original_vectors_verified": 50,
+  "canary_seed_vectors": 1,
+  "source_actual_archive": "bad35ced5b0b",
+  "routed_images": 26,
+  "actual_input_maps_fixture": 52,
+  "policies": 8,
+  "presence_frozen_all240": true,
+  "matched_cardinality_all_routes": true,
+  "resume_new_calls": 0,
+  "resume_model_loads": 0,
+  "exact_export_success_and_failure": true,
+  "originals_excluded": true,
+  "extracted_tests": ".....................                                                    [100%]\n21 passed in 33.99s",
+  "actual_pretrained_neural_calls": 0,
+  "attribution_effect": "UNRUN; fixed synthetic maps are fixture plumbing only",
+  "cpu_gradient_tests": "analytic linear/cubic and tiny random HF Dinov2Model; no pretrained weights"
+}
