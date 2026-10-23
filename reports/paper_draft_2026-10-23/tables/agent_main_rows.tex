@@ -1,0 +1,13 @@
+% Source: gold run ZIP 0c577ffe3bdd (reports/q23_gold_evaluation_2026-10-15), InternVL3.5-8B, L4, 1,606 calls, 0 errors, 0 invalid.
+% Columns: metric, direct, verification agent, revised candidate.
+Q1 anomaly F1 (fixed in all policies)        & .776 & .776 & .776 \\
+Q2 defect macro-F1                           & .522 & \textbf{.640} & .623 \\
+Q2 defect balanced accuracy                  & .510 & \textbf{.659} & .639 \\
+Q2 correct (/246)                            & 156 & 183 & \textbf{187} \\
+Q1--Q2 joint correct (/246)                  & 142 & 163 & \textbf{165} \\
+Q1--Q2 contradiction rate                    & .211 & .167 & \textbf{.150} \\
+\midrule
+Q3 presence balanced accuracy                & .551 & \textbf{.828} & \textbf{.828} \\
+Q3 false region on normal images (/107)      & 93 & \textbf{16} & \textbf{16} \\
+Q3 false ``none'' on defective images (/139) & \textbf{4} & 27 & 27 \\
+Q1--Q2--Q3 joint correct (/246)              & 91 & 156 & \textbf{157} \\

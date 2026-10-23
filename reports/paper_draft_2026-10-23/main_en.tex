@@ -1,0 +1,268 @@
+% InsPLAD-QA paper draft (English). Compile with pdfLaTeX + BibTeX (e.g. Overleaf).
+% Numbers come from the repository result files cited in each table source comment.
+% Matched-call control filled from run 902a9f8a1752 (reports/gold_matched_call_evaluation_2026-10-23), CPU-audited.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\TBD}{\textcolor{red}{TBD}}
+\newcommand{\CondImg}{Image only}
+\newcommand{\CondNorm}{+ normal ref.}
+\newcommand{\CondPos}{+ defect ref.}
+\newcommand{\CondBoth}{+ normal \& defect ref.}
+\newcommand{\CondVX}{+ vision expert (mean of 20)}
+
+\title{Fewer False Alarms, More Missed Defects:\\
+Benchmarking Vision-Language Models and Verification Agents\\
+for Power-Line Inspection on InsPLAD}
+\author{Anonymous authors}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large vision-language models (LVLMs) are increasingly proposed as zero-shot inspectors, but power-line inspection has no benchmark that tests whether they detect a defect, name it, and stay consistent across these questions. We build \emph{InsPLAD-QA}, an MMAD-style question-answering benchmark on the public InsPLAD UAV dataset. We align its anomaly-detection and fault-classification releases by exact image hashes and manually review a frozen gold set of 246 images and 534 questions. Under one prompt, output schema and evaluator, we compare four open LVLMs from distinct families and one API pipeline. Each model is tested image-only, with a normal reference, a defect reference, and 20 vision-expert cues. A normal reference raises anomaly-detection F1 for every open model, while expert cues give no consistent gain. We then evaluate a question-independent verification agent that was selected on a disjoint development set and run once on gold. It raises defect-type macro-F1 from .522 to .640 ($+.118$, paired 95\% CI $[+.043,+.199]$) and region-presence balanced accuracy from .551 to .828 ($+.277$, $[+.222,+.328]$). Normal false alarms fall from 93/107 to 16/107. A control that re-asks with the same number of calls but no new evidence falls well short ($-.164$ Q2 macro-F1 and $-.203$ presence BAcc versus the agent, CIs exclude zero), so the gain comes from the agent's structure, not from extra calls. The same agent, however, misses more defects (4/139 $\rightarrow$ 27/139) and almost never recognizes missing insulator caps (7/27 $\rightarrow$ 2/27). Over ten follow-up interventions do not recover missing components, including higher resolution, other LVLMs, anomaly detectors and part counters; the model fails even when shown a crop of the true location. We release the benchmark, code and per-question model answers, and argue that inspection benchmarks must report false alarms and misses separately rather than a single accuracy.
+\end{abstract}
+
+\section{Introduction}
+Utilities inspect thousands of kilometres of transmission line with unmanned aerial vehicles (UAVs), and the resulting images are reviewed largely by hand. LVLMs promise to answer open questions about such images without task-specific training. Industrial anomaly-detection benchmarks for LVLMs, notably MMAD~\cite{jiang2025mmad}, show that general models still lag behind human inspectors on manufactured objects. Power-line assets differ from bench-top industrial objects: they are photographed outdoors from varying viewpoints, against cluttered backgrounds, and their defects range from surface rust to entirely missing components.
+
+This paper asks three questions. (i) How well do current open LVLMs detect and classify defects on power-line assets under a fair, shared contract? (ii) Do a normal reference image or anomaly-detector (``vision expert'') cues help? (iii) Does a training-free verification agent, which re-examines each question with its own earlier answer and visual definitions, improve the answers, and at what cost?
+
+Our contributions are:
+\begin{itemize}
+  \item \textbf{InsPLAD-QA}, a reproducible benchmark built from InsPLAD~\cite{vieira2023insplad}. It has two tracks, an exact-hash \emph{Aligned Core} of 1,378 images shared by both releases, and a manually reviewed, frozen gold set (246 images, 534 questions). Leakage controls cover reference selection and the development split (Section~\ref{sec:benchmark}).
+  \item A controlled comparison of four LVLM families and an API pipeline under identical prompts, schema and scoring. It covers image-only, normal-reference, defect-reference and 80 vision-expert configurations, and reports consistency between questions as well as accuracy (Section~\ref{sec:baselines}).
+  \item A question-independent verification agent evaluated once on gold after selection on a disjoint development set. Its gains in defect typing and region presence come with a measured increase in missed defects, which we report as a trade-off rather than a net improvement (Section~\ref{sec:agent}). A matched-call control shows that the gain comes from the agent's structure, not from the extra calls it makes. Re-asking alone gives no Q2 gain and shifts answers towards ``normal''.
+  \item A negative analysis of missing-component defects. More than ten interventions fail, and the model does not respond even to an oracle crop of the defect (Section~\ref{sec:missing}).
+\end{itemize}
+
+\section{Related Work}
+\paragraph{LVLMs for industrial anomaly detection.} AnomalyGPT~\cite{gu2024anomalygpt} fine-tunes an LVLM with simulated anomalies, while MMAD~\cite{jiang2025mmad} benchmarks general LVLMs with multiple-choice questions on industrial objects. MMAD also studies agent-style aids such as expert anomaly maps and retrieved domain knowledge. We adopt MMAD's question format and its normal-reference (one-shot) setting, apply them to power-line UAV imagery, and add explicit cross-question consistency metrics.
+
+\paragraph{Anomaly detectors as experts.} PatchCore~\cite{roth2022patchcore}, Dinomaly~\cite{guo2025dinomaly} and AnomalyCLIP~\cite{zhou2024anomalyclip} produce image scores and anomaly maps without defect-type supervision. We pass their outputs to LVLMs as text scores, regions of interest or heatmaps.
+
+\paragraph{Self-verification.} Iterative self-feedback can improve LLM outputs~\cite{madaan2023selfrefine}, but asking a model to reconsider without new information can also degrade correct answers~\cite{huang2024cannotselfcorrect}. This motivates our matched re-ask control: it spends the same number of calls as the agent but supplies no new evidence.
+
+\section{Benchmark}\label{sec:benchmark}
+\subsection{Source data and label policy}
+InsPLAD~\cite{vieira2023insplad} provides two releases. The unsupervised anomaly-detection release covers 17 asset categories and 27,620 JPEG images split into train and test (6,481 test images). Three of its assets (\texttt{damper-preformed}, \texttt{spacer}, \texttt{yoke}) are normal-only in test. The supervised fault-classification release covers 5 assets and 11,525 images in train and val (6,417 val images); it has no test split. Folders named \texttt{good} or \texttt{normal} map to \emph{normal}, and every defect folder maps to \emph{anomalous}. We only slug-normalize \texttt{corros\~ao} to \texttt{corrosao} and never merge it with \texttt{rust}. The integer IDs in the supervised annotation file are asset-local class indices, not binary labels, so semantic labels come from folder names.
+
+\subsection{Tracks and Aligned Core}
+Track~A (general anomaly detection) uses all 6,481 unsupervised test images in zero-shot and one-shot (normal reference) form. Track~B (structured fault understanding) uses the 6,417 supervised val images and asks for both the anomaly label and the defect class. The two releases share 8,990 SHA-256-identical images; 1,384 of them lie in both unsupervised test and supervised val. Six of these carry conflicting binary labels and are excluded, which leaves an \emph{Aligned Core} of 1,378 images. On these images zero-shot, one-shot and structured answers can be compared byte for byte.
+
+\subsection{Gold v2 QA set}
+Running every model on every configuration over the full tracks is costly, and several labels needed manual checking. We therefore built a gold set from the Aligned Core: all 139 of its defective images, plus normal images capped per asset at the median and chosen for diversity with DINOv2~\cite{oquab2024dinov2} embeddings. Every image was manually reviewed and none was excluded. The set was then frozen (Table~\ref{tab:gold}). Each image has a binary question (Q1: ``Is the target asset normal or anomalous?'') and a four-way defect-type question (Q2: rust/corrosion, bird nest, missing cap, normal). Forty-two images also carry an MMAD-style four-option localization question (Q3), for 534 questions in total. Option order is fixed per question and independent of the answer.
+
+\begin{table}[t]
+\centering
+\caption{Frozen gold v2 composition (images). All 27 missing-cap images are glass insulators, an asset with only five normal images.}
+\label{tab:gold}
+\begin{tabular}{lrrrrr}
+\toprule
+Asset & Images & Normal & Rust & Bird nest & Missing cap \\
+\midrule
+\input{tables/gold_composition_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Development set and protocol}
+Every method choice was made on a separate development set. It has 240 images (480 Q1/Q2 questions; 125 normal, 115 defective) drawn with seed 42 from the supervised \emph{train} split, because the Aligned Core's defective images are all in gold. Dev excludes any image whose size and CRC32 fingerprint occurs in unsupervised test, in a fixed reference, or in gold. Configurations were frozen in a committed file before their single gold run, and gold scores never fed back into configuration choices. Gold had been used for earlier baseline comparisons, so we do not call it an untouched holdout.
+
+\subsection{References and leakage controls}
+A one-shot reference is a normal image of the same asset from unsupervised \emph{train}. We exclude any candidate whose fingerprint appears in test. The \emph{fixed} reference is drawn once per asset with seed 42. The \emph{retrieved} reference is the DINOv2-base cosine nearest neighbour of the target (pinned weights). Retrieval exposed a shortcut on dev: normal targets often retrieved a frame from the same flight (44\% vs.\ 16\% for defective targets), and cosine similarity alone separated normal from defective images with AUROC .886. We therefore exclude same-flight-date candidates (\emph{diffdate}) in every retrieved condition used by the agent.
+
+\subsection{Metrics}
+For Q1 we report F1, balanced accuracy (BAcc), precision, recall and TP/FP/TN/FN. For Q2 we report macro-F1 over the classes present and defect BAcc. Invalid outputs count as wrong: an invalid answer is a false negative on a defective image and a false positive on a normal image. \emph{Joint accuracy} counts images where Q1 and Q2 are both correct. \emph{Consistency error} is the share of images with valid answers where Q1 and Q2 disagree (normal with a defect type, or anomalous with ``normal''). \emph{False defect rate} is the share of normal images given a defect type. Differences between policies use a paired bootstrap over images with 2,000 resamples~\cite{efron1994bootstrap}.
+
+\section{Models and Baselines}\label{sec:baselines}
+\subsection{Setup}
+We keep one model per family: Qwen3.5-4B~\cite{qwen35} with thinking disabled, InternVL3.5-8B~\cite{wang2025internvl35} through its official chat path, MiniCPM-V-4.5~\cite{yao2024minicpmv} and LLaVA-OneVision-Qwen2-7B~\cite{li2024llavaov}. We also include a two-stage API pipeline (Luxia document vision followed by a 32B language model). All open models run unquantized with Transformers 5.14.0 on an NVIDIA L4 (22\,GB) using greedy decoding, with one exception. MiniCPM-V-4.5's chat interface samples by default (temperature 0.7), and we found this only after its gold baseline, reference and vision-expert runs. Its rows in Tables~\ref{tab:baseline} and~\ref{tab:conditions} are therefore single sampled runs. The decoding has since been fixed, and all agent experiments are greedy. InternVL uses a fixed total budget of six visual tiles per sample, so adding a reference halves the target's tiles. We treat this as a fixed visual-token budget rather than a free resolution increase.
+
+\subsection{Image-only baselines}
+Table~\ref{tab:baseline} shows that image-only Q1 F1 ranges from .555 to .718 and Q2 macro-F1 from .360 to .505. The original four-option Q3 is not informative. Its answers are only ``no region'' (22) or ``center'' (20), so a constant ``no region'' answer already scores .524. The best model (.667) beats it by just 6 of 42 questions. We therefore treat Q3 as auxiliary and later replace it with a presence-scored nine-region question.
+
+\begin{table}[t]
+\centering
+\caption{Image-only baselines on gold v2 (534 questions). Q3: 42 four-option localization questions. MiniCPM-V-4.5: single sampled run (see text).}
+\label{tab:baseline}
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & Valid & Q1 Acc & Q1 F1 & Q2 Acc & Q2 F1 & Q3 Acc \\
+\midrule
+\input{tables/baseline_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{References and vision experts}
+Table~\ref{tab:conditions} adds three kinds of extra input. The first is the fixed normal reference. The second is a \emph{defect} reference, the DINOv2-nearest anomalous image of the same asset from supervised train, chosen without the target label. The third is 20 vision-expert cues: four detectors (PatchCore, Dinomaly, AnomalyCLIP and a light ReconPatch variant) crossed with five presentations (score, ROI, heatmap, score+ROI, score+heatmap).
+
+A normal reference raises Q1 F1 for all four open models, for example InternVL from .597 to .794. It does not make answers more coherent. For InternVL and MiniCPM the false defect rate rises (.346$\rightarrow$.617 and .411$\rightarrow$.841). For LLaVA the consistency error more than doubles (.244$\rightarrow$.593). A higher Q1 score therefore does not imply consistent fault understanding. With a defect reference, three of the four models detect no defect at all (Q1 F1 = 0) and call almost every target normal. One hypothesis is that they compare the target with the exemplar and answer ``normal'' when the specific defect shown is absent; we did not test this further. Averaged over the 20 configurations, vision-expert cues lower Q1 F1 for InternVL (.597$\rightarrow$.382) and MiniCPM (.583$\rightarrow$.417). Q2 changes by at most .04 for every model, so no expert configuration gives a consistent gain. Expert scores are percentiles within the 246-image cohort (transductive), which favours the expert condition, yet the conclusion still holds.
+
+\begin{table}[t]
+\centering
+\caption{Effect of references and vision-expert cues on gold v2. Vision-expert values average 4 detectors $\times$ 5 presentations. CE: consistency error; FDR: false defect rate on normal images. MiniCPM-V-4.5: single sampled run.}
+\label{tab:conditions}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Condition & Q1 F1 & Q2 F1 & Joint & CE & FDR \\
+\midrule
+\input{tables/conditions_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{A Question-Independent Verification Agent}\label{sec:agent}
+\subsection{Design}
+The agent starts from the direct answer with a retrieved (diffdate) normal reference. Each question is re-examined on its own: a re-check sees only the reference and target images, the question and that question's own first answer. No other question's answer is shown, used for routing or overwritten. Contradictions between questions are computed only after all final answers are stored. Q1 is never re-checked, because a pilot re-ask of Q1 collapsed InternVL's Q1 F1 to .08 on dev, so Q1 is identical across policies.
+
+\begin{itemize}
+  \item \textbf{Q2, verification agent.} A ``second look'' prompt shows the model's own first answer, which may be right or wrong, together with one-sentence visual definitions of the four options.
+  \item \textbf{Q2, revised candidate.} A fresh question with revised definitions (adding rust cues) and no prior answer.
+  \item \textbf{Q3.} A separate nine-region-plus-``none'' question is asked for every image. A presence question comes first, and only a positive answer triggers a full-frame $3\times3$ position question. Because spatial ground truth is unavailable at this scale, Q3 is scored for \emph{presence only}: a wrong region on a defective image still counts as ``defect present''.
+\end{itemize}
+The agent and candidate were chosen on dev and run once on gold with InternVL3.5-8B. That run used 1,606 calls (492 direct answers and 1,114 tool calls) with zero errors and zero invalid outputs.
+
+\subsection{Results}
+Table~\ref{tab:agent} and Table~\ref{tab:ci} summarize the gold run. Against the direct question, the agent improves Q2 macro-F1 by $+.118$ (95\% CI $[+.043,+.199]$) and the candidate by $+.102$ ($[+.030,+.177]$); Q1--Q2 joint accuracy rises by $+.085$ and $+.093$. The staged Q3 raises presence BAcc by $+.277$ and cuts normal false alarms from 93/107 to 16/107. The candidate is not distinguishable from the original agent (Q2 macro-F1 $-.017$, CI $[-.073,+.036]$).
+
+The gain is not free. Defective images judged defect-free rise from 4/139 to 27/139, and this false-none increase is significant ($+.165$, CI $[+.103,+.234]$). Table~\ref{tab:perdefect} locates the change: normal images and bird nests improve, rust barely moves, and missing caps collapse from 7/27 to 2/27. The candidate calls 25 of the 27 missing-cap images ``normal''. The same pattern appeared on 200 dev images that were not used for design (Table~\ref{tab:dev} in the appendix).
+
+\begin{table}[t]
+\centering
+\caption{Verification agent on gold v2 (InternVL3.5-8B, 246 images). Q1 is fixed. Q3 is scored for presence only.}
+\label{tab:agent}
+\begin{tabular}{lrrr}
+\toprule
+Metric & Direct & Agent & Candidate \\
+\midrule
+\input{tables/agent_main_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Paired bootstrap differences (2,000 resamples over images).}
+\label{tab:ci}
+\begin{tabular}{llrr}
+\toprule
+Comparison & Metric & $\Delta$ & 95\% CI \\
+\midrule
+\input{tables/agent_ci_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Q2 correct answers per ground-truth class on gold v2. Re-ask: matched-call control (Section~\ref{sec:matched}).}
+\label{tab:perdefect}
+\begin{tabular}{lrrrrr}
+\toprule
+Class & Support & Direct & Re-ask & Agent & Candidate \\
+\midrule
+\input{tables/per_defect_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Structure or more calls? A matched-call control}\label{sec:matched}
+Per image, the agent makes two Q2 calls and up to three Q3 calls, where the direct question makes one of each. To separate structure from call count, we add a \emph{matched re-ask} policy that spends the same Q2 and Q3 calls on every image as the agent but supplies no new evidence. Q2 gets one own-answer re-check without definitions. Q3 gets as many sequential own-answer re-checks as the staged Q3 used for that image. We repeat the shown answer rather than the identical prompt, because the identical prompt under greedy decoding would trivially reproduce the first answer. The agent's saved gold calls are reused byte for byte, so only the 622 control calls are new. The decision rule was fixed before the run. If the agent beats matched re-ask on Q2 macro-F1 or Q3 presence BAcc with a CI excluding zero, we attribute that gain to structure. Otherwise we report that the gain is explained by additional calls.
+
+\begin{table}[t]
+\centering
+\caption{Matched-call control on gold v2. Calls/img counts Q2 and Q3 calls (Q1 is shared). Re-ask and agent spend identical calls on every image (Q2 492, Q3 622 in total).}
+\label{tab:matched}
+\begin{tabular}{lrrrrr}
+\toprule
+Policy & Calls/img & Q2 F1 & Q3 BAcc & Normal FP & Defect FN \\
+\midrule
+\input{tables/matched_call_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+The control ran on the same L4 with 622 new calls, 0 errors and 0 invalid outputs. The three published policies were reproduced exactly. The agent outperforms the equal-call re-ask by $+.164$ Q2 macro-F1 (95\% CI $[+.093,+.242]$) and $+.203$ Q3 presence BAcc ($[+.145,+.257]$), so by the predeclared rule its gain comes from the definitions and the staged structure rather than from extra calls (Table~\ref{tab:matched}).
+
+Re-asking alone does not help Q2 ($-.046$, $[-.095,+.001]$). It mainly pushes answers towards ``normal'': ``normal'' predictions rise from 86 to 139 of 246. That repairs 30 normal images but breaks 26 rust images, 21 of which become ``normal'' (Table~\ref{tab:perdefect}). The agent moves in the same direction less strongly (117 ``normal'' predictions), and its definitions keep rust (73/89) and recover bird nests (7 $\rightarrow$ 19/23). For Q3, re-asking gives a small presence gain ($+.074$, $[+.025,+.124]$) with a matching small shift: normal false regions 93 $\rightarrow$ 74 and missed defects 4 $\rightarrow$ 8. The staged presence question amplifies both effects. Compared with the re-ask, it removes many more false regions ($-.542$ in rate, $[-.636,-.447]$) and misses more defects ($+.137$, $[+.079,+.201]$). Asking again therefore already makes the model more conservative, and the agent's structure turns that shift into a large net gain while also enlarging the miss rate.
+
+\section{Why Missing Components Are Missed}\label{sec:missing}
+Missing caps are the one defect class that the agent makes worse. All 27 gold cases are glass insulators, an asset with only five gold normals, so asset and defect effects are confounded. We studied the 25 missing-cap images of the development set (never gold). All interventions below used fixed settings and fixed pass criteria written before each run, and no failed setting was tuned afterwards (Appendix Table~\ref{tab:negative}).
+\begin{itemize}
+  \item \textbf{Input and wording.} Doubling the target's visual tiles, short defect-evidence prompts, and both together all reduced missing-cap recall on dev, from 6/25 to 2, 4 and 1 of 25 respectively.
+  \item \textbf{Other models and detectors.} Swapping in Qwen3-VL-8B or Ovis2.5-9B did not recover missing caps. Three anomaly detectors used for Q3 presence (AdaCLIP, AnomalyVFM, InCTRL) all lowered presence BAcc.
+  \item \textbf{Part evidence.} Open-vocabulary detection, counting (CountGD++), SAM masks and dense correspondence to the normal reference (SIFT, DIFT) all failed their predeclared reliability gates on normal glass insulators. None could serve as part-count evidence.
+  \item \textbf{Oracle crops.} Given a crop of the human-annotated missing location, InternVL still answered ``no region'' in 20 of 20 cases in each of three crop arms. Asked independently ``is a component missing or broken?'', it answered ``absent'' in all 60 calls.
+  \item \textbf{A supervised expert.} A frozen DINOv2 feature plus a logistic head, trained on glass-insulator train labels with capture-date-disjoint splits, detected 25 of 25 dev missing caps. This breaks the training-free premise and covers one asset only. Occlusion analysis of the head placed the exact grid cell in 12 of 24 cases, against 8 of 24 for a fixed center guess (paired CI includes zero). Integrated gradients~\cite{sundararajan2017ig} did no better and showed large completeness residuals.
+\end{itemize}
+Together these results indicate that the failure lies in perception. In these images the 8B LVLM does not register the absence of a disc as a defect, even when the region is cropped for it. The prompts and routing are not the cause.
+
+\section{Discussion and Limitations}
+\paragraph{A trade-off, not a free gain.} The verification agent makes the model more conservative. The matched-call control shows that part of this conservatism comes simply from asking again~\cite{huang2024cannotselfcorrect}, and the agent's definitions and staging channel it into a real gain. It removes most false alarms on normal images but increases misses, especially for the subtle ``something is absent'' class. In inspection, a missed defect usually costs more than a false alarm. A single accuracy number would hide this, so benchmarks should report normal false-alarm rate and per-class recall alongside macro-F1.
+
+\paragraph{Limitations.} (1) The agent was evaluated with one model (InternVL3.5-8B), so transfer to other models is untested. (2) Gold has 246 images and prior exploratory use, and dev was explored repeatedly, so dev gains are exploratory. (3) Missing caps occur in one asset only, which confounds defect and asset. (4) Q3 is scored for presence, not location. On a separately annotated subset with 133 spatially labelled defects, exact grid-cell localization was 12 of 133 for both direct and staged prompting. (5) Vision-expert scores are transductive percentiles. (6) No new untouched holdout exists, because the Aligned Core's defective images are all in gold. Unused defective images remain only in supervised train. (7) MiniCPM-V-4.5's gold baseline and condition results come from sampled decoding, so they may inflate its inconsistency.
+
+\section{Conclusion}
+InsPLAD-QA provides a hash-aligned, manually reviewed benchmark for LVLM power-line inspection with a shared prompt, schema and evaluator. Normal references help anomaly detection but not coherence, and anomaly-detector cues do not help consistently. A question-independent verification agent improves defect typing and region presence, while trading false alarms for misses. An equal-call re-ask does not reproduce this gain, so the gain comes from the agent's structure. Missing components resist every training-free intervention we tried, including oracle crops.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+\section{Development-set confirmation}
+\begin{table}[h]
+\centering
+\caption{Dev additional 200 images (not used for design): same direction as gold.}
+\label{tab:dev}
+\begin{tabular}{lrrr}
+\toprule
+Metric & Direct & Agent & Revised \\
+\midrule
+\input{tables/dev_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Negative follow-up experiments}
+\begin{table}[h]
+\centering
+\caption{Follow-up interventions for missed defects (dev only, predeclared gates, no post-hoc tuning).}
+\label{tab:negative}
+\small
+\begin{tabular}{p{4.3cm}p{2.2cm}p{6.8cm}}
+\toprule
+Intervention & Data & Result \\
+\midrule
+Target zoom $\times$ short prompt (2$\times$2) & dev 240 & Q2 F1 .693 $\rightarrow$ .594/.627/.593; missing caps 6 $\rightarrow$ 2/4/1 of 25 \\
+Cross-model re-check (InternVL+Qwen) & dev 40 & Q2 F1 .652 $\rightarrow$ .692, CI $[-.055,+.181]$ \\
+Qwen3-VL-8B replacement & dev 40 $\rightarrow$ 240 & Q3 BAcc .792 $\rightarrow$ .833 on 40 not reproduced on 240 (.818 $\rightarrow$ .754) \\
+Ovis2.5-9B for Q2 & dev 40 & Q2 F1 .652 $\rightarrow$ .637; missing caps 1 $\rightarrow$ 0 of 4 \\
+AdaCLIP / AnomalyVFM / InCTRL for Q3 presence & dev 40 & BAcc .792 $\rightarrow$ .667 / .479 / .531 \\
+AnomalyR1 & smoke 5 & comparison model invalid 2/10; not comparable \\
+Grounding DINO / CountGD++ / SAM part evidence & glass insulators & reliability gates failed (e.g.\ CountGD repeatability 2/7, SAM 4/7, need 6/7) \\
+SIFT / DIFT alignment to normal ref. & 8 pairs / 7 normals & 0/8 and 0/7 pass \\
+Oracle crop of true location & dev 20 & 0/20 recovered in each of 3 arms \\
+Independent presence question & dev 20 & 60/60 calls answer ``absent'' \\
+Supervised missing-cap head (frozen DINOv2) & dev 50 glass & presence 25/25; location exact 12/24 vs.\ center 8/24 \\
+Integrated-gradients localization & dev 24 & exact $\le$ 9/24; completeness warnings 49/52 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Reproducibility}
+Code, prompts, frozen configurations, Colab notebooks, leaderboards and per-question answers are in the project repository. Raw per-call logs (prompts, outputs, latencies) are archived with SHA-256 hashes and available on request. Every run records the model ID, backend, benchmark commit, GPU, protocol and status. Notebooks verify the exact code revision before inference and resume from checkpoints saved every 20 calls.
+
+\end{document}

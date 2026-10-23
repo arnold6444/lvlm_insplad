@@ -2,9 +2,9 @@
 
 InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple VLMs under the same QA, prompt, and scoring contract.
 
-**Latest results (2026-10-18):** [reports/paper_tables/latest_results.md](reports/paper_tables/latest_results.md) — gold246 verification-agent comparison and follow-up dev experiments.
+**Latest results (2026-10-23):** [reports/paper_tables/latest_results.md](reports/paper_tables/latest_results.md) — gold246 verification-agent comparison, the matched-call control and follow-up dev experiments. Paper draft (English/Korean LaTeX): [reports/paper_draft_2026-10-23/](reports/paper_draft_2026-10-23/README.md).
 
-**Matched-call control on gold:** open [`lvlm_gold_v2_matched_call_colab.ipynb`](notebooks/lvlm_gold_v2_matched_call_colab.ipynb) in a fresh L4/A100 runtime and run all cells. It tests whether the agent's gain is structure or just more calls, reusing the saved gold run (622 new calls). See [protocol](docs/gold_matched_call.md).
+**Matched-call control on gold (done):** the agent beats an equal-call re-ask by +.164 Q2 macro-F1 and +.203 Q3 presence BAcc (paired CIs exclude zero). Results: [`results/latest/gold_v2_matched_call/`](results/latest/gold_v2_matched_call/leaderboard.csv). Notebook: [`lvlm_gold_v2_matched_call_colab.ipynb`](notebooks/lvlm_gold_v2_matched_call_colab.ipynb); see the [protocol](docs/gold_matched_call.md).
 
 For the **Q1 fixed, automatic target zoom × prompt** exploratory dev comparison, open
 [`lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb`](notebooks/lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb)

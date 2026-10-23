@@ -1,0 +1,279 @@
+% InsPLAD-QA 논문 초안 (한국어). pdfLaTeX + BibTeX로 컴파일 (Overleaf 기본 설정에서 동작, ko.TeX 포함).
+% 표 수치는 영어판과 같은 tables/*.tex 파일을 공유한다.
+% 호출 수 대조 결과는 실행 902a9f8a1752(reports/gold_matched_call_evaluation_2026-10-23)에서 채웠고 CPU 감사를 마쳤다.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{kotex}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\TBD}{\textcolor{red}{TBD}}
+\newcommand{\CondImg}{이미지만}
+\newcommand{\CondNorm}{+ 정상 참조}
+\newcommand{\CondPos}{+ 결함 참조}
+\newcommand{\CondBoth}{+ 정상·결함 참조}
+\newcommand{\CondVX}{+ vision expert (20개 평균)}
+\renewcommand{\abstractname}{요약}
+\renewcommand{\refname}{참고문헌}
+\renewcommand{\tablename}{표}
+
+\title{오경보는 줄고 미탐은 늘었다:\\
+InsPLAD 송전선 점검을 위한 시각-언어 모델과\\
+검증 에이전트 벤치마크}
+\author{저자 미기재}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+대형 시각-언어 모델(LVLM)을 학습 없이 쓰는 점검자로 활용하자는 제안이 늘고 있다. 그러나 송전선 점검 분야에는 모델이 결함을 찾고, 종류를 말하고, 두 답을 서로 모순 없이 하는지를 함께 시험하는 벤치마크가 없다. 본 연구는 공개 UAV 데이터셋 InsPLAD 위에 MMAD 방식의 질의응답 벤치마크 \emph{InsPLAD-QA}를 구축한다. 이상탐지 공개본과 결함분류 공개본을 이미지 해시로 정확히 맞추고, 246장·534문항의 gold 세트를 수작업으로 검토한 뒤 동결하였다. 하나의 프롬프트·출력 형식·채점기로 서로 다른 계열의 공개 LVLM 4종과 API 파이프라인 1종을 비교한다. 각 모델은 이미지만, 정상 참조, 결함 참조, 20가지 vision expert 단서 조건에서 평가된다. 정상 참조는 모든 공개 모델의 이상탐지 F1을 높였지만 vision expert 단서는 일관된 이득이 없었다. 이어서 문항별로 독립적으로 재확인하는 검증 에이전트를 별도 개발 세트에서 고른 뒤 gold에서 한 번 평가하였다. 결함 종류 macro-F1은 .522에서 .640으로($+.118$, 대응 95\% CI $[+.043,+.199]$), 결함 영역 유무 균형정확도는 .551에서 .828로($+.277$, $[+.222,+.328]$) 올랐다. 정상 이미지 오경보도 93/107에서 16/107로 줄었다. 같은 호출 수로 새 근거 없이 다시 묻는 대조군은 에이전트보다 Q2 macro-F1이 .164, 유무 BAcc가 .203 낮았다(CI 모두 0 제외). 따라서 개선은 추가 호출이 아니라 에이전트의 구조에서 온다. 그러나 같은 에이전트는 결함을 더 많이 놓쳤고(4/139 $\rightarrow$ 27/139), 애자 캡 누락은 거의 알아보지 못했다(7/27 $\rightarrow$ 2/27). 해상도 확대, 다른 LVLM, 이상탐지 모델, 부품 계수 등 열 가지가 넘는 후속 시도도 부품 누락을 복구하지 못했으며, 정답 위치를 잘라 보여줘도 실패하였다. 벤치마크·코드·문항별 모델 답을 공개하며, 점검 벤치마크는 하나의 정확도가 아니라 오경보와 미탐을 따로 보고해야 함을 주장한다.
+\end{abstract}
+
+\section{서론}
+전력회사는 무인항공기(UAV)로 수천 km의 송전선을 촬영하고, 그 영상을 대부분 사람이 직접 검토한다. LVLM은 과제별 학습 없이 이런 영상에 대한 개방형 질문에 답할 가능성을 보여준다. 산업 이상탐지용 LVLM 벤치마크, 특히 MMAD~\cite{jiang2025mmad}는 범용 모델이 제조품 검사에서 아직 사람에 미치지 못함을 보였다. 송전선 설비는 실내 산업 부품과 다르다. 야외에서 다양한 시점으로, 복잡한 배경과 함께 촬영되며, 결함도 표면 녹부터 부품이 통째로 없는 경우까지 다양하다.
+
+본 연구는 세 가지 질문을 다룬다. (i) 공정한 공통 계약 아래에서 현재 공개 LVLM은 송전선 설비 결함을 얼마나 잘 찾고 분류하는가? (ii) 정상 참조 이미지나 이상탐지 모델(``vision expert'') 단서가 도움이 되는가? (iii) 각 문항을 자기 이전 답과 시각적 정의로 다시 보게 하는 학습 없는 검증 에이전트가 답을 개선하는가, 그렇다면 그 대가는 무엇인가?
+
+기여는 다음과 같다.
+\begin{itemize}
+  \item InsPLAD~\cite{vieira2023insplad} 기반의 재현 가능한 벤치마크 \textbf{InsPLAD-QA}. 두 트랙, 두 공개본에 공통인 1,378장의 해시 일치 \emph{Aligned Core}, 수작업 검토 후 동결한 gold 세트(246장, 534문항)로 이루어진다. 참조 선택과 개발 세트 분할에는 누출 방지 규칙을 적용하였다(\ref{sec:benchmark}절).
+  \item 동일한 프롬프트·형식·채점으로 4개 LVLM 계열과 API 파이프라인을 통제 비교하였다. 이미지만, 정상 참조, 결함 참조, vision expert 80가지 구성을 다루며, 정확도와 함께 문항 간 일관성도 보고한다(\ref{sec:baselines}절).
+  \item 별도 개발 세트에서 고른 뒤 gold에서 한 번 평가한 문항 독립 검증 에이전트. 결함 종류와 영역 유무의 개선이 미탐 증가와 함께 나타남을 측정하였고, 이를 순수 개선이 아닌 트레이드오프로 보고한다(\ref{sec:agent}절). 호출 수를 맞춘 대조로 개선이 추가 호출이 아니라 구조에서 온다는 것을 보였다. 다시 묻기만 하면 Q2는 좋아지지 않고 답이 ``정상'' 쪽으로 쏠린다.
+  \item 부품 누락 결함에 대한 부정적 분석. 열 가지가 넘는 시도가 실패했고, 정답 위치를 잘라 보여줘도 모델이 반응하지 않았다(\ref{sec:missing}절).
+\end{itemize}
+
+\section{관련 연구}
+\paragraph{산업 이상탐지를 위한 LVLM.} AnomalyGPT~\cite{gu2024anomalygpt}는 모사한 결함으로 LVLM을 미세조정한다. MMAD~\cite{jiang2025mmad}는 산업 부품에 대한 객관식 문항으로 범용 LVLM을 평가하고, 전문가 이상지도와 도메인 지식 검색 같은 에이전트형 보조도 살펴본다. 본 연구는 MMAD의 문항 형식과 정상 참조(1-shot) 설정을 송전선 UAV 영상에 적용하고, 문항 간 일관성 지표를 추가한다.
+
+\paragraph{전문가로서의 이상탐지 모델.} PatchCore~\cite{roth2022patchcore}, Dinomaly~\cite{guo2025dinomaly}, AnomalyCLIP~\cite{zhou2024anomalyclip}은 결함 종류 지도 없이 이미지 점수와 이상지도를 만든다. 본 연구는 이 출력을 점수 문장, 관심 영역(ROI), 열지도 형태로 LVLM에 전달한다.
+
+\paragraph{자기 검증.} 반복적 자기 피드백은 LLM 출력을 개선할 수 있다~\cite{madaan2023selfrefine}. 그러나 새 정보 없이 다시 생각하게 하면 맞던 답이 틀릴 수도 있다~\cite{huang2024cannotselfcorrect}. 그래서 에이전트와 같은 수의 호출을 쓰되 새 근거는 주지 않는 \emph{호출 수 맞춘 재질문} 대조군을 둔다.
+
+\section{벤치마크}\label{sec:benchmark}
+\subsection{원천 데이터와 라벨 규칙}
+InsPLAD~\cite{vieira2023insplad}는 두 공개본을 제공한다. 비지도 이상탐지 공개본은 17개 설비 종류, 27,620장으로 train/test로 나뉘며 test는 6,481장이다. 이 중 3개 설비(\texttt{damper-preformed}, \texttt{spacer}, \texttt{yoke})는 test에 정상만 있다. 지도 결함분류 공개본은 5개 설비, 11,525장으로 train/val로 나뉘며 val은 6,417장이고 test 분할은 없다. \texttt{good}·\texttt{normal} 폴더는 \emph{정상}, 모든 결함 폴더는 \emph{이상}으로 매핑한다. \texttt{corros\~ao}는 \texttt{corrosao}로 표기만 바꾸며 \texttt{rust}와 합치지 않는다. 지도 주석 파일의 정수 ID는 설비별 클래스 번호이지 이진 라벨이 아니므로, 의미 라벨은 폴더 이름에서 얻는다.
+
+\subsection{트랙과 Aligned Core}
+트랙 A(일반 이상탐지)는 비지도 test 6,481장 전체를 zero-shot과 one-shot(정상 참조) 형태로 쓴다. 트랙 B(구조적 결함 이해)는 지도 val 6,417장을 쓰고 이상 여부와 결함 종류를 함께 묻는다. 두 공개본은 SHA-256이 같은 이미지 8,990장을 공유하며, 그중 1,384장은 비지도 test와 지도 val에 동시에 속한다. 이 가운데 이진 라벨이 서로 다른 6장을 빼면 1,378장의 \emph{Aligned Core}가 남는다. 이 이미지들에서는 zero-shot, one-shot, 구조적 답을 같은 바이트의 이미지로 비교할 수 있다.
+
+\subsection{Gold v2 질의응답 세트}
+모든 모델의 모든 구성을 전체 트랙에 돌리기는 비용이 크고, 일부 라벨은 수작업 확인이 필요했다. 그래서 Aligned Core에서 gold 세트를 만들었다. 결함 이미지 139장은 전부 넣고, 정상 이미지는 설비별 중앙값으로 상한을 둔 뒤 DINOv2~\cite{oquab2024dinov2} 임베딩으로 다양하게 골랐다. 모든 이미지를 수작업으로 검토했고 제외된 이미지는 없었다. 그 뒤 세트를 동결하였다(표~\ref{tab:gold}). 각 이미지에는 이진 문항(Q1: ``대상 설비는 정상인가 이상인가?'')과 4지선다 결함 종류 문항(Q2: 녹/부식, 새집, 캡 누락, 정상)이 있다. 42장에는 MMAD 방식의 4지선다 위치 문항(Q3)이 추가로 있어 총 534문항이다. 보기 순서는 문항마다 고정되며 정답과 무관하다.
+
+\begin{table}[t]
+\centering
+\caption{동결된 gold v2 구성(이미지 수). 캡 누락 27장은 모두 유리 애자이며, 이 설비의 정상 이미지는 5장뿐이다.}
+\label{tab:gold}
+\begin{tabular}{lrrrrr}
+\toprule
+설비 & 이미지 & 정상 & 녹 & 새집 & 캡 누락 \\
+\midrule
+\input{tables/gold_composition_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{개발 세트와 실험 절차}
+모든 방법 선택은 별도의 개발(dev) 세트에서 했다. Aligned Core의 결함 이미지가 모두 gold에 들어갔기 때문에, dev는 지도 \emph{train} 분할에서 seed 42로 240장(Q1/Q2 480문항, 정상 125·결함 115)을 뽑았다. 크기와 CRC32 지문이 비지도 test, 고정 참조, gold 중 하나에 나오는 이미지는 dev에서 뺐다. 각 구성은 gold에서 한 번 돌리기 전에 설정 파일로 커밋해 고정했고, gold 점수를 보고 설정을 다시 고르지 않았다. 다만 gold는 앞선 기준선 비교에 쓰인 적이 있으므로 완전히 새로운 시험 세트라고 부르지 않는다.
+
+\subsection{참조 이미지와 누출 방지}
+1-shot 참조는 비지도 \emph{train}에 있는 같은 설비의 정상 이미지이며, 지문이 test에 나오는 후보는 뺀다. \emph{고정} 참조는 설비마다 seed 42로 한 번 뽑는다. \emph{검색} 참조는 대상 이미지와 DINOv2-base 코사인 유사도가 가장 높은 이미지다(가중치 고정). dev에서 검색에 지름길이 있음을 확인했다. 정상 대상은 같은 비행의 프레임을 참조로 가져오는 경우가 많았고(정상 44\%, 결함 16\%), 코사인 유사도만으로도 정상과 결함을 AUROC .886으로 구분할 수 있었다. 그래서 에이전트가 쓰는 검색 조건에서는 같은 촬영일 후보를 모두 제외(\emph{diffdate})한다.
+
+\subsection{평가 지표}
+Q1은 F1, 균형정확도(BAcc), 정밀도, 재현율, TP/FP/TN/FN을 보고한다. Q2는 gold에 있는 클래스에 대한 macro-F1과 결함 BAcc를 보고한다. 무효 출력은 오답으로 처리하며, 결함 이미지에서는 미탐(FN), 정상 이미지에서는 오경보(FP)로 센다. \emph{동시 정확도(joint)}는 Q1과 Q2가 모두 맞은 이미지 비율이다. \emph{모순율}은 두 답이 모두 유효한 이미지 가운데 Q1과 Q2가 어긋나는 비율이다(정상이라 하고 결함 종류를 대거나, 이상이라 하고 ``정상''을 고른 경우). \emph{결함 오판율}은 정상 이미지에 결함 종류를 답한 비율이다. 조건 간 차이는 이미지 단위 대응 bootstrap(2,000회 재표집)~\cite{efron1994bootstrap}으로 검정한다.
+
+\section{모델과 기준선}\label{sec:baselines}
+\subsection{실험 설정}
+계열마다 모델을 하나씩 둔다. Qwen3.5-4B~\cite{qwen35}(thinking 끔), 공식 chat 경로의 InternVL3.5-8B~\cite{wang2025internvl35}, MiniCPM-V-4.5~\cite{yao2024minicpmv}, LLaVA-OneVision-Qwen2-7B~\cite{li2024llavaov}이다. 여기에 2단계 API 파이프라인(Luxia 문서 비전 + 32B 언어 모델)을 더한다. 공개 모델은 모두 양자화 없이 Transformers 5.14.0으로 NVIDIA L4(22\,GB)에서 greedy 디코딩으로 실행했다. 예외가 하나 있다. MiniCPM-V-4.5의 chat 인터페이스는 기본값이 샘플링(temperature 0.7)인데, 이를 gold 기준선·참조·vision expert 실행 뒤에야 발견했다. 그래서 표~\ref{tab:baseline}과 표~\ref{tab:conditions}의 MiniCPM 행은 샘플링으로 한 번 돌린 결과다. 이후 디코딩을 고쳤으며 에이전트 실험은 모두 greedy다. InternVL은 샘플당 시각 타일 총량을 6으로 고정하므로, 참조 이미지를 넣으면 대상 이미지의 타일이 절반으로 준다. 이는 해상도를 공짜로 늘린 것이 아니라 시각 토큰 총량을 고정한 설계로 해석한다.
+
+\subsection{이미지만 주는 기준선}
+표~\ref{tab:baseline}에서 이미지만 준 Q1 F1은 .555--.718, Q2 macro-F1은 .360--.505이다. 원래의 4지선다 Q3는 변별력이 없다. 정답이 ``영역 없음''(22문항)과 ``중앙''(20문항)뿐이라, 늘 ``영역 없음''만 골라도 .524가 나온다. 가장 좋은 모델(.667)도 42문항 중 6문항 더 맞혔을 뿐이다. 그래서 이 Q3는 보조 지표로만 쓰고, 뒤에서는 유무로 채점하는 9구역 문항으로 바꾼다.
+
+\begin{table}[t]
+\centering
+\caption{gold v2에서 이미지만 준 기준선(534문항). Q3: 4지선다 위치 문항 42개. MiniCPM-V-4.5는 샘플링으로 한 번 돌린 결과(본문 참고).}
+\label{tab:baseline}
+\begin{tabular}{lrrrrrr}
+\toprule
+모델 & 유효 & Q1 Acc & Q1 F1 & Q2 Acc & Q2 F1 & Q3 Acc \\
+\midrule
+\input{tables/baseline_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{참조 이미지와 vision expert}
+표~\ref{tab:conditions}는 세 종류의 추가 입력을 비교한다. 첫째는 고정 정상 참조다. 둘째는 \emph{결함} 참조로, 대상 라벨을 쓰지 않고 지도 train에서 같은 설비의 DINOv2 최근접 결함 이미지를 고른다. 셋째는 vision expert 단서 20가지로, 탐지기 4종(PatchCore, Dinomaly, AnomalyCLIP, 경량 ReconPatch)과 제시 방식 5종(점수, ROI, 열지도, 점수+ROI, 점수+열지도)의 조합이다.
+
+정상 참조는 공개 모델 4종 모두의 Q1 F1을 높였다. 예를 들어 InternVL은 .597에서 .794가 되었다. 하지만 답이 더 일관되지는 않았다. InternVL과 MiniCPM은 결함 오판율이 올랐고(.346$\rightarrow$.617, .411$\rightarrow$.841), LLaVA는 모순율이 두 배 넘게 늘었다(.244$\rightarrow$.593). 즉 Q1 점수가 높아졌다고 결함 이해가 일관된 것은 아니다. 결함 참조를 주면 4종 중 3종이 결함을 하나도 찾지 못하고(Q1 F1 = 0) 거의 모든 대상을 정상이라 답했다. 모델이 대상을 예시와 비교해서, 예시에 보인 결함이 없으면 ``정상''이라 답한다는 가설을 세울 수 있지만 더 검증하지는 않았다. vision expert 단서는 20가지 평균으로 InternVL(.597$\rightarrow$.382)과 MiniCPM(.583$\rightarrow$.417)의 Q1 F1을 떨어뜨렸다. Q2 변화는 모든 모델에서 .04 이하로, 어떤 expert 구성도 일관된 이득을 주지 않았다. expert 점수는 246장 집단 안에서 매긴 백분위(transductive)라 expert 조건에 유리한데도 결론은 같다.
+
+\begin{table}[t]
+\centering
+\caption{gold v2에서 참조 이미지와 vision expert 단서의 효과. vision expert 값은 탐지기 4종 $\times$ 제시 방식 5종의 평균. CE: 모순율, FDR: 정상 이미지 결함 오판율. MiniCPM-V-4.5는 샘플링으로 한 번 돌린 결과.}
+\label{tab:conditions}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+모델 & 조건 & Q1 F1 & Q2 F1 & Joint & CE & FDR \\
+\midrule
+\input{tables/conditions_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{문항 독립 검증 에이전트}\label{sec:agent}
+\subsection{설계}
+에이전트는 검색(diffdate) 정상 참조를 준 직접 답에서 출발한다. 각 문항은 따로 재확인한다. 재확인 때 모델은 참조·대상 이미지, 그 문항, 그 문항의 첫 답만 본다. 다른 문항의 답은 보여주지도, 재확인 여부를 정하는 데 쓰지도, 덮어쓰지도 않는다. 문항 간 모순은 최종 답을 모두 저장한 뒤에만 계산한다. Q1은 재확인하지 않는다. 예비 실험에서 Q1을 다시 물었더니 dev에서 InternVL Q1 F1이 .08로 무너졌기 때문이다. 따라서 Q1은 모든 조건에서 같다.
+
+\begin{itemize}
+  \item \textbf{Q2, 검증 에이전트.} ``다시 보기'' 프롬프트로 모델 자신의 첫 답(맞을 수도 틀릴 수도 있다)과 네 보기의 한 문장짜리 시각적 정의를 함께 보여준다.
+  \item \textbf{Q2, 수정 후보.} 이전 답 없이, 녹 단서를 보강해 수정한 정의로 새로 묻는다.
+  \item \textbf{Q3.} 모든 이미지에 9구역+``없음'' 문항을 따로 둔다. 먼저 결함 영역 유무를 묻고, 있다고 답할 때만 전체 프레임 $3\times3$ 위치를 묻는다. 이 규모에서는 위치 정답이 없어 Q3는 \emph{유무만} 채점한다. 결함 이미지에서 위치를 틀려도 ``결함 있음''으로 센다.
+\end{itemize}
+에이전트와 수정 후보는 dev에서 고른 뒤 InternVL3.5-8B로 gold에서 한 번 실행했다. 호출은 1,606회(직접 답 492회, 도구 호출 1,114회)였고, 오류와 무효 출력은 모두 0이었다.
+
+\subsection{결과}
+표~\ref{tab:agent}와 표~\ref{tab:ci}에 gold 결과를 정리했다. 직접 질문 대비 Q2 macro-F1은 에이전트가 $+.118$(95\% CI $[+.043,+.199]$), 수정 후보가 $+.102$($[+.030,+.177]$) 올랐다. Q1--Q2 동시 정확도는 각각 $+.085$, $+.093$ 올랐다. 단계형 Q3는 유무 BAcc를 $+.277$ 높였고 정상 오경보를 93/107에서 16/107로 줄였다. 수정 후보와 기존 에이전트는 통계적으로 구분되지 않았다(Q2 macro-F1 $-.017$, CI $[-.073,+.036]$).
+
+이 개선에는 대가가 따른다. 결함 이미지를 결함 없음으로 판단한 경우가 4/139에서 27/139로 늘었고, 이 증가는 유의하다($+.165$, CI $[+.103,+.234]$). 표~\ref{tab:perdefect}를 보면 변화가 어디서 오는지 알 수 있다. 정상과 새집은 좋아졌고 녹은 거의 그대로였지만, 캡 누락은 7/27에서 2/27로 무너졌다. 수정 후보는 캡 누락 27장 중 25장을 ``정상''이라 답했다. 설계에 쓰지 않은 dev 200장에서도 같은 방향이 나타났다(부록 표~\ref{tab:dev}).
+
+\begin{table}[t]
+\centering
+\caption{gold v2에서 검증 에이전트 결과(InternVL3.5-8B, 246장). Q1은 고정, Q3는 유무만 채점. 열: 직접 질문 / 에이전트 / 수정 후보.}
+\label{tab:agent}
+\begin{tabular}{lrrr}
+\toprule
+지표 & 직접 & 에이전트 & 수정 후보 \\
+\midrule
+\input{tables/agent_main_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{이미지 단위 대응 bootstrap 차이(2,000회 재표집).}
+\label{tab:ci}
+\begin{tabular}{llrr}
+\toprule
+비교 & 지표 & $\Delta$ & 95\% CI \\
+\midrule
+\input{tables/agent_ci_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{gold v2 실제 종류별 Q2 정답 수. 재질문: 호출 수 맞춘 대조(\ref{sec:matched}절).}
+\label{tab:perdefect}
+\begin{tabular}{lrrrrr}
+\toprule
+종류 & 장수 & 직접 & 재질문 & 에이전트 & 수정 후보 \\
+\midrule
+\input{tables/per_defect_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{구조 덕분인가, 더 물어봐서인가: 호출 수 맞춘 대조}\label{sec:matched}
+직접 질문은 이미지마다 Q2와 Q3를 한 번씩 부르지만, 에이전트는 Q2를 두 번, Q3를 최대 세 번 부른다. 구조의 효과와 호출 수의 효과를 나누기 위해 \emph{호출 수 맞춘 재질문} 조건을 추가한다. 이 조건은 이미지마다 에이전트와 같은 수의 Q2·Q3 호출을 쓰되 새 근거는 주지 않는다. Q2는 정의 없이 자기 답을 보여주고 한 번 다시 묻는다. Q3는 단계형 Q3가 그 이미지에 쓴 호출 수만큼 자기 답을 보여주며 차례로 다시 묻는다. 같은 프롬프트를 그대로 반복하면 greedy 디코딩에서는 첫 답이 그대로 나오므로, 프롬프트 대신 자기 답을 보여주는 방식을 택했다. 에이전트의 gold 호출은 저장된 것을 바이트 단위로 재사용하므로, 새로 필요한 호출은 대조군의 622회뿐이다. 판정 규칙은 실행 전에 정했다. 에이전트가 Q2 macro-F1이나 Q3 유무 BAcc에서 호출 수 맞춘 재질문보다 낫고 CI가 0을 포함하지 않으면 개선을 구조의 효과로 본다. 그렇지 않으면 개선은 추가 호출로 설명된다고 보고한다.
+
+\begin{table}[t]
+\centering
+\caption{gold v2 호출 수 맞춘 대조. 호출/장은 Q2·Q3 호출이며 Q1은 공유한다. 재질문과 에이전트는 모든 이미지에서 같은 수의 호출을 쓴다(총 Q2 492회, Q3 622회).}
+\label{tab:matched}
+\begin{tabular}{lrrrrr}
+\toprule
+조건 & 호출/장 & Q2 F1 & Q3 BAcc & 정상 FP & 결함 FN \\
+\midrule
+\input{tables/matched_call_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+대조 실험은 같은 L4에서 새 호출 622회로 실행했고, 오류와 무효 출력은 모두 0이었다. 기존에 발표한 세 조건도 그대로 재현되었다. 에이전트는 같은 호출 수의 재질문보다 Q2 macro-F1이 $+.164$(95\% CI $[+.093,+.242]$), Q3 유무 BAcc가 $+.203$($[+.145,+.257]$) 높았다. 미리 정한 규칙에 따라, 개선은 추가 호출이 아니라 정의와 단계 구조에서 온다고 판단한다(표~\ref{tab:matched}).
+
+다시 묻기만으로는 Q2가 좋아지지 않았다($-.046$, $[-.095,+.001]$). 대신 답이 ``정상'' 쪽으로 쏠렸다. 246장 중 ``정상'' 답이 86개에서 139개로 늘어, 정상 이미지 30장은 바로잡혔지만 녹 26장이 틀리게 되었고 그중 21장은 ``정상''으로 바뀌었다(표~\ref{tab:perdefect}). 에이전트도 같은 방향으로 움직였지만 정도가 약했다(``정상'' 답 117개). 정의 덕분에 녹을 지켰고(73/89) 새집도 되찾았다(7 $\rightarrow$ 19/23). Q3에서는 다시 묻기가 유무 BAcc를 조금 올렸고($+.074$, $[+.025,+.124]$), 정상 오경보는 93에서 74로, 결함 미탐은 4에서 8로 소폭 움직였다. 단계형 유무 질문은 이 두 효과를 모두 키웠다. 재질문과 비교하면 오경보를 훨씬 많이 없앴고(비율 $-.542$, $[-.636,-.447]$) 결함도 더 많이 놓쳤다($+.137$, $[+.079,+.201]$). 즉 다시 묻는 것만으로도 모델은 보수적이 되며, 에이전트 구조는 그 변화를 큰 순이득으로 바꾸는 동시에 미탐률도 키운다.
+
+\section{부품 누락은 왜 놓치는가}\label{sec:missing}
+캡 누락은 에이전트가 오히려 나빠지게 만든 유일한 결함 종류다. gold의 27장은 모두 유리 애자이고 이 설비의 gold 정상 이미지는 5장뿐이어서, 설비 효과와 결함 효과가 섞여 있다. 그래서 gold가 아닌 dev의 캡 누락 25장으로 분석했다. 아래 시도는 모두 실행 전에 설정과 통과 기준을 고정했고, 실패한 설정을 사후에 조정하지 않았다(부록 표~\ref{tab:negative}).
+\begin{itemize}
+  \item \textbf{입력과 문구.} 대상 시각 타일을 두 배로 늘리기, 짧은 결함 근거 문구, 둘 다 적용하기 모두 dev 캡 누락 재현율을 6/25에서 각각 2, 4, 1/25로 낮췄다.
+  \item \textbf{다른 모델과 탐지기.} Qwen3-VL-8B나 Ovis2.5-9B로 바꿔도 캡 누락은 회복되지 않았다. Q3 유무에 쓴 이상탐지 모델 3종(AdaCLIP, AnomalyVFM, InCTRL)은 모두 유무 BAcc를 낮췄다.
+  \item \textbf{부품 근거.} 개방어휘 검출, 계수(CountGD++), SAM 마스크, 정상 참조와의 밀집 대응(SIFT, DIFT) 모두 정상 유리 애자에서 미리 정한 신뢰성 기준을 통과하지 못했다. 어느 것도 부품 개수 근거로 쓸 수 없었다.
+  \item \textbf{정답 위치 crop.} 사람이 표시한 누락 위치를 잘라 보여줘도 InternVL은 세 가지 crop 방식 모두에서 20건 중 20건 ``영역 없음''이라 답했다. ``부품이 빠지거나 부서졌는가?''만 따로 물어도 60회 호출 모두 ``없음''이라 답했다.
+  \item \textbf{지도학습 전문가.} 고정 DINOv2 특징에 로지스틱 헤드를 붙이고 유리 애자 train 라벨로 촬영일이 겹치지 않게 학습했다. 이 분류기는 dev 캡 누락 25장을 모두 찾았지만, 학습 없는 전제를 벗어나고 한 설비에만 해당한다. 이 헤드의 가림(occlusion) 분석은 정확한 격자 칸을 24건 중 12건 맞혔고, 고정 중앙 추측은 8건이었다(대응 CI가 0 포함). Integrated gradients~\cite{sundararajan2017ig}는 이보다 낫지 않았고, completeness 잔차가 컸다.
+\end{itemize}
+이 결과들을 종합하면 실패의 원인은 프롬프트나 경로 설계보다 인식에 있다. 이 영상에서 8B LVLM은 원판 하나가 없는 것을 결함으로 인식하지 못하며, 해당 영역을 잘라 줘도 마찬가지다.
+
+\section{논의와 한계}
+\paragraph{공짜 개선이 아닌 트레이드오프.} 검증 에이전트는 모델을 보수적으로 만든다. 호출 수 맞춘 대조를 보면 이 보수화의 일부는 다시 묻는 것 자체에서 오고~\cite{huang2024cannotselfcorrect}, 에이전트의 정의와 단계 구조가 그것을 실제 이득으로 이끈다. 정상 이미지의 오경보는 대부분 없애지만 미탐은 늘리며, 특히 ``무언가 없다''는 미묘한 종류에서 그렇다. 점검에서는 대개 결함을 놓치는 비용이 오경보보다 크다. 하나의 정확도 숫자는 이 차이를 가리므로, 벤치마크는 macro-F1과 함께 정상 오경보율과 종류별 재현율을 보고해야 한다.
+
+\paragraph{한계.}
+\begin{enumerate}
+  \item 에이전트는 모델 하나(InternVL3.5-8B)로만 평가했으며, 다른 모델로의 일반화는 시험하지 않았다.
+  \item gold는 246장이고 이전에 탐색적으로 쓰인 적이 있다. dev는 여러 번 탐색되었으므로 dev에서의 개선은 탐색적 결과다.
+  \item 캡 누락은 한 설비에만 있어 결함과 설비 효과가 섞여 있다.
+  \item Q3는 위치가 아니라 유무로 채점했다. 공간 라벨이 있는 결함 133건을 따로 주석한 부분집합에서, 정확한 격자 칸 위치 정답은 직접 질문과 단계형 모두 133건 중 12건이었다.
+  \item vision expert 점수는 집단 내 백분위(transductive)다.
+  \item 새로운 미사용 시험 세트가 없다. Aligned Core의 결함 이미지는 모두 gold에 있고, 쓰지 않은 결함 이미지는 지도 train에만 남아 있다.
+  \item MiniCPM-V-4.5의 gold 기준선과 조건 결과는 샘플링 디코딩으로 얻어서 모순율이 부풀려졌을 수 있다.
+\end{enumerate}
+
+\section{결론}
+InsPLAD-QA는 공통 프롬프트·형식·채점기를 갖춘, 해시로 정렬하고 수작업으로 검토한 LVLM 송전선 점검 벤치마크다. 정상 참조는 이상탐지를 돕지만 일관성은 높이지 않으며, 이상탐지 모델 단서는 일관되게 돕지 않는다. 문항 독립 검증 에이전트는 결함 종류와 영역 유무를 개선하지만, 그 대가로 오경보를 미탐과 맞바꾼다. 같은 호출 수로 다시 묻기만 해서는 이 개선이 재현되지 않으므로, 개선은 에이전트 구조의 효과다. 부품 누락은 정답 위치 crop을 포함해 시도한 모든 학습 없는 방법에 저항하였다.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+\section{개발 세트 확인}
+\begin{table}[h]
+\centering
+\caption{설계에 쓰지 않은 dev 추가 200장: gold와 같은 방향. 열: 직접 질문 / 에이전트 / 수정 방식.}
+\label{tab:dev}
+\begin{tabular}{lrrr}
+\toprule
+지표 & 직접 & 에이전트 & 수정 \\
+\midrule
+\input{tables/dev_rows}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{부정적 후속 실험}
+\begin{table}[h]
+\centering
+\caption{결함 미탐을 줄이려는 후속 시도(dev만 사용, 사전 고정 기준, 사후 조정 없음).}
+\label{tab:negative}
+\small
+\begin{tabular}{p{4.3cm}p{2.2cm}p{6.8cm}}
+\toprule
+시도 & 데이터 & 결과 \\
+\midrule
+대상 확대 $\times$ 짧은 문구 (2$\times$2) & dev 240 & Q2 F1 .693 $\rightarrow$ .594/.627/.593; 캡 누락 정답 6 $\rightarrow$ 2/4/1 (/25) \\
+다른 모델 답으로 재검토 (InternVL+Qwen) & dev 40 & Q2 F1 .652 $\rightarrow$ .692, CI $[-.055,+.181]$ \\
+Qwen3-VL-8B로 교체 & dev 40 $\rightarrow$ 240 & 40장의 Q3 BAcc .792 $\rightarrow$ .833이 240장에서 재현 안 됨 (.818 $\rightarrow$ .754) \\
+Q2를 Ovis2.5-9B로 & dev 40 & Q2 F1 .652 $\rightarrow$ .637; 캡 누락 1 $\rightarrow$ 0 (/4) \\
+Q3 유무에 AdaCLIP / AnomalyVFM / InCTRL & dev 40 & BAcc .792 $\rightarrow$ .667 / .479 / .531 \\
+AnomalyR1 & smoke 5장 & 비교 모델 무효 출력 2/10, 비교 불가 \\
+Grounding DINO / CountGD++ / SAM 부품 근거 & 유리 애자 & 신뢰성 기준 미달 (예: CountGD 반복성 2/7, SAM 4/7, 기준 6/7) \\
+정상 참조와 SIFT / DIFT 정렬 & 8쌍 / 정상 7장 & 0/8, 0/7 통과 \\
+정답 위치 crop 제공 & dev 20 & 세 방식 모두 회복 0/20 \\
+독립 유무 질문 & dev 20 & 60회 모두 ``없음'' \\
+지도학습 캡 누락 헤드 (고정 DINOv2) & dev 유리 애자 50 & 유무 25/25; 정확 위치 12/24, 중앙 추측 8/24 \\
+Integrated gradients 위치 & dev 24 & 정확 위치 9/24 이하; completeness 경고 49/52 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{재현성}
+코드, 프롬프트, 고정 설정, Colab 노트북, 리더보드, 문항별 답을 프로젝트 저장소에 공개한다. 호출별 원시 기록(프롬프트·출력·지연 시간)은 SHA-256 해시와 함께 보관하며 요청 시 제공한다. 모든 실행은 모델 ID, 백엔드, 벤치마크 커밋, GPU, 프로토콜, 상태를 기록한다. 노트북은 추론 전에 정확한 코드 버전을 확인하고, 20회 호출마다 저장한 체크포인트에서 이어서 실행한다.
+
+\end{document}

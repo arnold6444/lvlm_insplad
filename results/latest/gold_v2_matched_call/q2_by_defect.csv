@@ -1,0 +1,17 @@
+model_key,policy,defect,images,q2_correct,q2_accuracy
+internvl3_5_8b,baseline,bird-nest,23,7,0.30434782608695654
+internvl3_5_8b,baseline,missing-cap,27,7,0.25925925925925924
+internvl3_5_8b,baseline,normal,107,63,0.5887850467289719
+internvl3_5_8b,baseline,rust,89,79,0.8876404494382022
+internvl3_5_8b,previous_agent,bird-nest,23,19,0.8260869565217391
+internvl3_5_8b,previous_agent,missing-cap,27,5,0.18518518518518517
+internvl3_5_8b,previous_agent,normal,107,86,0.8037383177570093
+internvl3_5_8b,previous_agent,rust,89,73,0.8202247191011236
+internvl3_5_8b,candidate,bird-nest,23,18,0.782608695652174
+internvl3_5_8b,candidate,missing-cap,27,2,0.07407407407407407
+internvl3_5_8b,candidate,normal,107,93,0.8691588785046729
+internvl3_5_8b,candidate,rust,89,74,0.8314606741573034
+internvl3_5_8b,matched_reask,bird-nest,23,7,0.30434782608695654
+internvl3_5_8b,matched_reask,missing-cap,27,3,0.1111111111111111
+internvl3_5_8b,matched_reask,normal,107,86,0.8037383177570093
+internvl3_5_8b,matched_reask,rust,89,54,0.6067415730337079

@@ -1,0 +1,60 @@
+{
+  "status": "complete",
+  "complete": true,
+  "policies": [
+    {
+      "model_key": "internvl3_5_8b",
+      "policy": "baseline",
+      "status": "complete",
+      "eligible_for_comparison": true,
+      "row_errors": 0,
+      "invalid_tool_answers": 0,
+      "q12_answers": 492,
+      "q3_answers": 246,
+      "q1_fixed": true,
+      "q1_calls": 0,
+      "tool_calls": 246
+    },
+    {
+      "model_key": "internvl3_5_8b",
+      "policy": "previous_agent",
+      "status": "complete",
+      "eligible_for_comparison": true,
+      "row_errors": 0,
+      "invalid_tool_answers": 0,
+      "q12_answers": 492,
+      "q3_answers": 246,
+      "q1_fixed": true,
+      "q1_calls": 0,
+      "tool_calls": 868
+    },
+    {
+      "model_key": "internvl3_5_8b",
+      "policy": "candidate",
+      "status": "complete",
+      "eligible_for_comparison": true,
+      "row_errors": 0,
+      "invalid_tool_answers": 0,
+      "q12_answers": 492,
+      "q3_answers": 246,
+      "q1_fixed": true,
+      "q1_calls": 0,
+      "tool_calls": 868
+    },
+    {
+      "model_key": "internvl3_5_8b",
+      "policy": "matched_reask",
+      "status": "complete",
+      "eligible_for_comparison": true,
+      "row_errors": 0,
+      "invalid_tool_answers": 0,
+      "q12_answers": 492,
+      "q3_answers": 246,
+      "q1_fixed": true,
+      "q1_calls": 0,
+      "tool_calls": 868
+    }
+  ],
+  "selection_performed": false,
+  "result_published": false
+}

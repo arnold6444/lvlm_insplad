@@ -1,0 +1,90 @@
+{
+  "protocol": "gold_v2_matched_call_control",
+  "input_signature": "70e9abacacb896a37e887fb67d5cd7b9f7077e42c33ca483f55f05ef1279dfa9",
+  "prediction_identity": "d3025a7e4d07a920992f90a0f225ea0c626e7c0b3c606261dacf456671783e0f",
+  "benchmark_commit": "36458d5331ec72fdbc8dc763b4aa30e34b11997a",
+  "config": {
+    "protocol": "gold_v2_matched_call_control",
+    "version": 1,
+    "models": [
+      "internvl3_5_8b"
+    ],
+    "policies": [
+      "baseline",
+      "previous_agent",
+      "candidate",
+      "matched_reask"
+    ],
+    "primary_comparison": [
+      "matched_reask",
+      "previous_agent"
+    ],
+    "reference_condition": "normal_ref_retrieved_diffdate",
+    "q1": "unchanged direct baseline answer; no Q1 inference in any policy",
+    "existing_policies": "baseline, previous_agent and candidate are exactly the PR56/57 gold policies (configs/q1_fixed_q2_cues_q3_legacy_gold_v1.json); saved gold steps are reused when prompt and image bytes match",
+    "matched_reask_q2": "direct Q2 answer, then one own-answer re-check without definitions (2 calls, same as previous_agent direct + define)",
+    "matched_reask_q3": "direct Q3 answer, then k sequential own-answer re-checks, k = presence/position calls the staged Q3 made for the same image (1 or 2); last valid answer is final, otherwise direct",
+    "matched_reask_rationale": "repeating the identical greedy direct prompt is degenerate, so each re-check shows the question's own previous answer, as in the Q2 reask",
+    "q3_evaluation": "image-label presence only; spatial accuracy null",
+    "selection": "analysis-only control added after gold; no setting is chosen or changed from gold scores",
+    "gold_limit": "existing gold246 has prior exploratory use; not a new untouched holdout",
+    "failure_gate": "all planned policies and dependencies must have full coverage, zero errors and zero invalids"
+  },
+  "code_sha256": {
+    "scripts/run_gold_v2_matched_call.py": "6bdde3b440dc263100bc165affdf066cee42c385ce6d075f0c0229a44b0c9123",
+    "scripts/run_gold_v2_q23_candidate.py": "caad191a51a9f24685bc64e60ec407276ddfd191e572c337eb5e8909c9b6710c",
+    "scripts/run_gold_v2_q2_q3_refined_dev.py": "dcd4ba3d77d2668d85098c05c889e7ea520ccf2ba4a97ac6b47dc9dbe4deafef",
+    "scripts/run_gold_v2_q2_q3_agent_dev.py": "d7196adf586797e9131cc52d005d6d34c30ebe3cb751ce3e8e49eade6db2d44a",
+    "scripts/run_gold_v2_verify_agent.py": "ded0d022e13ecf64971fd1e5d40e5595f166c1a99277837662de0e4a019126f1",
+    "scripts/run_gold_v2_consistency_metrics.py": "802267807ee16dfa5b700f8676f2d8c294e733c99fc1586884896e164c8b3ec6",
+    "scripts/run_gold_v2_dev_baselines.py": "6104d142d3f52ab85e6ca130c32a4d6f1a08c7f676e199f003a2a963d9ab51de",
+    "scripts/run_gold_v2_reference_ablation.py": "25b52f00cbc7911149b2377bdf0129f46cd1575831ac7f8b83dc1665534f8e6d",
+    "src/insplad_benchmark/hf_adapters.py": "4e5e39fe437a3c7dcb52be598cbc1d1ac9acabb0b2414d8a259173a9b6d577dc"
+  },
+  "images": 246,
+  "questions_q12": 492,
+  "questions_q3_auxiliary": 246,
+  "q1": "direct baseline fixed; zero Q1 inference",
+  "q3_location_accuracy": null,
+  "independence": "Q2 own inputs only; Q3 own inputs/answers only; contradictions evaluation only",
+  "baseline_source": null,
+  "baseline_source_sha256": null,
+  "reuse_source": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_q23_candidate_v2/predictions/internvl3_5_8b/steps.jsonl",
+  "reuse_source_sha256": "521c15fa8b8ad37a336814b0c267535befb1c5496afe3207ecc786cac339fe36",
+  "n_boot": 2000,
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "model_spec": {
+    "backend": "hf",
+    "provider": "huggingface",
+    "model_id": "OpenGVLab/InternVL3_5-8B",
+    "trust_remote_code": true,
+    "adapter": "internvl_chat",
+    "max_total_tiles": 6,
+    "role": "internvl_family"
+  },
+  "software": {
+    "torch": "2.11.0+cu130",
+    "transformers": "5.14.0",
+    "numpy": "2.1.3",
+    "Pillow": "11.3.0"
+  },
+  "complete": true,
+  "called_this_run": 622,
+  "reused_calls": 0,
+  "reused_candidate_steps": 1606,
+  "imported_baseline_calls": 0,
+  "baseline_calls_this_run": 0,
+  "tool_calls_this_run": 622,
+  "adapter_load_blocked_steps": 0,
+  "unique_calls": 2228,
+  "row_errors": 0,
+  "invalid_answers": 0,
+  "images_by_gt": {
+    "normal": 107,
+    "anomalous": 139
+  },
+  "q1_calls": 0
+}

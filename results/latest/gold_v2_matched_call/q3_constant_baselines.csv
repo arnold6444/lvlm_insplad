@@ -1,0 +1,3 @@
+control,q3_presence_balanced_accuracy,q3_presence_accuracy,q3_normal_none_accuracy,q3_normal_false_region_rate,q3_anomaly_false_none_rate,q3_anomaly_region_recall,q3_invalid_rate,q3_normal_images,q3_anomalous_images,q1_q2_q3_presence_joint,q3_location_accuracy,q3_anomalous_location_labels
+always_none,0.5,0.4349593495934959,1.0,0.0,1.0,0.0,0.0,107,139,,,0
+always_region,0.5,0.5650406504065041,0.0,1.0,0.0,1.0,0.0,107,139,,,0
