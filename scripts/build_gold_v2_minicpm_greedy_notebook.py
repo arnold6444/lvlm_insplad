@@ -177,9 +177,17 @@ def code_files() -> list[str]:
     return sorted(set(found) | set(EXTRA_FILES))
 
 
+def blob_id(rel: str) -> str:
+    """The blob Colab's checkout will show: HEAD's blob when unchanged (keeps committed CRLF data files exact)."""
+    unchanged = subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", "HEAD", "--", rel]).returncode == 0
+    tracked = subprocess.run(["git", "-C", str(ROOT), "cat-file", "-e", f"HEAD:{rel}"],
+                             stderr=subprocess.DEVNULL).returncode == 0
+    command = ["rev-parse", f"HEAD:{rel}"] if unchanged and tracked else ["hash-object", rel]
+    return subprocess.check_output(["git", "-C", str(ROOT), *command], text=True).strip()
+
+
 def code_blobs() -> dict[str, str]:
-    return {rel: subprocess.check_output(["git", "-C", str(ROOT), "hash-object", rel], text=True).strip()
-            for rel in code_files()}
+    return {rel: blob_id(rel) for rel in code_files()}
 
 
 def build() -> dict:
