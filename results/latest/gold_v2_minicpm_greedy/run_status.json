@@ -1,0 +1,35 @@
+{
+  "status": "complete",
+  "complete": true,
+  "conditions": [
+    {
+      "condition": "image_only",
+      "status": "complete",
+      "row_errors": 0,
+      "invalid_outputs": 0,
+      "questions": 534
+    },
+    {
+      "condition": "normal_reference",
+      "status": "complete",
+      "row_errors": 0,
+      "invalid_outputs": 0,
+      "questions": 534
+    },
+    {
+      "condition": "positive_reference",
+      "status": "complete",
+      "row_errors": 0,
+      "invalid_outputs": 0,
+      "questions": 534
+    },
+    {
+      "condition": "normal_positive_reference",
+      "status": "complete",
+      "row_errors": 0,
+      "invalid_outputs": 0,
+      "questions": 534
+    }
+  ],
+  "published": false
+}

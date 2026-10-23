@@ -1,4 +1,5 @@
 % Source: results/latest/gold_v2_consistency_metrics/consistency_leaderboard.csv (generated, not hand-copied).
+% MiniCPM-V-4.5 image/reference rows: greedy re-run 1661680ed362; its vision-expert row is still the sampled run (dagger).
 % Columns: model, condition, Q1 F1, Q2 macro-F1, joint acc, consistency error, false defect rate.
 % \CondImg etc. are defined in each main file so the condition labels can be localized.
 \multirow{5}{*}{Qwen3.5-4B}     & \CondImg  & .646 & .445 & .407 & .264 & .607 \\
@@ -13,11 +14,11 @@
                                 & \CondBoth & .735 & .490 & .537 & .228 & .393 \\
                                 & \CondVX   & .382 & .470 & .369 & .423 & .284 \\
 \midrule
-\multirow{5}{*}{MiniCPM-V-4.5}  & \CondImg  & .583 & .450 & .431 & .341 & .411 \\
-                                & \CondNorm & .752 & .469 & .480 & .126 & .841 \\
-                                & \CondPos  & .000 & .332 & .415 & .146 & .047 \\
-                                & \CondBoth & .632 & .500 & .439 & .317 & .589 \\
-                                & \CondVX   & .417 & .477 & .412 & .367 & .235 \\
+\multirow{5}{*}{MiniCPM-V-4.5}  & \CondImg  & .618 & .483 & .496 & .280 & .308 \\
+                                & \CondNorm & .753 & .461 & .484 & .110 & .841 \\
+                                & \CondPos  & .014 & .328 & .415 & .142 & .047 \\
+                                & \CondBoth & .648 & .488 & .447 & .301 & .607 \\
+                                & \CondVX$^\dagger$ & .417 & .477 & .412 & .367 & .235 \\
 \midrule
 \multirow{5}{*}{LLaVA-OV-7B}    & \CondImg  & .718 & .505 & .512 & .244 & .252 \\
                                 & \CondNorm & .749 & .446 & .333 & .593 & .009 \\

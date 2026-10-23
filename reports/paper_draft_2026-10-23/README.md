@@ -31,5 +31,5 @@
 - dev·후속 실험: `reports/paper_tables/latest_results.md`, `plan.md`의 감사 기록.
 
 ## 주의
-- MiniCPM-V-4.5의 gold 기준선·조건 수치는 샘플링 디코딩 버그를 고치기 전 실행 결과다. 본문과 표 설명에 명시했다.
+- MiniCPM-V-4.5의 기준선과 참조 3조건은 greedy로 다시 돌린 결과(실행 `1661680ed362`, 감사: `reports/gold_minicpm_greedy_evaluation_2026-10-23/`)로 바꿨다. vision expert 20구성 평균 행만 샘플링 결과이고 표에 †로 표시했다. 비교는 부록 표 `tab:minicpm`에 있다.
 - 한국어판 표의 행 이름(지표·종류 이름)은 공유 표 파일이라 영어로 남아 있다.

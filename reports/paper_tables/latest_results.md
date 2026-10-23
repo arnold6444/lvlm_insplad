@@ -105,6 +105,25 @@
 | Integrated gradients 위치 (PR69·70) | dev 24장 | 정확 위치 9/24 이하, completeness 경고 49/52 | 기각 |
 | MiniCPM-V-4.5 dev 80 | dev 80 | 코드·노트북 준비 후 GPU 할당 대기 | 범위 동결로 중단 |
 
+## 표 D. MiniCPM-V-4.5 greedy 재실행 (2026-10-23, gold 534문항)
+
+발표된 MiniCPM gold 기준선·참조 결과는 어댑터가 샘플링(temperature 0.7)하던 PR #47 이전 실행이었다. 프롬프트·이미지·참조는 그대로 두고 디코딩만 greedy로 바꿔 다시 돌렸다.
+- 실행: L4 / main@49059c6, 2,136회 호출, 오류 0, 무효 0, 게시 안 함.
+- CPU 감사: 프롬프트·이미지·파싱 2,136개 불일치 0, 리더보드·CI 21행 오차 0.
+- 결과: [`results/latest/gold_v2_minicpm_greedy/`](../../results/latest/gold_v2_minicpm_greedy/leaderboard.csv), 보고서: [`analysis.md`](../gold_minicpm_greedy_evaluation_2026-10-23/1661680ed362/analysis.md)
+
+| 조건 (greedy / 샘플링) | Q1 F1 | Q2 Macro-F1 | 동시 정답 | 모순율 | 결함 오판율 |
+|---|---|---|---|---|---|
+| 이미지만 | .618 / .583 | .483 / .450 | .496 / .431 | **.280 / .341** | **.308 / .411** |
+| + 정상 참조 | .753 / .752 | .461 / .469 | .484 / .480 | .110 / .126 | .841 / .841 |
+| + 결함 참조 | .014 / .000 | .328 / .332 | .415 / .415 | .142 / .146 | .047 / .047 |
+| + 정상·결함 참조 | .648 / .632 | .488 / .500 | .447 / .439 | .301 / .317 | .607 / .589 |
+
+- **샘플링은 이미지만 조건의 불일치를 부풀리고 있었다.** greedy에서 534문항 중 54개의 답이 바뀌었다.
+- 참조 3조건의 변화는 .05 이하다.
+- greedy 안에서 비교해도 결론은 같다. 정상 참조는 Q1 F1을 올리고(+.135 [+.055, +.217]) 결함 오판율도 크게 올린다(+.533 [+.430, +.634]).
+- MiniCPM의 vision expert 20구성은 다시 돌리지 않았다(샘플링 결과 그대로이며 논문 표에 † 표시).
+
 ## 주장할 수 있는 것 / 없는 것
 
 | 주장 가능 | 주장 불가 |
@@ -122,11 +141,13 @@
 1. ~~구성요소 제거 비교 (호출 수 맞춤)~~ → **완료**(표 A-3, 구조 효과 확인). 정의와 단계를 하나씩 빼는 세부 비교는 하지 않는다.
 2. 독립 평가 세트: Aligned Core의 결함 이미지는 모두 gold에 있다. 쓰지 않은 결함 이미지는 supervised train에만 남아 있어 새로 만들지 않고 **논문 한계로 명시**한다.
 3. 오경보와 미탐 함께 보고 → 논문 초안 표에 반영했다.
-4. 남은 일: 논문 컴파일·제목·저자 확정. MiniCPM greedy 재실행은 선택 사항이다(현재 MiniCPM gold 수치는 샘플링 버그를 고치기 전 실행이며, 논문에 명시했다).
+4. ~~MiniCPM greedy 재실행~~ → **완료**(표 D). 논문 표 2·3과 부록에 반영했다.
+5. 남은 일: 논문 컴파일·제목·저자 확정.
 
 ## 출처
 
 - 호출 수 대조 (GitHub): `results/latest/gold_v2_matched_call/`, `reports/gold_matched_call_evaluation_2026-10-23/`
+- MiniCPM greedy (GitHub): `results/latest/gold_v2_minicpm_greedy/`, `reports/gold_minicpm_greedy_evaluation_2026-10-23/`
 - 이하 로컬 보고서
 - gold 246: `reports/q23_gold_evaluation_2026-10-15/0c577ffe3bdd/analysis.md`
 - dev 추가 200: `reports/q2_q3_refined_evaluation_2026-10-14/d348a43771e9/analysis.md`

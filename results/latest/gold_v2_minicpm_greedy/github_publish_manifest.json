@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "published_via": "pull request (not the API publish script)",
+  "source_archive": "gold_minicpm_greedy_results.zip",
+  "source_archive_sha256": "1661680ed362351c1f1397bdc2915126fa6be0f6904bebf6292f445a2c406a3b",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_minicpm_greedy_v1",
+  "repo": "arnold6444/lvlm_insplad",
+  "prefix": "gold_v2_minicpm_greedy",
+  "target_root": "results/latest",
+  "code_commit": "49059c659eff5cf880c6117c26b7fa37f274a297",
+  "audit": "reports/gold_minicpm_greedy_evaluation_2026-10-23/1661680ed362/audit_summary.json",
+  "derived_files": {
+    "answers.csv": "built from the archive's steps.jsonl and gold_qa_snapshot.jsonl (no new inference)"
+  },
+  "not_published": "raw per-call steps.jsonl (2.4 MB), QA snapshot and image manifest stay in the archive",
+  "files": [
+    {
+      "name": "answers.csv",
+      "size_bytes": 322566,
+      "sha256": "3a15a0f70f8b10e3384c70991cfa053b2dca9497ecea7f597c0828da37cd78cf"
+    },
+    {
+      "name": "comparison_vs_sampled.csv",
+      "size_bytes": 2088,
+      "sha256": "68f816ff7cd462d7d2988e34a80759b27ced6d28081015b916b3ae1d2223da5b"
+    },
+    {
+      "name": "leaderboard.csv",
+      "size_bytes": 905,
+      "sha256": "26d19d73ff697390a8f108a88f9a4ef0468b837ffb57b0e4771c47647b04aaee"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "size_bytes": 2756,
+      "sha256": "9f0fd38c056f290fb36a4ba0498053df62ee749dea1b883ff1449a8ce9843f6d"
+    },
+    {
+      "name": "run_metadata.json",
+      "size_bytes": 2138,
+      "sha256": "f9c7530c7dec4ff3f4b512c3354a582afc3fa56bbfe029522f799086662540b2"
+    },
+    {
+      "name": "run_status.json",
+      "size_bytes": 712,
+      "sha256": "9106cc2e5de5eadd7cb3ebd71018da62b3991e7e9ec831b2e9fc94fa94f3d2ee"
+    },
+    {
+      "name": "significance.csv",
+      "size_bytes": 2597,
+      "sha256": "7d3f6b2c7904156005657a736b9c8e3b41fb7fda608a31d1314f04cdd7bd6846"
+    }
+  ]
+}
