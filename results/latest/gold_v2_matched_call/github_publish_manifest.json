@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "published_via": "pull request (not the API publish script)",
+  "source_archive": "gold_matched_call_results.zip",
+  "source_archive_sha256": "902a9f8a17529c7e24da7d496da9d85e592afaac7fe15bb3f776ca973ced81fb",
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results/gold_v2_matched_call_v1",
+  "repo": "arnold6444/lvlm_insplad",
+  "prefix": "gold_v2_matched_call",
+  "target_root": "results/latest",
+  "code_commit": "36458d5331ec72fdbc8dc763b4aa30e34b11997a",
+  "audit": "reports/gold_matched_call_evaluation_2026-10-23/902a9f8a1752/audit_summary.json",
+  "not_published": "raw per-call steps.jsonl (3.6 MB) and image manifest stay in the archive",
+  "files": [
+    {
+      "name": "answers.csv",
+      "size_bytes": 443773,
+      "sha256": "c3aed38dd3be403b71364a7a3a77003dc9d50db38158499df3d24a454f0f8290"
+    },
+    {
+      "name": "call_budget.csv",
+      "size_bytes": 329,
+      "sha256": "07d609515e38cda4399bba3789b9a61c2be5cb6dd646224b4ba470458fa0487b"
+    },
+    {
+      "name": "leaderboard.csv",
+      "size_bytes": 2242,
+      "sha256": "5c2870d1f1a730eac5c1283828efe25eb839be60cff1575ca2114d675a33708c"
+    },
+    {
+      "name": "metrics_asset_macro.csv",
+      "size_bytes": 759,
+      "sha256": "e3c381807717926f6a43ea3e82ec2f159bfeb40fbdc3498aefe80815599511be"
+    },
+    {
+      "name": "metrics_by_asset.csv",
+      "size_bytes": 7205,
+      "sha256": "5d08413e9950b4068ffb8be6edd6eea32ceff181b9946bfe81dabb952c05e436"
+    },
+    {
+      "name": "q2_by_defect.csv",
+      "size_bytes": 1041,
+      "sha256": "d0200316a3aca66b88e20079f1633a4adf9ea84e48f4ffa7d349362ebfde83f7"
+    },
+    {
+      "name": "q3_constant_baselines.csv",
+      "size_bytes": 429,
+      "sha256": "87c41999262a4a63d4e38c0146acef87ae50a0890d2060eae9c6d81a283b65d0"
+    },
+    {
+      "name": "run_metadata.json",
+      "size_bytes": 4292,
+      "sha256": "7aa8173498cc26bce04aee82cec5bec7f9e7b75ca3271e34b063b9a38bc3a1b6"
+    },
+    {
+      "name": "run_status.json",
+      "size_bytes": 1424,
+      "sha256": "a3c5ba2c58beb2b1c73eb33800941921c6ef1d3f244a3a179843ee130a5a7445"
+    },
+    {
+      "name": "significance.csv",
+      "size_bytes": 8249,
+      "sha256": "412389f3d3a4b50dc610cbb4a07d0edb2705ca86b1ad6036dc3ca3b163730752"
+    }
+  ]
+}

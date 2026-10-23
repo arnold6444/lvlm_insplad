@@ -1,0 +1,46 @@
+model_key,baseline,condition,metric,base,new,delta,ci_low,ci_high,significant,n_boot,scope
+internvl3_5_8b,matched_reask,previous_agent,q1_anomaly_f1,0.776471,0.776471,0.0,0.0,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,previous_agent,q2_defect_macro_f1,0.475851,0.640123,0.164272,0.093151,0.241816,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,previous_agent,joint_accuracy,0.556911,0.662602,0.105691,0.052846,0.158537,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,previous_agent,consistency_error,0.199187,0.166667,-0.03252,-0.089431,0.028455,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,previous_agent,false_defect_rate,0.196262,0.196262,0.0,-0.082681,0.084911,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,matched_reask,q1_anomaly_f1,0.776471,0.776471,0.0,0.0,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,matched_reask,q2_defect_macro_f1,0.521715,0.475851,-0.045863,-0.095314,0.000481,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,matched_reask,joint_accuracy,0.577236,0.556911,-0.020325,-0.077236,0.036585,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,matched_reask,consistency_error,0.211382,0.199187,-0.012195,-0.081301,0.052846,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,matched_reask,false_defect_rate,0.411215,0.196262,-0.214953,-0.321101,-0.108911,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,candidate,q1_anomaly_f1,0.776471,0.776471,0.0,0.0,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,candidate,q2_defect_macro_f1,0.475851,0.623294,0.147443,0.079781,0.221159,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,candidate,joint_accuracy,0.556911,0.670732,0.113821,0.060976,0.166667,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,candidate,consistency_error,0.199187,0.150407,-0.04878,-0.105691,0.012195,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,candidate,false_defect_rate,0.196262,0.130841,-0.065421,-0.158879,0.020005,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,candidate,q1_anomaly_f1,0.776471,0.776471,0.0,0.0,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,candidate,q2_defect_macro_f1,0.521715,0.623294,0.101579,0.030338,0.177003,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,candidate,joint_accuracy,0.577236,0.670732,0.093496,0.044715,0.142276,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,candidate,consistency_error,0.211382,0.150407,-0.060976,-0.117886,-0.00813,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,baseline,candidate,false_defect_rate,0.411215,0.130841,-0.280374,-0.371703,-0.186025,True,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,previous_agent,candidate,q1_anomaly_f1,0.776471,0.776471,0.0,0.0,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,previous_agent,candidate,q2_defect_macro_f1,0.640123,0.623294,-0.016829,-0.072668,0.03567,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,previous_agent,candidate,joint_accuracy,0.662602,0.670732,0.00813,-0.028455,0.044715,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,previous_agent,candidate,consistency_error,0.166667,0.150407,-0.01626,-0.060976,0.02439,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,previous_agent,candidate,false_defect_rate,0.196262,0.130841,-0.065421,-0.136752,0.0,False,2000,gold246 Q1/Q2 image-level paired comparison
+internvl3_5_8b,matched_reask,previous_agent,q3_presence_balanced_accuracy,0.6254286290593694,0.8281113427015396,0.20268271364217028,0.14541326615005704,0.2569165593397278,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,previous_agent,q3_normal_false_region_rate,0.6915887850467289,0.14953271028037382,-0.5420560747663551,-0.6363636363636364,-0.44680334641602976,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,previous_agent,q3_anomaly_false_none_rate,0.05755395683453238,0.19424460431654678,0.1366906474820144,0.07857142857142857,0.20144320027848686,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,previous_agent,q1_q2_q3_presence_joint,0.36585365853658536,0.6341463414634146,0.2682926829268293,0.20731707317073167,0.3252032520325203,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,matched_reask,q3_presence_balanced_accuracy,0.5510320715390304,0.6254286290593694,0.07439655752033891,0.025244991460010045,0.1238820161840468,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,matched_reask,q3_normal_false_region_rate,0.8691588785046729,0.6915887850467289,-0.17757009345794394,-0.2727272727272727,-0.08567423230974658,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,matched_reask,q3_anomaly_false_none_rate,0.02877697841726619,0.05755395683453238,0.02877697841726619,0.006665562913907286,0.05845110771581355,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,matched_reask,q1_q2_q3_presence_joint,0.3699186991869919,0.36585365853658536,-0.004065040650406526,-0.05691056910569109,0.05284552845528456,False,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,candidate,q3_presence_balanced_accuracy,0.6254286290593694,0.8281113427015396,0.20268271364217028,0.14541326615005704,0.2569165593397278,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,candidate,q3_normal_false_region_rate,0.6915887850467289,0.14953271028037382,-0.5420560747663551,-0.6363636363636364,-0.44680334641602976,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,candidate,q3_anomaly_false_none_rate,0.05755395683453238,0.19424460431654678,0.1366906474820144,0.07857142857142857,0.20144320027848686,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,matched_reask,candidate,q1_q2_q3_presence_joint,0.36585365853658536,0.6382113821138211,0.27235772357723576,0.20731707317073172,0.3333333333333333,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,candidate,q3_presence_balanced_accuracy,0.5510320715390304,0.8281113427015396,0.2770792711625092,0.22161779997496442,0.3280834486967828,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,candidate,q3_normal_false_region_rate,0.8691588785046729,0.14953271028037382,-0.719626168224299,-0.7999999999999999,-0.625,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,candidate,q3_anomaly_false_none_rate,0.02877697841726619,0.19424460431654678,0.1654676258992806,0.1031687675070028,0.23437769396551722,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,baseline,candidate,q1_q2_q3_presence_joint,0.3699186991869919,0.6382113821138211,0.26829268292682923,0.20731707317073172,0.32926829268292684,True,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,previous_agent,candidate,q3_presence_balanced_accuracy,0.8281113427015396,0.8281113427015396,0.0,0.0,0.0,False,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,previous_agent,candidate,q3_normal_false_region_rate,0.14953271028037382,0.14953271028037382,0.0,0.0,0.0,False,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,previous_agent,candidate,q3_anomaly_false_none_rate,0.19424460431654678,0.19424460431654678,0.0,0.0,0.0,False,2000,"gold246 presence only, no localization claim"
+internvl3_5_8b,previous_agent,candidate,q1_q2_q3_presence_joint,0.6341463414634146,0.6382113821138211,0.004065040650406471,-0.03252032520325199,0.04065040650406504,False,2000,"gold246 presence only, no localization claim"

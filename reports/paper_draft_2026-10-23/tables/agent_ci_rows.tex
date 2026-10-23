@@ -1,0 +1,15 @@
+% Source: gold run 0c577ffe3bdd, paired bootstrap over images, 2,000 resamples.
+% Candidate rows are the published significance.csv. Agent-vs-direct rows were recomputed on CPU from the saved
+% answers.csv with the same repository functions (no new inference); that recomputation reproduces the
+% published candidate rows exactly. Q3 is shared by agent and candidate.
+% Columns: comparison, metric, difference, 95% CI.
+Agent $-$ direct        & Q2 macro-F1                 & $+.118$ & $[+.043, +.199]$ \\
+Agent $-$ direct        & Q1--Q2 joint                & $+.085$ & $[+.033, +.142]$ \\
+Candidate $-$ direct    & Q2 macro-F1                 & $+.102$ & $[+.030, +.177]$ \\
+Candidate $-$ direct    & Q1--Q2 joint                & $+.093$ & $[+.045, +.142]$ \\
+Candidate $-$ agent     & Q2 macro-F1                 & $-.017$ & $[-.073, +.036]$ \\
+Candidate $-$ agent     & Q1--Q2 joint                & $+.008$ & $[-.028, +.045]$ \\
+\midrule
+Agent/candidate $-$ direct & Q3 presence BAcc            & $+.277$ & $[+.222, +.328]$ \\
+Agent/candidate $-$ direct & Q3 normal false-region rate & $-.720$ & $[-.800, -.625]$ \\
+Agent/candidate $-$ direct & Q3 defect false-none rate   & $+.165$ & $[+.103, +.234]$ \\
