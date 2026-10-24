@@ -1,281 +1,105 @@
-# InsPLAD LVLM Benchmark v1
+# InsPLAD-QA: an LVLM benchmark for power-line inspection
 
-InsPLAD-based benchmark for **General Anomaly Detection** and **Structured Fault Understanding**, inspired by MMAD-style LVLM evaluation. The benchmark compares multiple VLMs under the same QA, prompt, and scoring contract.
+InsPLAD-QA is an MMAD-style question-answering benchmark built on the public InsPLAD UAV dataset. It tests whether vision-language models detect a defect (Q1), name it (Q2) and say whether a defect region is present (Q3), and whether those answers agree. Every model uses the same QA, prompt, output schema and evaluator.
 
-**Latest results (2026-10-23):** [reports/paper_tables/latest_results.md](reports/paper_tables/latest_results.md) — gold246 verification-agent comparison, the matched-call control and follow-up dev experiments. Paper draft (English/Korean LaTeX): [reports/paper_draft_2026-10-23/](reports/paper_draft_2026-10-23/README.md).
+**Status (2026-10-24): final.** The scope is frozen, all planned experiments are done, and the results are written up in the paper draft.
 
-**Matched-call control on gold (done):** the agent beats an equal-call re-ask by +.164 Q2 macro-F1 and +.203 Q3 presence BAcc (paired CIs exclude zero). Results: [`results/latest/gold_v2_matched_call/`](results/latest/gold_v2_matched_call/leaderboard.csv). Notebook: [`lvlm_gold_v2_matched_call_colab.ipynb`](notebooks/lvlm_gold_v2_matched_call_colab.ipynb); see the [protocol](docs/gold_matched_call.md).
+- **Paper (English/Korean, LaTeX and Word):** [`reports/paper_draft_2026-10-23/`](reports/paper_draft_2026-10-23/README.md)
+- **All results in one place:** [`reports/paper_tables/latest_results.md`](reports/paper_tables/latest_results.md)
+- **Independent check of every number in the paper:** [`VERIFICATION_2026-10-24.md`](reports/paper_draft_2026-10-23/VERIFICATION_2026-10-24.md)
 
-**MiniCPM greedy re-run (done):** the published MiniCPM gold baseline/reference rows had been sampled (temperature 0.7, before PR #47). The greedy re-run (2,136 calls, 0 errors) lowers its image-only false defect rate from .411 to .308 and its consistency error from .341 to .280. The reference conditions move by ≤ .05. Results: [`results/latest/gold_v2_minicpm_greedy/`](results/latest/gold_v2_minicpm_greedy/leaderboard.csv). Notebook: [`lvlm_gold_v2_minicpm_greedy_colab.ipynb`](notebooks/lvlm_gold_v2_minicpm_greedy_colab.ipynb); see the [protocol](docs/gold_minicpm_greedy.md).
+## Main findings (gold v2: 246 images, 534 questions)
 
-For the **Q1 fixed, automatic target zoom × prompt** exploratory dev comparison, open
-[`lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb`](notebooks/lvlm_gold_v2_q23_zoom_prompt_dev_colab.ipynb)
-in a fresh L4/A100 Colab runtime and run all cells. Four factorial conditions isolate
-native-image detail and wording; Q1 stays cached, normal references stay unchanged,
-and no manual boxes or new labels are needed. It writes a separate folder and never
-retunes gold. See [design and run instructions](docs/q23_zoom_prompt_dev.md).
-
-For the dev-selected **Q1 fixed + revised Q2 + previous Q3** gold candidate, open
-[`lvlm_gold_v2_q23_candidate_colab.ipynb`](notebooks/lvlm_gold_v2_q23_candidate_colab.ipynb)
-in a fresh L4/A100 Colab runtime and run all cells. It prepares missing inputs automatically,
-preserves previous results, and reports Q3 **presence only**, with spatial accuracy unknown.
-The notebook fetches and verifies an immutable code commit. For saved PR56 predictions,
-[`CPU reaggregation`](notebooks/lvlm_gold_v2_q23_candidate_reaggregate_colab.ipynb) repairs metrics
-without another GPU run. See [protocol, failure gates and recovery](docs/q23_candidate_gold.md).
+- **Image-only baselines.** Q1 F1 ranges from .555 to .718 and Q2 macro-F1 from .360 to .505 across four open LVLMs and one API pipeline.
+- **Normal reference.** It raises Q1 F1 for every open model, for example InternVL3.5-8B from .597 to .794. For MiniCPM-V-4.5, however, balanced accuracy falls (.656 → .587) because it flags most normal images. Its effect on consistency is mixed.
+- **Anomaly-detector cues.** They mostly raise defect-type F1 but lower anomaly-detection F1. No cue improves both for every model.
+- **Verification agent (InternVL3.5-8B).** The agent was chosen on a disjoint dev set and run once on gold.
+  - Q2 macro-F1 rises from .522 to .640 (+.118, paired 95% CI [+.043, +.199]).
+  - Region-presence balanced accuracy rises from .551 to .828.
+  - False alarms on normal images fall from 93/107 to 16/107.
+- **Matched-call control.** An equal-call re-ask without the agent's definitions and staging trails the agent by .164 Q2 macro-F1 and .203 presence BAcc. Both CIs exclude zero.
+- **Cost.** Missed defects rise from 4/139 to 27/139, mostly missing insulator caps (the agent names that defect in 5 of 27 images). Dev-only follow-ups with higher resolution, other LVLMs, anomaly detectors and part-evidence tools did not recover them. Only an asset-specific supervised classifier did.
 
 ## Benchmark design
 
-### Track A — General Anomaly Detection
-Source: `unsupervised_anomaly_detection.zip`
+| Part | Source | Images | Use |
+|---|---|---|---|
+| Track A, general anomaly detection | `unsupervised_anomaly_detection.zip`, official `test` | 6,481 (17 assets) | zero-shot and one-shot (normal reference) |
+| Track B, structured fault understanding | `supervised_fault_classification.zip`, official `val` (no test split) | 6,417 (5 assets) | anomaly label + defect class, Joint Accuracy |
+| Aligned Core | unsup test ∩ sup val ∩ identical SHA-256 ∩ same binary GT | 1,378 | same image bytes across tracks |
+| Gold v2 (frozen) | Aligned Core, manually reviewed | 246 images / 534 questions | all paper results |
+| Dev | supervised `train`, seed 42, leakage-checked | 240 images / 480 Q1–Q2 questions | every method choice |
 
-- 17 asset categories
-- official `test`: **6,481** images
-- Zero-shot: target test image only
-- One-shot: same target test image + one fixed same-asset **normal/good** image from `train`
-- 14 assets contain both normal and anomalous test GT
-- 3 assets are normal-only in test: `damper-preformed`, `spacer`, `yoke`
+- Three Track A assets are normal-only in test: `damper-preformed`, `spacer`, `yoke`. Six exact-duplicate images have conflicting binary GT and are left out of cross-track comparisons.
+- One-shot references come only from the same asset's unsupervised train normals (seed 42). Candidates whose size+CRC32 fingerprint appears in test are excluded. The retrieved reference is the DINOv2-base cosine nearest neighbour.
 
-The benchmark's 1-shot regime is intentionally the MMAD-style **normal-reference** setting. It does not provide an anomalous/positive example.
+### Label policy
+- `good`/`normal` → `normal`; every defect folder → `anomalous`.
+- `corrosão` → `corrosao` (slug only, never merged with `rust`).
+- The integers in `image_list_val.txt` are asset-local class indices, not binary labels, so semantic labels come from folder names.
 
-### Track B — Structured Fault Understanding
-Source: `supervised_fault_classification.zip`
+### Metrics
+- Anomaly: Balanced Accuracy, F1, Precision/Recall, TP/FP/TN/FN, Invalid Output Rate, per asset and asset-macro.
+- Structured: defect BAcc, Macro-F1, Joint Accuracy, False Defect Rate, Consistency Error, Invalid Output Rate.
+- An invalid answer counts as FN for an anomalous image and is reported apart from FP for a normal image (`metrics.anomaly_classification_summary`).
 
-- 5 asset categories
-- `train/val`, no official test
-- official `val`: **6,417** images
-- output: `{"anomaly":"...","defect_class":"..."}`
-- metrics include defect BAcc, Macro F1, Joint Accuracy, FDR, Consistency Error, and Invalid Output Rate
+## Models
 
-### Aligned Core — same-image cross-track analysis
-The two ZIPs share **8,990 SHA256-identical images**. `unsupervised test ∩ supervised val` contains 1,384 exact same images; six have conflicting binary GT, leaving a clean **Aligned Core of 1,378 images**.
+One model per model line, unquantized on an L4/A100-class GPU (at least 20 GiB VRAM; the HF runners refuse smaller GPUs):
 
-The final baseline table uses this Aligned Core so every model is evaluated on the **same query images** for anomaly detection, normal-reference anomaly detection, and structured defect understanding.
+- `Qwen/Qwen3.5-4B` (thinking disabled)
+- `OpenGVLab/InternVL3_5-8B` (official chat path, 6 visual tiles)
+- `openbmb/MiniCPM-V-4_5` (official `chat()`, greedy)
+- `llava-hf/llava-onevision-qwen2-7b-ov-hf`
+- Luxia two-stage API pipeline (document vision → chat), image-only only
 
-## Source-label policy
+## Repository map
 
-- `good` and `normal` → benchmark `normal`
-- any defect folder → `anomalous`
-- `corrosão` → `corrosao` slug only; it is not merged with `rust`
-- supervised `image_list_val.txt` integers are asset-local class IDs, not binary anomaly labels, so semantic GT comes from defect folder names
+| Path | Contents |
+|---|---|
+| `src/insplad_benchmark/` | dataset parsing, QA utilities, metrics, model adapters, retrieval |
+| `scripts/` | benchmark build, runners, evaluation and notebook builders |
+| `notebooks/` | Colab notebooks, listed below by paper section |
+| `results/latest/` | published leaderboards and metrics, each with a `github_publish_manifest.json` (SHA-256 of the committed files) |
+| `reports/paper_draft_2026-10-23/` | the paper |
+| `reports/paper_tables/` | result tables, including `latest_results.md` |
+| `reports/*_evaluation_*/`, `reports/*_research_*/`, ... | one summary (`analysis.md`) per experiment run |
+| `reports/*.md`, `reports/*.csv` | dataset structure, overlap and QA validation records |
+| `docs/` | experiment protocols, indexed in [`docs/README.md`](docs/README.md) |
+| `configs/`, `samples/` | label mappings, locked configurations, 20-row sample QA |
 
-## Setup / tests
+Raw per-call logs and the Colab result ZIPs are not in git. They are archived with SHA-256 hashes, which are recorded in the manifests and the analysis files, and are available on request.
 
-```powershell
-python -m pip install -e ".[dev]"
-python -m pytest -v
-```
+## Notebooks by paper section
 
-## Main generated benchmark files
+Open a notebook in Colab on an L4/A100 runtime, put `unsupervised_anomaly_detection.zip` and `supervised_fault_classification.zip` anywhere in Google Drive `MyDrive`, and choose **Run all**. Each run writes to its own Drive folder and resumes from saved calls.
 
-The full QA and Aligned Core files are rebuilt from the two source ZIPs when needed:
+| Paper section | Notebooks | Results |
+|---|---|---|
+| Benchmark build (§3) | `build_explainable_qa_gold_v2_colab`, `lvlm_gold_v2_dev_set_colab` | `gold_v2_final`, `gold_v2_dev` |
+| Image-only baselines (§4) | `lvlm_gold_v2_baselines_colab`; four-option Q3: `lvlm_gold_v2_loc_box_annotation_colab`, `lvlm_gold_v2_loc_mmad_eval_colab`; MiniCPM greedy re-run: `lvlm_gold_v2_minicpm_greedy_colab` | `gold_v2_baseline`, `gold_v2_loc_mmad`, `gold_v2_minicpm_greedy` |
+| References and expert cues (§4) | `lvlm_gold_v2_reference_ablation_colab` (+ `_5lvlm_finalize`, `_hf4_resume`, `_luxia_resume`), `lvlm_gold_v2_reference_expert_colab`, `lvlm_vision_expert_smoke(_resumable)_colab` → `lvlm_gold_v2_vision_expert_selection_colab` → `lvlm_gold_v2_vision_expert_full_final/resume_colab` | `gold_v2_reference`, `gold_v2_reference_expert`, `gold_v2_vision_expert_*`, `gold_v2_consistency_metrics` |
+| Agent design on dev (§5) | `lvlm_gold_v2_dev_baselines_colab`, `lvlm_gold_v2_consistency_agent_colab` (re-ask pilot), `lvlm_gold_v2_prompt_diagnostic_colab`, `lvlm_gold_v2_offline_agent_colab`, `lvlm_gold_v2_verify_agent_dev_colab`, `lvlm_gold_v2_q2_q3_agent_dev_colab`, `lvlm_gold_v2_q2_q3_refined_dev_colab` | `gold_v2_dev_baselines`, `gold_v2_offline_agent`, `gold_v2_verify_agent_dev` |
+| Agent on gold (§5) | `lvlm_gold_v2_main_rerun_colab` (retrieved-reference direct answers), `lvlm_gold_v2_verify_agent_gold_colab`, `lvlm_gold_v2_q23_candidate_colab` (+ `_reaggregate`), `lvlm_gold_v2_matched_call_colab` | `gold_v2_matched_call` (its first three policies equal gold run `0c577ffe3bdd`) |
+| Missing-cap follow-ups, dev only (§6, appendix) | `lvlm_gold_v2_q23_zoom_prompt_dev_colab`, `lvlm_gold_v2_q3_multiregion_colab`, `lvlm_dev_missing_location_annotation_colab`, `lvlm_q2_conflict_evidence_dev_colab`, `lvlm_q3_gt_crop_diagnostic_dev_colab`, `lvlm_q3_missing_occlusion_dev_colab`, `lvlm_selective_missing_expert_agent_dev_colab`, `lvlm_missing_presence_independent_dev_colab`, `lvlm_missing_expert_direct_dev_colab`, `lvlm_missing_ig_location_dev_colab`, `lvlm_missing_ig_numerics_colab`, `missing_component_probe_colab` | summaries under `reports/` |
+| Full-track runners (not run for the paper) | `lvlm_baselines_full_colab`, `luxia_baselines_full_colab`, `lvlm_one_shot_plus_colab` | — |
 
-- `data/qa/anomaly_zero_shot.jsonl` — 6,481
-- `data/qa/anomaly_one_shot.jsonl` — 6,481
-- `data/qa/defect_qa.jsonl` — 6,417
-- `reports/aligned_core.csv` — 1,378 same-image links
+The other dev follow-ups in the paper's appendix (other LVLMs, anomaly detectors, cross-model review, part-evidence and alignment probes) ran from frozen source bundles. Their code and raw logs are archived and not part of this repository. Their summaries are in `reports/pretrained_inspection_research_2026-10-17/`, `reports/q2_cross_model_review_evaluation_2026-10-16/`, `reports/counting_structure_research_2026-10-17/` and the other dated folders linked from `latest_results.md`.
 
-Committed smoke samples:
-
-- `samples/anomaly_zero_shot_20.jsonl`
-- `samples/anomaly_one_shot_20.jsonl`
-- `samples/defect_20.jsonl`
-- `samples/aligned_core_20.jsonl`
-
-## Colab notebooks
-
-### Smoke / execution check
-
-- `notebooks/lvlm_baselines_colab.ipynb` — four non-overlapping Hugging Face VLM family representatives, 20/20/20 smoke
-- `notebooks/luxia_pipeline_smoke_colab.ipynb` — Luxia Vision (Document AI) → Luxia Chat two-stage API smoke
-
-Smoke contract:
-
-```text
-Zero-shot 20
-→ 1-shot normal reference 20
-→ Structured 20
-```
-
-### Final HF baseline table
-
-- `notebooks/lvlm_baselines_full_colab.ipynb` — **Aligned Core 1,378 same query images**
-
-This notebook rebuilds the verified Aligned Core from the source ZIPs, then evaluates:
-
-```text
-Image only anomaly: 1,378
-+ normal reference anomaly: 1,378
-structured anomaly + defect class: 1,378
-```
-
-Predictions are checkpointed to:
-
-```text
-MyDrive/lvlm_insplad_results/hf_full_aligned_core_v1/
-```
-
-Successful rows are reused on the next run, so the four models can be run one at a time across multiple Colab sessions.
-
-### Retrieved 1-shot+ experiment
-
-`1-shot+` keeps the fixed one-shot prompt and evaluation contract, but replaces the asset-wide fixed normal with a query-specific reference:
-
-```text
-Aligned Core query
-→ same-asset unsupervised train-normal candidates
-→ exclude every train candidate whose size+ZIP-CRC32 fingerprint occurs in test
-→ facebook/dinov2-base@f9e44c814b77203eaa57a6bdbbd535f21ede1415 CLS embedding
-→ deterministic cosine Top-1
-→ [retrieved normal reference, query] LVLM input
-```
-
-Generated artifacts are separate from the fixed baseline:
-
-- `one_shot_plus.jsonl` — retrieved QA with unchanged query ID/image/GT
-- `one_shot_plus_references.csv` — fixed/retrieved paths, cosine score, model commit, and exact cache SHA-256 provenance
-- `reference_embeddings.npz` — pickle-free incremental embedding cache
-- `one_shot_plus_smoke_25.jsonl` — deterministic label-balanced, asset-round-robin smoke QA
-- `hf_one_shot_plus_v1/` — separate predictions and metrics
-
-The plus experiment uses only Qwen3.5-4B, InternVL3.5-8B, and MiniCPM-V-4.5. LLaVA remains available to the legacy baseline but is intentionally rejected by `one_shot_plus` mode.
-
-Top-1 selection is deterministic for the exact pinned embedding cache (recorded by SHA-256). A cold re-embedding on different GPU/runtime kernels can produce tiny floating-point differences near a tie, so reuse the persisted cache when comparing or resuming experiments.
-
-Open `notebooks/lvlm_one_shot_plus_colab.ipynb` for the recommended end-to-end path. It snapshots aligned zero/fixed/structured/retrieved QA, persists the commit-pinned DINO cache in Drive, runs a 25-row smoke by default, and leaves `RUN_FULL = False`; the 1,378-row LVLM inference is never started unless that guard is changed explicitly.
-
-For an already rebuilt benchmark/Aligned Core, the equivalent builder command is:
+## Setup and tests
 
 ```powershell
-python -m pip install -e ".[retrieval,hf]"
-python scripts/build_one_shot_plus.py `
-  --anomaly-manifest work/manifests/unsup.csv `
-  --unsup-zip C:\path\to\unsupervised_anomaly_detection.zip `
-  --base-one-shot-qa work/benchmark/data/qa/anomaly_one_shot.jsonl `
-  --aligned-core work/benchmark/reports/aligned_core.csv `
-  --out-qa work/aligned_qa/one_shot_plus.jsonl `
-  --out-manifest work/retrieval/one_shot_plus_references.csv `
-  --cache work/retrieval/reference_embeddings.npz `
-  --smoke-out work/aligned_qa/one_shot_plus_smoke_25.jsonl `
-  --smoke-size 25 `
-  --model-revision f9e44c814b77203eaa57a6bdbbd535f21ede1415 `
-  --device cuda
+python -m pip install -e ".[dev]"            # retrieval and HF inference: .[retrieval,hf]
+python -m pytest -q --basetemp=.pytest-tmp    # fixtures only; no source ZIPs or GPU needed
 ```
-
-Run the guarded three-model smoke on an L4/A100-class runtime:
-
-```powershell
-python scripts/run_hf_aligned_core_full.py `
-  --experiment one_shot_plus --smoke-size 25 `
-  --qa-dir work/aligned_qa `
-  --unsup-zip C:\path\to\unsupervised_anomaly_detection.zip `
-  --sup-zip C:\path\to\supervised_fault_classification.zip `
-  --out-dir hf_one_shot_plus_v1/smoke_25 `
-  --models qwen3_5_4b internvl3_5_8b minicpm_v_4_5
-```
-
-`scripts/evaluate.py --regime one_shot_plus` writes overall, per-asset, and unweighted asset-macro anomaly metrics with TP/FP/TN/FN, Precision, Recall, and Specificity. Smoke and full runs must use different output directories; the runner rejects an incompatible or ambiguous existing result root. After complete full predictions exist, compare the three regimes and yoke-suspension FP directly (the analyzer rejects partial, wrong-model, or stale-reference plus results):
-
-```powershell
-python scripts/analyze_aligned_core_results.py `
-  --qa-dir work/aligned_qa `
-  --results-dir hf_full_aligned_core_v1 `
-  --one-shot-plus-qa work/aligned_qa/one_shot_plus.jsonl `
-  --one-shot-plus-results-dir hf_one_shot_plus_v1/full `
-  --out-dir hf_one_shot_plus_v1/comparison
-```
-
-The comparison includes `anomaly_asset_macro.csv`, `fixed_vs_retrieved_overall.csv`, `fixed_vs_retrieved_by_asset.csv`, and `yoke_fp_comparison.csv`.
-
-## 4-model Hugging Face benchmark
-
-To avoid duplicate model families, only one representative per family is kept:
-
-- `Qwen/Qwen3.5-4B` — Qwen family
-- `OpenGVLab/InternVL3_5-8B` — InternVL family
-- `openbmb/MiniCPM-V-4_5` — MiniCPM family
-- `llava-hf/llava-onevision-qwen2-7b-ov-hf` — LLaVA family
-
-Removed from the active benchmark because a newer model from the same family is already included:
-
-- `Qwen/Qwen2.5-VL-7B-Instruct`
-- `Qwen/Qwen3-VL-8B-Instruct`
-- `OpenGVLab/InternVL2_5-8B`
-
-`Qwen3.5-4B` is used instead of larger Qwen3.5 variants because the benchmark environment is an NVIDIA L4 with about 22 GB VRAM. Qwen3.5 support requires the Transformers v5 generation; the Colab notebooks pin `transformers==5.14.0` for reproducibility.
-
-### GPU-aware adapter policy
-
-- Qwen3.5 uses `AutoProcessor + AutoModelForMultimodalLM` with `enable_thinking=False`.
-- MiniCPM-V 4.5 uses its official `AutoModel + chat()` path.
-- LLaVA-OneVision uses the official `AutoProcessor + AutoModelForMultimodalLM` path.
-- InternVL3.5 uses its official `chat()` path with one fixed total visual tile budget of 6 per sample.
-- The notebook does not force 4-bit quantization just to fit a T4. Use an L4/A100-class runtime.
-
-### Run the final Hugging Face baseline
-
-Open `notebooks/lvlm_baselines_full_colab.ipynb` from `main` in Google Colab and run cells from top to bottom.
-
-Because this repository is private, add this Colab Secret:
-
-- `GITHUB_TOKEN`: fine-grained/read-only token that can clone this repository
-
-The default cell requests all four models. For long Colab sessions, set `MODELS_TO_RUN` to one model at a time. The fixed Drive result directory preserves previous successful rows.
-
-## Luxia pipeline smoke
-
-Open `notebooks/luxia_pipeline_smoke_colab.ipynb` from `main` in Google Colab.
-
-Add these Colab Secrets:
-
-- `GITHUB_TOKEN`
-- `LUXIA_API_KEY`
-
-GPU is not required for the Luxia API pipeline. The notebook evaluates the same Zero-shot 20 / 1-shot 20 / Structured 20 smoke contract and exports `leaderboard.csv`, `prediction_review.csv`, `run_status.json`, and `run_metadata.json`.
-
-The Luxia runner reuses successful predictions from the latest `luxia_smoke_*.zip`, retries failed or missing rows only, and still produces a leaderboard if a row-level API failure remains by counting that row as invalid.
-
-## Source ZIPs from Google Drive
-
-Put these files anywhere under Google Drive `MyDrive`:
-
-- `unsupervised_anomaly_detection.zip`
-- `supervised_fault_classification.zip`
-
-The Colab notebooks mount Drive and find each filename automatically. If the same filename exists more than once, set `DRIVE_DATA_DIR` to the folder containing the dataset ZIPs.
-
-## Full baseline scoring
-
-The final Aligned Core leaderboard reports:
-
-- Zero-shot anomaly Balanced Accuracy / F1
-- Normal-reference anomaly Balanced Accuracy / F1
-- Defect Balanced Accuracy / Macro-F1
-- Joint Accuracy
-- False Defect Rate
-- Consistency Error
-- Structured Invalid Output Rate
-
-These structured metrics are an **explainability proxy / fault-understanding evaluation**. InsPLAD does not provide natural-language explanation, location, or appearance ground truth; those require a separate reviewed subset for the later method/ideation stage.
-
-## Optional balanced-100 utility
-
-`scripts/build_balanced_samples.py` remains available for quick intermediate experiments, but the current final baseline table goes directly from the 20-row smoke to the **Aligned Core 1,378** evaluation.
 
 ## Evaluation CLI
 
 ```powershell
-python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_zero_shot.jsonl --predictions predictions/anomaly_zero_shot.jsonl --regime zero_shot
-python scripts/evaluate.py --task anomaly --qa data/qa/anomaly_one_shot.jsonl --predictions predictions/anomaly_one_shot.jsonl --regime one_shot
-python scripts/evaluate.py --task explainability --qa data/qa/defect_qa.jsonl --predictions predictions/defect.jsonl
+python scripts/evaluate.py --task anomaly --qa <qa.jsonl> --predictions <pred.jsonl> --regime zero_shot|one_shot|one_shot_plus
+python scripts/evaluate.py --task explainability --qa <defect_qa.jsonl> --predictions <pred.jsonl>
 ```
 
+## Data source
 
-## Standalone missing-component supervised probe
-
-`notebooks/missing_component_probe_colab.ipynb`: L4/A100 → existing `GITHUB_TOKEN` Secret → Run all.
-Automatically trains a frozen-DINOv2 + small classifier on existing glass-insulator train labels,
-excluding official val/test and all dev/gold targets, with date-disjoint internal splits.
-Dev is reported only after freezing; gold is not scored. Outputs use a fresh timestamp/UUID folder
-and `missing_component_probe_results.zip`; previous results and QA answers are preserved.
-This is a separate supervised-assisted condition; actual effectiveness requires the Colab run.
-See [protocol, leakage checks and outputs](docs/missing_component_probe.md).
+InsPLAD is published on Mendeley Data; [`insplad_google_drive`](insplad_google_drive) holds the official download link. The source ZIPs and images are not committed.

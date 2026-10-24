@@ -1,6 +1,6 @@
-# 최신 결과 정리 (2026-10-23 기준)
+# 최신 결과 정리 (최종, 2026-10-24)
 
-기존 [`README.md`](README.md)의 표 1~5는 2026-10-08 gold v2 단일 질문(MMAD 방식) 비교다. 이 문서는 그 뒤에 나온 **검증 agent 결과와 후속 실험**을 한곳에 모은다. 모든 수치는 실제 Colab 실행 결과를 로컬에서 독립 검산한 값이다. 대부분의 원본 보고서는 `reports/` 아래 로컬 폴더에만 있다. 호출 수 대조 실험은 결과(`results/latest/gold_v2_matched_call/`)와 감사 보고서(`reports/gold_matched_call_evaluation_2026-10-23/`)를 GitHub에 올렸다. 논문 초안은 [`reports/paper_draft_2026-10-23/`](../paper_draft_2026-10-23/README.md)에 있다.
+기존 [`README.md`](README.md)의 표 1~5는 2026-10-08 gold v2 단일 질문(MMAD 방식) 비교다. 이 문서는 그 뒤에 나온 **검증 agent 결과와 후속 실험**을 한곳에 모은다. 모든 수치는 실제 Colab 실행 결과를 로컬에서 독립 검산한 값이다. 실험마다 요약 보고서(`analysis.md`)가 `reports/` 아래 날짜별 폴더에 있다. 원시 호출 기록과 결과 ZIP은 git에 없고 SHA-256과 함께 따로 보관한다. 논문 초안은 [`reports/paper_draft_2026-10-23/`](../paper_draft_2026-10-23/README.md)에 있다. 계획한 실험은 모두 끝났다.
 
 ## 한 줄 결론
 
@@ -149,11 +149,21 @@
 
 - 호출 수 대조 (GitHub): `results/latest/gold_v2_matched_call/`, `reports/gold_matched_call_evaluation_2026-10-23/`
 - MiniCPM greedy (GitHub): `results/latest/gold_v2_minicpm_greedy/`, `reports/gold_minicpm_greedy_evaluation_2026-10-23/`
-- 이하 로컬 보고서
-- gold 246: `reports/q23_gold_evaluation_2026-10-15/0c577ffe3bdd/analysis.md`
+- 실험별 요약 (GitHub, 원시 ZIP은 따로 보관)
+- dev 다시 묻기 시범(Q1 F1 .82→.08): `reports/dev_prompt_diagnostic_2026-10-12/result.md`, `reports/dev_agent_audit_2026-10-12/diagnosis.md`
+- dev 첫 Q2/Q3 에이전트: `reports/q2_q3_evaluation_2026-10-13/a235a8c4ddf8/analysis.md`
+- gold 246: `reports/q23_gold_evaluation_2026-10-15/0c577ffe3bdd/analysis.md`, 오답 진단 `reports/q23_gold_error_diagnosis_2026-10-15/analysis.md`
 - dev 추가 200: `reports/q2_q3_refined_evaluation_2026-10-14/d348a43771e9/analysis.md`
 - 확대 × 문구: `reports/q23_zoom_prompt_evaluation_2026-10-16/b7334ab86381/analysis.md`
 - 교차 모델 재검토: `reports/q2_cross_model_review_evaluation_2026-10-16/analysis.md`
-- 모델 교체·이상탐지 모델: `reports/pretrained_inspection_research_2026-10-17/*_analysis.md`
-- 부품 근거·정렬: `reports/component_grounding_probe_2026-10-16/`, `reports/counting_structure_research_2026-10-17/`, `reports/sam_mask_probe_2026-10-17/`, `reports/reference_registration_probe_2026-10-16/`, `reports/diffusion_correspondence_research_2026-10-17/`
+- 모델 교체·이상탐지 모델: `reports/pretrained_inspection_research_2026-10-17/` (`analysis.md`, `*_analysis.md`, `review.md`)
+- 부품 근거·정렬: `reports/component_grounding_probe_2026-10-16/`, `reports/counting_structure_research_2026-10-17/`, `reports/sam_mask_probe_2026-10-17/`, `reports/reference_registration_probe_2026-10-16/`, `reports/diffusion_correspondence_research_2026-10-17/` (각 `analysis.md`)
 - 구성 비율: `reports/composition_profile_dev_2026-10-17/analysis.md`
+- Q3 별도 9칸 복수 위치: `reports/q3_multiregion_evaluation_2026-10-21/22d7ec3296e7/analysis.md`
+- dev 누락 위치 표시: `reports/dev_missing_location_annotation_evaluation_2026-10-21/analysis.md`
+- 정답 위치 crop: `reports/q3_gt_crop_diagnostic_evaluation_2026-10-21/e5baeefd1020/analysis.md`
+- 위치 후보 확대: `reports/q3_missing_occlusion_evaluation_2026-10-21/dc60885b0e8a/analysis.md`
+- 정상 참조 + 판별기 + LVLM: `reports/selective_missing_expert_agent_evaluation_2026-10-21/38b050835bbb/analysis.md`
+- 이전 답 없는 유무 질문: `reports/missing_presence_independent_evaluation_2026-10-22/5d828a071752/analysis.md`
+- 판별기·위치 후보 직접 채택: `reports/missing_expert_direct_evaluation_2026-10-22/bad35ced5b0b/analysis.md`
+- IG 위치 도구와 계산 오차: `reports/missing_ig_location_evaluation_2026-10-23/d9170b124d97/analysis.md`, `reports/missing_ig_numerics_evaluation_2026-10-23/b80756a9c8f0/analysis.md`
