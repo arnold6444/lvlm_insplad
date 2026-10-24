@@ -7,6 +7,15 @@
 | `tables/*.tex` | 두 판이 같이 쓰는 표 숫자. 각 파일 첫 줄 주석에 출처 결과 파일이 있음 |
 | `refs.bib` | 참고문헌. `TODO-VERIFY` 항목은 제출 전 저자·학회·연도 확인 필요 |
 
+## Word 파일 (docx)
+- `InsPLAD_QA_paper_en.docx`(10쪽), `InsPLAD_QA_paper_ko.docx`(12쪽): 위 LaTeX 원고를 그대로 변환한 Word판이다. 표·인용 번호·참고문헌을 포함한다.
+- 원고를 고친 뒤 다시 만들려면 `tex2docx.js`를 쓴다(Node.js + npm `docx@9` 필요).
+  ```
+  node tex2docx.js main_en.tex InsPLAD_QA_paper_en.docx en
+  node tex2docx.js main_ko.tex InsPLAD_QA_paper_ko.docx ko
+  ```
+- 2026-10-24 Word로 PDF를 만들어 쪽별로 확인했고, OOXML 형식 검사도 통과했다. 원본은 LaTeX이므로 내용은 LaTeX에서 고치고 docx를 다시 만든다.
+
 ## 컴파일 (Overleaf 권장)
 1. 이 폴더 전체를 ZIP으로 묶어 Overleaf → New Project → Upload Project.
 2. Menu → Main document를 `main_en.tex` 또는 `main_ko.tex`로 지정.
