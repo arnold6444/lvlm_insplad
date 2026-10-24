@@ -278,6 +278,6 @@ Integrated-gradients localization & dev 24 & exact $\le$ 9/24; completeness warn
 \end{table}
 
 \section{Reproducibility}
-Code, prompts, frozen configurations, Colab notebooks, leaderboards and per-question answers are in the project repository. Raw per-call logs (prompts, outputs, latencies) are archived with SHA-256 hashes and available on request. Runs record the model ID, backend, benchmark commit, protocol and status; the later runs (agent, matched-call, MiniCPM re-run) also record the GPU. Notebooks verify the exact code revision before inference and resume from checkpoints saved every 20 calls.
+Code, prompts, frozen configurations, Colab notebooks, leaderboards and per-question answers for the main results are in the project repository, together with a summary of every follow-up run. Some dev follow-ups in Appendix Table~ef{tab:negative} (the other LVLMs, anomaly detectors, cross-model re-check and part-evidence and alignment probes) ran from frozen source bundles; their code is archived rather than in the repository. Raw per-call logs (prompts, outputs, latencies) and all of this archived code are kept with SHA-256 hashes and available on request. Runs record the model ID, backend, benchmark commit, protocol and status; the later runs (agent, matched-call, MiniCPM re-run) also record the GPU. Notebooks verify the exact code revision before inference and resume from checkpoints saved every 20 calls.
 
 \end{document}

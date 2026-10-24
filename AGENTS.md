@@ -1,6 +1,8 @@
 # lvlm_insplad — 에이전트 운영 규칙
 
-InsPLAD 데이터로 LVLM 이상탐지 · 구조화 결함 이해 QA 벤치마크(MMAD 스타일)를 만들고, 여러 VLM 을 같은 QA · 프롬프트 · 채점 계약으로 비교한다. 설계·트랙 정의는 `README.md`, 목표·범위는 `GOAL.md`, 진행 중 작업은 `plan.md`, 실험별 프로토콜은 `docs/`, 데이터 검증 기록은 `reports/*.md`.
+InsPLAD 데이터로 LVLM 이상탐지 · 구조화 결함 이해 QA 벤치마크(MMAD 스타일)를 만들고, 여러 VLM 을 같은 QA · 프롬프트 · 채점 계약으로 비교한다. 설계·트랙 정의·노트북 지도는 `README.md`, 목표·범위는 `GOAL.md`, 남은 일은 `plan.md`, 실험별 프로토콜은 `docs/`(목록 `docs/README.md`), 결과 정리는 `reports/paper_tables/latest_results.md`, 논문은 `reports/paper_draft_2026-10-23/`, 데이터 검증 기록은 `reports/*.md`.
+
+**현재 상태(2026-10-24): 최종.** 2026-10-23 범위 동결 이후 계획한 실험은 모두 끝났다. 새 실험은 논문 표나 문장을 바꿀 때만, 사용자가 요청할 때만 한다. 남은 일은 논문 마무리(Overleaf 컴파일, 제목·저자)뿐이다.
 
 ## 변경 금지 계약
 - Track A: unsupervised 17개 자산, 공식 `test` 6,481장. Track B: supervised 5개 자산, 공식 `val` 6,417장(test split 없음). Joint Accuracy 는 Track B 안에서만 계산
