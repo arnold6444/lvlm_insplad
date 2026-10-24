@@ -5,7 +5,7 @@
 | `main_en.tex` | 영어판 본문 |
 | `main_ko.tex` | 한국어판 본문 (kotex) |
 | `tables/*.tex` | 두 판이 같이 쓰는 표 숫자. 각 파일 첫 줄 주석에 출처 결과 파일이 있음 |
-| `refs.bib` | 참고문헌. `TODO-VERIFY` 항목은 제출 전 저자·학회·연도 확인 필요 |
+| `refs.bib` | 참고문헌. 2026-10-24 웹·독립 검증으로 확인 |
 
 ## Word 파일 (docx)
 - `InsPLAD_QA_paper_en.docx`(10쪽), `InsPLAD_QA_paper_ko.docx`(12쪽): 위 LaTeX 원고를 그대로 변환한 Word판이다. 표·인용 번호·참고문헌을 포함한다.
