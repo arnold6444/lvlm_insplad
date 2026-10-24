@@ -196,15 +196,23 @@ if BASELINE_PREDICTIONS.is_file():
     cmd += ["--baseline-predictions", BASELINE_PREDICTIONS]
 if REUSE_STEPS:
     cmd += ["--reuse-steps", REUSE_STEPS, "--reuse-manifest", REUSE_MANIFEST]
-run(cmd, check=False)
+import uuid
+INVOCATION_ID = uuid.uuid4().hex  # 아래 확인 셀은 이 실행 ID가 적힌 결과 파일만 받아들입니다.
+RUN_RC = None  # 셀이 중간에 끊기면 이전 실행의 종료 코드가 남지 않게 비워 둡니다.
+RUN_RC = run(cmd + ["--invocation-id", INVOCATION_ID], check=False)
+print("종료 코드:", RUN_RC, "실행 ID:", INVOCATION_ID)
 # The original gold QA must remain identical.
 assert GOLD_SOURCE_HASH == candidate.old.diagnostic.digest(candidate.agent.v2.load_gold_qa_v2(QA_DIR))
 '''
 
-CHECK_CELL = '''# 자동 결과 확인: 완전한 실행만 성공 인정
+CHECK_CELL = '''# 자동 결과 확인: 이번 실행이 종료 코드 0으로 끝나고, 결과 파일이 같은 실행에서 나왔을 때만 성공 인정
 pd.set_option("display.max_rows", 100)
+if globals().get("RUN_RC") != 0:
+    raise RuntimeError(f"이번 추론 실행이 실패했습니다(종료 코드 {globals().get('RUN_RC')}). 이전 실행의 결과 파일은 쓰지 않습니다. 추론 셀을 다시 실행하세요.")
 status = json.loads((RUN_ROOT / "run_status.json").read_text(encoding="utf-8"))
 meta = json.loads((RUN_ROOT / "run_metadata.json").read_text(encoding="utf-8"))
+if status.get("invocation_id") != INVOCATION_ID or meta.get("invocation_id") != INVOCATION_ID:
+    raise RuntimeError("결과 파일이 이번 실행에서 나온 것이 아닙니다. 추론 셀을 다시 실행하세요.")
 display(pd.DataFrame(status["policies"]))
 if (not status.get("complete") or not meta.get("complete") or meta.get("row_errors") or meta.get("invalid_answers")
     or len(status["policies"]) != 4 or not all(p["eligible_for_comparison"] for p in status["policies"])):

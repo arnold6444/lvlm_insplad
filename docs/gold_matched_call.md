@@ -26,3 +26,5 @@ Primary comparison: `previous_agent − matched_reask` (paired bootstrap, 2,000 
 ## Gates
 
 The run is complete only when all four policies have full coverage with zero errors and zero invalid outputs. Invalid or failed policies are excluded from tables and comparisons, and only failed or invalid calls are retried. The run stops on changed inputs, lock, code, images or reused-run image bytes, so use a new folder in that case. Outputs follow the gold candidate runner (`leaderboard.csv`, `answers.csv`, `metrics_by_asset.csv`, `q2_by_defect.csv`, `significance.csv`, raw `steps.jsonl`, metadata/status) plus `call_budget.csv`.
+
+The notebook passes a fresh `--invocation-id` to every run and keeps its exit code. The check cell accepts results only when that exit code is 0 and `run_status.json` and `run_metadata.json` carry the same invocation ID, so a re-run that fails early cannot pass on an earlier run's files. The runner loads the model only on a GPU with at least 20 GiB VRAM; a fully cached resume never loads it.

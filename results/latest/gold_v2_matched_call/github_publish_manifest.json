@@ -13,38 +13,52 @@
   "files": [
     {
       "name": "answers.csv",
-      "size_bytes": 443773,
-      "sha256": "c3aed38dd3be403b71364a7a3a77003dc9d50db38158499df3d24a454f0f8290"
+      "size_bytes": 440820,
+      "sha256": "c090e240b4e19828ea43d38a5f3157163587d90d9e236ecbe66c93ddbb33b529",
+      "archive_size_bytes": 443773,
+      "archive_sha256": "c3aed38dd3be403b71364a7a3a77003dc9d50db38158499df3d24a454f0f8290"
     },
     {
       "name": "call_budget.csv",
-      "size_bytes": 329,
-      "sha256": "07d609515e38cda4399bba3789b9a61c2be5cb6dd646224b4ba470458fa0487b"
+      "size_bytes": 324,
+      "sha256": "d6e61922c77895cc7cf2eab2bb6ebddabc809093a262bc0475f84d6942f17e04",
+      "archive_size_bytes": 329,
+      "archive_sha256": "07d609515e38cda4399bba3789b9a61c2be5cb6dd646224b4ba470458fa0487b"
     },
     {
       "name": "leaderboard.csv",
-      "size_bytes": 2242,
-      "sha256": "5c2870d1f1a730eac5c1283828efe25eb839be60cff1575ca2114d675a33708c"
+      "size_bytes": 2237,
+      "sha256": "b5067ddf21d0fe4b76ed6657b03ee5e553610e6fc5fde7eefd5ffa10cbeca4f6",
+      "archive_size_bytes": 2242,
+      "archive_sha256": "5c2870d1f1a730eac5c1283828efe25eb839be60cff1575ca2114d675a33708c"
     },
     {
       "name": "metrics_asset_macro.csv",
-      "size_bytes": 759,
-      "sha256": "e3c381807717926f6a43ea3e82ec2f159bfeb40fbdc3498aefe80815599511be"
+      "size_bytes": 754,
+      "sha256": "a7c66b2353ec5e23f52849a41015106738b0c8d77e965f9646579e77e7206a20",
+      "archive_size_bytes": 759,
+      "archive_sha256": "e3c381807717926f6a43ea3e82ec2f159bfeb40fbdc3498aefe80815599511be"
     },
     {
       "name": "metrics_by_asset.csv",
-      "size_bytes": 7205,
-      "sha256": "5d08413e9950b4068ffb8be6edd6eea32ceff181b9946bfe81dabb952c05e436"
+      "size_bytes": 7184,
+      "sha256": "ab04017c117ea70db917eb1c391dded3e6f64138724db27486452dca1299ea9f",
+      "archive_size_bytes": 7205,
+      "archive_sha256": "5d08413e9950b4068ffb8be6edd6eea32ceff181b9946bfe81dabb952c05e436"
     },
     {
       "name": "q2_by_defect.csv",
-      "size_bytes": 1041,
-      "sha256": "d0200316a3aca66b88e20079f1633a4adf9ea84e48f4ffa7d349362ebfde83f7"
+      "size_bytes": 1024,
+      "sha256": "8314f0bf78c30150288c1819dfa9ce0707dfeea1827a5175e8bfe5a22fed83fa",
+      "archive_size_bytes": 1041,
+      "archive_sha256": "d0200316a3aca66b88e20079f1633a4adf9ea84e48f4ffa7d349362ebfde83f7"
     },
     {
       "name": "q3_constant_baselines.csv",
-      "size_bytes": 429,
-      "sha256": "87c41999262a4a63d4e38c0146acef87ae50a0890d2060eae9c6d81a283b65d0"
+      "size_bytes": 426,
+      "sha256": "08daaae356cc8dcbcb99f1fde7061df809fc0db6782534baeccd65701d3147cd",
+      "archive_size_bytes": 429,
+      "archive_sha256": "87c41999262a4a63d4e38c0146acef87ae50a0890d2060eae9c6d81a283b65d0"
     },
     {
       "name": "run_metadata.json",
@@ -58,8 +72,11 @@
     },
     {
       "name": "significance.csv",
-      "size_bytes": 8249,
-      "sha256": "412389f3d3a4b50dc610cbb4a07d0edb2705ca86b1ad6036dc3ca3b163730752"
+      "size_bytes": 8203,
+      "sha256": "0fd3b92151a2bd8e498d997375856ccc436dc91575d8d8f393ac7fd3ab09b4d3",
+      "archive_size_bytes": 8249,
+      "archive_sha256": "412389f3d3a4b50dc610cbb4a07d0edb2705ca86b1ad6036dc3ca3b163730752"
     }
-  ]
+  ],
+  "checksums": "sha256/size_bytes are of the file as committed here (git stores these text files with LF line endings, which is what GitHub serves); archive_sha256/archive_size_bytes are of the same member inside source_archive (CRLF CSVs), given only where the bytes differ"
 }

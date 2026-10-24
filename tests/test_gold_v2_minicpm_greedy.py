@@ -158,14 +158,102 @@ def test_notebook_is_built_from_current_code_never_publishes_and_gates_outputs(t
     for rel in ("scripts/run_gold_v2_minicpm_greedy.py", "scripts/run_gold_v2_reference_ablation.py",
                 "results/latest/gold_v2_reference/reference_manifest.csv"):
         assert rel in config["CODE_BLOBS"]
+    run_cell = "".join(notebook["cells"][4]["source"])
+    assert "RUN_RC = run(" in run_cell and '"--invocation-id", INVOCATION_ID' in run_cell
     rows, args, out = setup(tmp_path)
-    assert run(rows, args, []) == 0
+    assert run(rows, [*args, "--invocation-id", "first"], []) == 0
     import pandas as pd
     cell = "".join(notebook["cells"][5]["source"])
-    context = {"pd": pd, "json": json, "RUN_ROOT": out, "display": lambda obj: None}
+    context = {"pd": pd, "json": json, "RUN_ROOT": out, "display": lambda obj: None, "RUN_RC": 0, "INVOCATION_ID": "first"}
     exec(cell, context)
+    # A re-run that fails before writing anything leaves the earlier run's complete files behind: never accept them.
+    with pytest.raises(ValueError, match="inputs/code changed"):
+        run(rows, [*args, "--n-boot", "30", "--invocation-id", "second"], [])
+    assert json.loads((out/"run_status.json").read_text())["complete"]
+    with pytest.raises(RuntimeError, match="종료 코드 1"):
+        exec(cell, {**context, "RUN_RC": 1, "INVOCATION_ID": "second"})
+    with pytest.raises(RuntimeError, match="이번 실행에서 나온 것이 아닙니다"):
+        exec(cell, {**context, "INVOCATION_ID": "second"})
     status = json.loads((out/"run_status.json").read_text())
     status["complete"] = False
     (out/"run_status.json").write_text(json.dumps(status))
     with pytest.raises(RuntimeError, match="오류/누락"):
         exec(cell, context)
+
+
+def test_status_belongs_to_this_invocation_even_when_aggregation_crashes(tmp_path, monkeypatch):
+    rows, args, out = setup(tmp_path)
+    assert run(rows, [*args, "--invocation-id", "first"], []) == 0
+    meta = json.loads((out/"run_metadata.json").read_text())
+    assert meta["invocation_id"] == json.loads((out/"run_status.json").read_text())["invocation_id"] == "first"
+    monkeypatch.setattr(runner, "aggregate", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("crash")))
+    with pytest.raises(RuntimeError, match="crash"):
+        run(rows, [*args, "--invocation-id", "second"], [])
+    status = json.loads((out/"run_status.json").read_text())
+    assert status["status"] == "running" and not status["complete"] and status["invocation_id"] == "second"
+
+
+def test_required_anomaly_and_structured_metrics_keep_invalid_normal_apart_from_fp(tmp_path):
+    rows, args, out = setup(tmp_path)
+    infer = fake(rows, [])
+
+    def with_invalid(adapter, images, prompt):
+        core, qt = fixtures._who(prompt)
+        return "no idea" if (core, qt, condition_of(prompt)) == ("c0", fixtures.Q1, "image_only") else infer(adapter, images, prompt)
+    assert runner.main(args, loader=lambda spec: {}, infer=with_invalid, load_qa=runner.v2.load_gold_qa_v2) == 0
+    lb = {r["condition"]: r for r in fixtures._csv(out/"leaderboard.csv")}
+    # image_only answers "A" (normal) everywhere except the invalid c0 Q1: 3 anomalous missed, 2 normal correct.
+    img = lb["image_only"]
+    assert (img["q1_tp"], img["q1_fp"], img["q1_tn"], img["q1_fn"], img["q1_invalid_normal_n"]) == ("0", "0", "2", "3", "1")
+    assert float(img["q1_accuracy"]) == pytest.approx(2/6) and float(img["q1_balanced_accuracy"]) == pytest.approx(1/3)
+    assert float(img["q1_specificity"]) == pytest.approx(2/3) and float(img["q1_recall"]) == 0
+    assert float(img["q2_accuracy"]) == pytest.approx(.5) and float(img["q2_defect_balanced_accuracy"]) == pytest.approx(.5)
+    ref = lb["normal_reference"]
+    assert (ref["q1_tp"], ref["q1_fp"], ref["q1_tn"], ref["q1_fn"]) == ("3", "0", "3", "0")
+    assert float(ref["q1_balanced_accuracy"]) == float(ref["q2_defect_balanced_accuracy"]) == 1.0
+    by_asset = fixtures._csv(out/"metrics_by_asset.csv")
+    assert {(r["condition"], r["asset_category"]) for r in by_asset} == {(c, a) for c in COND_KEYS
+                                                                         for a in ("vari-grip", "yoke-suspension")}
+    assert all("q1_normal_images" in r and "q1_anomalous_images" in r for r in by_asset)
+    macro = {r["condition"]: r for r in fixtures._csv(out/"metrics_asset_macro.csv")}
+    assert set(macro) == set(COND_KEYS) and macro["normal_reference"]["assets"] == "2"
+    for key in runner.MACRO_KEYS:
+        values = [float(r[key]) for r in by_asset if r["condition"] == "image_only"]
+        assert float(macro["image_only"][key]) == pytest.approx(sum(values)/len(values), abs=1e-6)
+
+
+def test_aggregate_rebuilds_the_same_reports_from_saved_steps_without_a_model(tmp_path):
+    rows, args, out = setup(tmp_path)
+    assert run(rows, args, []) == 0
+    steps = {r["id"]: r for r in runner.base.read_jsonl(out/"predictions"/runner.MODEL/"steps.jsonl")}
+    snapshot = runner.base.read_jsonl(out/"gold_qa_snapshot.jsonl")
+    again = tmp_path/"again"
+    statuses = runner.aggregate(snapshot, steps, again, tmp_path/"sampled.csv", n_boot=20)
+    assert all(s["status"] == "complete" for s in statuses)
+    for name in ("leaderboard.csv", "metrics_by_asset.csv", "metrics_asset_macro.csv", "comparison_vs_sampled.csv",
+                 "significance.csv"):
+        assert (again/name).read_bytes() == (out/name).read_bytes(), name
+
+
+def test_default_loader_needs_20gib_and_cached_resume_never_loads(tmp_path, monkeypatch):
+    import types
+
+    def fake_torch(gib):
+        props = types.SimpleNamespace(total_memory=gib * 1024**3)
+        cuda = types.SimpleNamespace(is_available=lambda: gib > 0, get_device_properties=lambda i: props)
+        return types.SimpleNamespace(cuda=cuda)
+    loaded = []
+    monkeypatch.setitem(sys.modules, "insplad_benchmark.hf_adapters",
+                        types.SimpleNamespace(load_hf_adapter=lambda spec: loaded.append(spec) or "adapter"))
+    for gib in (0, 16):
+        monkeypatch.setitem(sys.modules, "torch", fake_torch(gib))
+        with pytest.raises(RuntimeError, match=">= 20 GiB"):
+            runner.default_loader(runner.base.MODEL_REGISTRY[runner.MODEL])
+    monkeypatch.setitem(sys.modules, "torch", fake_torch(24))
+    assert runner.default_loader(runner.base.MODEL_REGISTRY[runner.MODEL]) == "adapter" and len(loaded) == 1
+    monkeypatch.setitem(sys.modules, "torch", fake_torch(0))
+    rows, args, out = setup(tmp_path)
+    assert run(rows, args, []) == 0
+    calls = []
+    assert runner.main(args, infer=fake(rows, calls), load_qa=runner.v2.load_gold_qa_v2) == 0 and calls == []
+    assert len(loaded) == 1

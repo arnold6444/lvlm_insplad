@@ -183,14 +183,50 @@ def test_notebook_is_built_from_current_code_and_gates_real_outputs(tmp_path):
     assert "scripts/run_gold_v2_matched_call.py" in config["CODE_BLOBS"]
     assert "scripts/run_gold_v2_q23_candidate.py" in config["CODE_BLOBS"]
     assert config["RUN_FOLDER"].endswith("gold_v2_matched_call_v1")
+    run_cell = "".join(notebook["cells"][4]["source"])
+    assert "RUN_RC = run(" in run_cell and '"--invocation-id", INVOCATION_ID' in run_cell
     rows, _, args, _, out = setup(tmp_path)
-    assert run(rows, args, []) == 0
+    assert run(rows, [*args, "--invocation-id", "first"], []) == 0
     import pandas as pd
     cell = "".join(notebook["cells"][5]["source"])
-    context = {"pd": pd, "json": json, "RUN_ROOT": out, "display": lambda obj: None}
+    context = {"pd": pd, "json": json, "RUN_ROOT": out, "display": lambda obj: None, "RUN_RC": 0, "INVOCATION_ID": "first"}
     exec(cell, context)
+    # PR71 review: a re-run that fails before touching the folder must not pass on the earlier run's complete files.
+    with pytest.raises(ValueError, match="inputs/config/code changed"):
+        run(rows, [*args, "--n-boot", "30", "--invocation-id", "second"], [])
+    assert json.loads((out/"run_status.json").read_text())["complete"]
+    with pytest.raises(RuntimeError, match="종료 코드 1"):
+        exec(cell, {**context, "RUN_RC": 1, "INVOCATION_ID": "second"})
+    with pytest.raises(RuntimeError, match="이번 실행에서 나온 것이 아닙니다"):
+        exec(cell, {**context, "INVOCATION_ID": "second"})
+    meta = json.loads((out/"run_metadata.json").read_text())
+    assert meta["invocation_id"] == json.loads((out/"run_status.json").read_text())["invocation_id"] == "first"
     status = json.loads((out/"run_status.json").read_text())
     status["complete"] = False
     runner.old.atomic_json(out/"run_status.json", status)
     with pytest.raises(RuntimeError, match="실패/무효/누락"):
         exec(cell, context)
+
+
+def test_default_loader_needs_20gib_and_cached_resume_never_loads(tmp_path, monkeypatch):
+    import types
+
+    def fake_torch(gib):
+        props = types.SimpleNamespace(total_memory=gib * 1024**3)
+        cuda = types.SimpleNamespace(is_available=lambda: gib > 0, get_device_properties=lambda i: props)
+        return types.SimpleNamespace(cuda=cuda)
+    spec = runner.agent.base.MODEL_REGISTRY[MODEL]
+    loaded = []
+    monkeypatch.setitem(sys.modules, "insplad_benchmark.hf_adapters",
+                        types.SimpleNamespace(load_hf_adapter=lambda spec: loaded.append(spec) or "adapter"))
+    for gib in (0, 16):
+        monkeypatch.setitem(sys.modules, "torch", fake_torch(gib))
+        with pytest.raises(RuntimeError, match=">= 20 GiB"):
+            runner.default_loader(spec)
+    monkeypatch.setitem(sys.modules, "torch", fake_torch(24))
+    assert runner.default_loader(spec) == "adapter" and len(loaded) == 1
+    monkeypatch.setitem(sys.modules, "torch", fake_torch(0))
+    rows, _, args, _, out = setup(tmp_path)
+    assert run(rows, args, []) == 0
+    calls = []
+    assert runner.main(args, load_qa=lambda _: rows, infer=fake(calls)) == 0 and calls == [] and len(loaded) == 1

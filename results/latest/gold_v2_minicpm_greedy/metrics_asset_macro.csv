@@ -1,0 +1,5 @@
+model_key,condition,assets,q1_accuracy,q1_balanced_accuracy,q1_anomaly_f1,q1_precision,q1_recall,q1_specificity,q2_accuracy,q2_defect_balanced_accuracy,q2_defect_macro_f1,joint_accuracy,consistency_error,false_defect_rate
+minicpm_v_4_5,image_only,5,0.590411,0.642261,0.532424,0.826871,0.478461,0.806061,0.685657,0.733917,0.686064,0.483267,0.280586,0.260606
+minicpm_v_4_5,normal_reference,5,0.665845,0.584462,0.759464,0.651657,0.981045,0.187879,0.570103,0.536606,0.553272,0.529853,0.112755,0.802424
+minicpm_v_4_5,positive_reference,5,0.378507,0.465962,0.009091,0.2,0.004651,0.927273,0.501998,0.527642,0.400348,0.364555,0.15666,0.090909
+minicpm_v_4_5,normal_positive_reference,5,0.582032,0.669644,0.57293,0.592366,0.593833,0.745455,0.59722,0.554414,0.531612,0.420649,0.321177,0.677576
