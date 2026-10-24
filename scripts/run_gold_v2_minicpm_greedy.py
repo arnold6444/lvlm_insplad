@@ -24,6 +24,7 @@ import json
 import subprocess
 import sys
 import time
+import uuid
 from collections import Counter
 from pathlib import Path
 
@@ -31,6 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "src")]
 import run_gold_v2_consistency_metrics as cons
 import run_gold_v2_reference_ablation as ref
+from insplad_benchmark.metrics import anomaly_classification_summary, balanced_accuracy
 
 base, v2 = ref.base, ref.v2
 MODEL = "minicpm_v_4_5"
@@ -41,6 +43,19 @@ REFERENCE_MANIFEST = ROOT / "results/latest/gold_v2_reference/reference_manifest
 SAMPLED = ROOT / "results/latest/gold_v2_consistency_metrics/consistency_leaderboard.csv"
 TABLE_KEYS = ("q1_anomaly_f1", "q2_defect_macro_f1", "joint_accuracy", "consistency_error", "false_defect_rate",
               "q3_accuracy", "q1_invalid_rate", "q2_invalid_rate", "q3_invalid_rate")
+MACRO_KEYS = ("q1_accuracy", "q1_balanced_accuracy", "q1_anomaly_f1", "q1_precision", "q1_recall", "q1_specificity",
+              "q2_accuracy", "q2_defect_balanced_accuracy", "q2_defect_macro_f1", "joint_accuracy", "consistency_error",
+              "false_defect_rate")
+MIN_VRAM_GIB = 20
+
+
+def default_loader(spec):
+    """Load the HF model only on a >= 20 GiB GPU (AGENTS.md), never quantizing to fit; cached resumes never get here."""
+    import torch
+    if not torch.cuda.is_available() or torch.cuda.get_device_properties(0).total_memory < MIN_VRAM_GIB * 1024**3:
+        raise RuntimeError(f"an L4/A100-class GPU with >= {MIN_VRAM_GIB} GiB VRAM is required to load {spec['model_id']}")
+    from insplad_benchmark.hf_adapters import load_hf_adapter
+    return load_hf_adapter(spec)
 
 
 def git_commit():
@@ -84,7 +99,63 @@ def images_for(row, condition, manifest, targets, normals, positives):
 
 
 def metrics(rows, choice):
-    return {**cons.consistency_row(cons.image_pairs(rows), choice), **cons.q3_row(cons.q3_pairs(rows), choice)}
+    """Consistency/Q3 metrics plus the anomaly and structured metrics AGENTS.md requires (invalid normal answers stay
+    separate from false positives, as in metrics.anomaly_classification_summary)."""
+    pairs = cons.image_pairs(rows)
+    q1_true = [str(a["anomaly_gt"]) for a, _ in pairs]
+    q1_pred = [base.predicted_semantic(a, choice.get(str(a["id"]))) or "invalid" for a, _ in pairs]
+    q2_true = [str(b["defect_gt"]) for _, b in pairs]
+    q2_pred = [base.predicted_semantic(b, choice.get(str(b["id"]))) or "invalid" for _, b in pairs]
+    s = anomaly_classification_summary(q1_true, q1_pred)
+    out = {**cons.consistency_row(pairs, choice), **cons.q3_row(cons.q3_pairs(rows), choice)}
+    out.update({"q1_accuracy": round(sum(a == b for a, b in zip(q1_true, q1_pred)) / len(pairs), 6),
+                **{f"q1_{k}": (round(s[k], 6) if isinstance(s[k], float) else s[k])
+                   for k in ("balanced_accuracy", "precision", "recall", "specificity", "tp", "fp", "tn", "fn",
+                             "invalid_normal_n", "invalid_anomalous_n", "has_both_classes")},
+                "q1_normal_images": s["normal_n"], "q1_anomalous_images": s["anomalous_n"],
+                "q2_accuracy": round(sum(a == b for a, b in zip(q2_true, q2_pred)) / len(pairs), 6),
+                "q2_defect_balanced_accuracy": round(balanced_accuracy(q2_true, q2_pred), 6)})
+    return out
+
+
+def aggregate(rows, steps, out_dir, sampled_path=SAMPLED, n_boot=2000):
+    """Write every report from saved steps ({condition/question_id: record}); returns the per-condition status rows."""
+    choices = {c: {str(r["id"]): steps[f"{c}/{r['id']}"]["predicted_choice"] for r in rows} for c in CONDITIONS}
+    sampled = sampled_rows(sampled_path)
+    leaderboard, comparison, statuses, by_asset, macro = [], [], [], [], []
+    for condition in CONDITIONS:
+        recs = [steps[f"{condition}/{r['id']}"] for r in rows]
+        errors = sum(bool(r["error"]) for r in recs)
+        complete = errors == 0 and len(recs) == len(rows)
+        statuses.append({"condition": condition, "status": "complete" if complete else "incomplete",
+                         "row_errors": errors, "invalid_outputs": sum(r["predicted_choice"] is None for r in recs),
+                         "questions": len(recs)})
+        if not complete:
+            continue
+        m = metrics(rows, choices[condition])
+        leaderboard.append({"model_key": MODEL, "condition": condition, "decoding": "greedy",
+                            "latency_s": round(sum(r["latency_s"] for r in recs), 3), **m})
+        assets = []
+        for asset in sorted({r["asset_category"] for r in rows}):
+            sub = [r for r in rows if r["asset_category"] == asset]
+            assets.append({"model_key": MODEL, "condition": condition, "asset_category": asset, **metrics(sub, choices[condition])})
+        by_asset += assets
+        macro.append({"model_key": MODEL, "condition": condition, "assets": len(assets),
+                      **{k: round(sum(a[k] for a in assets) / len(assets), 6) for k in MACRO_KEYS}})
+        old = sampled.get(condition)
+        for key in TABLE_KEYS:
+            if key in m:
+                comparison.append({"condition": condition, "metric": key, "greedy": m[key],
+                                   "sampled_published": float(old[key]) if old and old.get(key) not in (None, "") else None,
+                                   "difference": round(m[key] - float(old[key]), 6) if old and old.get(key) not in (None, "") else None})
+    found = {(MODEL, c): choices[c] for c in CONDITIONS if any(s["condition"] == c and s["status"] == "complete" for s in statuses)}
+    sig = cons.significance_rows(cons.image_pairs(rows), cons.q3_pairs(rows), found, [MODEL], COMPARISONS, n_boot)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name, data in (("leaderboard.csv", leaderboard), ("metrics_by_asset.csv", by_asset),
+                       ("metrics_asset_macro.csv", macro), ("comparison_vs_sampled.csv", comparison),
+                       ("significance.csv", sig)):
+        base.write_csv(out_dir/name, data)
+    return statuses
 
 
 def sampled_rows(path):
@@ -101,7 +172,9 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
     p.add_argument("--sampled-leaderboard", type=Path, default=SAMPLED)
     p.add_argument("--checkpoint-every", type=int, default=20)
     p.add_argument("--n-boot", type=int, default=2000)
+    p.add_argument("--invocation-id", default=None, help="written to run_metadata/run_status so callers can tell this run's files from an earlier run's")
     args = p.parse_args(argv)
+    invocation = args.invocation_id or uuid.uuid4().hex
     if not args.out_dir.name.startswith(PREFIX) or args.checkpoint_every <= 0 or args.n_boot <= 0:
         raise ValueError("use a separate gold_v2_minicpm_greedy* output folder and positive check counts")
     summary = json.loads((args.qa_dir/"build_summary.json").read_text(encoding="utf-8"))
@@ -140,9 +213,13 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
         "code_sha256": code, "reference_manifest": str(args.reference_manifest),
         "reference_manifest_sha256": hashlib.sha256(Path(args.reference_manifest).read_bytes()).hexdigest(),
         "replaces": "sampled (temperature 0.7) MiniCPM results in gold_v2_baseline / gold_v2_reference",
-        "published": False, "software": {}, "complete": False}
+        "published": False, "software": {}, "complete": False, "invocation_id": invocation}
     args.out_dir.mkdir(parents=True, exist_ok=True)
     meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    status_path = args.out_dir/"run_status.json"
+    # Replace any earlier run's status first, so a crash below can never leave an old "complete" behind.
+    status_path.write_text(json.dumps({"status": "running", "complete": False, "invocation_id": invocation,
+                                       "published": False}, indent=2) + "\n", encoding="utf-8")
     base.write_csv(args.out_dir/"image_manifest.csv", image_manifest)
     base.write_jsonl(args.out_dir/"gold_qa_snapshot.jsonl", rows)
     path = args.out_dir/"predictions"/MODEL/"steps.jsonl"
@@ -152,9 +229,8 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
     existing = {r["id"]: r for r in records}
     if infer is None:
         from insplad_benchmark.hf_adapters import infer_hf as infer
-    holder = base.LazyHFAdapter(spec, loader=loader)
+    holder = base.LazyHFAdapter(spec, loader=loader or default_loader)
     used, counts = {}, Counter()
-    choices = {c: {} for c in CONDITIONS}
     load_failure = ""
 
     def save():
@@ -196,41 +272,13 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
                            "output": output, "error": error, "latency_s": round(time.time()-start, 3)}
                 rec["predicted_choice"] = base.parse_choice(rec["output"], letters)
                 used[key] = rec
-                choices[condition][str(row["id"])] = rec["predicted_choice"]
                 if new_call and counts["called_this_run"] % args.checkpoint_every == 0:
                     save()
                     print(f"[{condition}] {len(used)} steps saved", flush=True)
     finally:
         save()
         holder.release()
-    sampled = sampled_rows(args.sampled_leaderboard)
-    leaderboard, comparison, statuses, by_asset = [], [], [], []
-    for condition in CONDITIONS:
-        recs = [used[f"{condition}/{r['id']}"] for r in rows]
-        errors = sum(bool(r["error"]) for r in recs)
-        complete = errors == 0 and len(recs) == len(rows)
-        statuses.append({"condition": condition, "status": "complete" if complete else "incomplete",
-                         "row_errors": errors, "invalid_outputs": sum(r["predicted_choice"] is None for r in recs),
-                         "questions": len(recs)})
-        if not complete:
-            continue
-        m = metrics(rows, choices[condition])
-        leaderboard.append({"model_key": MODEL, "condition": condition, "decoding": "greedy",
-                            "latency_s": round(sum(r["latency_s"] for r in recs), 3), **m})
-        for asset in sorted({r["asset_category"] for r in rows}):
-            sub = [r for r in rows if r["asset_category"] == asset]
-            by_asset.append({"model_key": MODEL, "condition": condition, "asset_category": asset, **metrics(sub, choices[condition])})
-        old = sampled.get(condition)
-        for key in TABLE_KEYS:
-            if key in m:
-                comparison.append({"condition": condition, "metric": key, "greedy": m[key],
-                                   "sampled_published": float(old[key]) if old and old.get(key) not in (None, "") else None,
-                                   "difference": round(m[key] - float(old[key]), 6) if old and old.get(key) not in (None, "") else None})
-    found = {(MODEL, c): choices[c] for c in CONDITIONS if any(s["condition"] == c and s["status"] == "complete" for s in statuses)}
-    sig = cons.significance_rows(cons.image_pairs(rows), cons.q3_pairs(rows), found, [MODEL], COMPARISONS, args.n_boot)
-    for name, data in (("leaderboard.csv", leaderboard), ("metrics_by_asset.csv", by_asset),
-                       ("comparison_vs_sampled.csv", comparison), ("significance.csv", sig)):
-        base.write_csv(args.out_dir/name, data)
+    statuses = aggregate(rows, used, args.out_dir, args.sampled_leaderboard, args.n_boot)
     complete = all(s["status"] == "complete" for s in statuses)
     meta.update({"complete": complete, "called_this_run": counts["called_this_run"], "reused_calls": counts["reused_calls"],
                  "unique_steps": len(used), "row_errors": sum(s["row_errors"] for s in statuses),
@@ -248,8 +296,8 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
     except ImportError:
         pass
     meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (args.out_dir/"run_status.json").write_text(json.dumps({"status": "complete" if complete else "incomplete",
-        "complete": complete, "conditions": statuses, "published": False}, indent=2) + "\n", encoding="utf-8")
+    status_path.write_text(json.dumps({"status": "complete" if complete else "incomplete", "complete": complete,
+        "invocation_id": invocation, "conditions": statuses, "published": False}, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({**counts, "complete": complete}, indent=2), flush=True)
     return 0 if complete else 1
 

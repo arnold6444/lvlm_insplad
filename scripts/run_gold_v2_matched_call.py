@@ -16,6 +16,7 @@ import importlib.metadata
 import json
 import sys
 import time
+import uuid
 from collections import Counter
 from pathlib import Path
 
@@ -31,6 +32,16 @@ POLICIES = ("baseline", "previous_agent", "candidate", "matched_reask")
 # (a, b) reports b - a. The first row is the primary question.
 COMPARISONS = [("matched_reask", "previous_agent"), ("baseline", "matched_reask"),
                ("matched_reask", "candidate"), ("baseline", "candidate"), ("previous_agent", "candidate")]
+MIN_VRAM_GIB = 20
+
+
+def default_loader(spec):
+    """Load the HF model only on a >= 20 GiB GPU (AGENTS.md), never quantizing to fit; cached resumes never get here."""
+    import torch
+    if not torch.cuda.is_available() or torch.cuda.get_device_properties(0).total_memory < MIN_VRAM_GIB * 1024**3:
+        raise RuntimeError(f"an L4/A100-class GPU with >= {MIN_VRAM_GIB} GiB VRAM is required to load {spec['model_id']}")
+    from insplad_benchmark.hf_adapters import load_hf_adapter
+    return load_hf_adapter(spec)
 
 
 def image_member(path):
@@ -96,7 +107,9 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
     p.add_argument("--config", type=Path, default=CONFIG)
     p.add_argument("--checkpoint-every", type=int, default=20)
     p.add_argument("--n-boot", type=int, default=2000)
+    p.add_argument("--invocation-id", default=None, help="written to run_metadata/run_status so callers can tell this run's files from an earlier run's")
     args = p.parse_args(argv)
+    invocation = args.invocation_id or uuid.uuid4().hex
     if not args.out_dir.name.startswith(PREFIX) or args.n_boot <= 0 or args.checkpoint_every <= 0:
         raise ValueError("use a separate gold_v2_matched_call* output folder and positive check counts")
     config = json.loads(args.config.read_text(encoding="utf-8"))
@@ -146,17 +159,19 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
         "baseline_source": str(args.baseline_predictions) if args.baseline_predictions else None,
         "baseline_source_sha256": baseline_sha, "reuse_source": str(args.reuse_steps) if args.reuse_steps else None,
         "reuse_source_sha256": reuse_sha, "n_boot": args.n_boot,
-        "gpu": previous.get("gpu"), "model_spec": agent.base.MODEL_REGISTRY[model], "software": {}, "complete": False}
+        "gpu": previous.get("gpu"), "model_spec": agent.base.MODEL_REGISTRY[model], "software": {}, "complete": False,
+        "invocation_id": invocation}
     old.atomic_json(meta_path, meta)
     old.atomic_json(args.out_dir/"protocol_lock.json", {"config": config, "input_signature": signature,
         "prediction_identity": identity, "note": "pre-inference protocol, not a successful-result or selection marker"})
-    old.atomic_json(args.out_dir/"run_status.json", {"status": "running", "complete": False, "policies": []})
+    old.atomic_json(args.out_dir/"run_status.json", {"status": "running", "complete": False, "invocation_id": invocation,
+                                                     "policies": []})
     candidate.save_records(args.out_dir/"gold_qa_q12_snapshot.jsonl", rows)
     candidate.save_records(args.out_dir/"q3_auxiliary_partial_qa.jsonl", q3)
     agent.cons.write_csv(args.out_dir/"image_manifest.csv", manifest)
     if infer is None:
         from insplad_benchmark.hf_adapters import infer_hf as infer
-    holder = agent.base.LazyHFAdapter(agent.base.MODEL_REGISTRY[model], loader=loader)
+    holder = agent.base.LazyHFAdapter(agent.base.MODEL_REGISTRY[model], loader=loader or default_loader)
     used, first, baseline_deps = {}, {}, []
     finals = {policy: {} for policy in POLICIES}
     locations = {policy: {} for policy in POLICIES}
@@ -287,7 +302,7 @@ def main(argv=None, *, loader=None, infer=None, load_qa=None):
             meta["software"][package] = None
     old.atomic_json(meta_path, meta)
     old.atomic_json(args.out_dir/"run_status.json", {"status": "complete" if complete else "incomplete", "complete": complete,
-        "policies": statuses, "selection_performed": False, "result_published": False})
+        "invocation_id": invocation, "policies": statuses, "selection_performed": False, "result_published": False})
     print(json.dumps({**counts, "complete": complete, "q1_calls": 0}, indent=2), flush=True)
     return 0 if complete else 1
 

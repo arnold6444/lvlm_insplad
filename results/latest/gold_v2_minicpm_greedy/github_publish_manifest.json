@@ -10,7 +10,10 @@
   "code_commit": "49059c659eff5cf880c6117c26b7fa37f274a297",
   "audit": "reports/gold_minicpm_greedy_evaluation_2026-10-23/1661680ed362/audit_summary.json",
   "derived_files": {
-    "answers.csv": "built from the archive's steps.jsonl and gold_qa_snapshot.jsonl (no new inference)"
+    "answers.csv": "built from the archive's steps.jsonl and gold_qa_snapshot.jsonl (no new inference)",
+    "leaderboard.csv": "re-aggregated on CPU from the archive's steps.jsonl and gold_qa_snapshot.jsonl with run_gold_v2_minicpm_greedy.aggregate (2026-10-24 review fix, no new inference): every earlier column is unchanged; Q1 accuracy/BAcc/precision/recall/specificity/TP/FP/TN/FN/invalid and Q2 accuracy/defect BAcc added",
+    "metrics_by_asset.csv": "re-aggregated on CPU from the archive's steps.jsonl and gold_qa_snapshot.jsonl with run_gold_v2_minicpm_greedy.aggregate (2026-10-24 review fix, no new inference): every earlier column is unchanged; Q1 accuracy/BAcc/precision/recall/specificity/TP/FP/TN/FN/invalid and Q2 accuracy/defect BAcc added",
+    "metrics_asset_macro.csv": "re-aggregated on CPU from the archive's steps.jsonl and gold_qa_snapshot.jsonl with run_gold_v2_minicpm_greedy.aggregate (2026-10-24 review fix, no new inference): every earlier column is unchanged; Q1 accuracy/BAcc/precision/recall/specificity/TP/FP/TN/FN/invalid and Q2 accuracy/defect BAcc added"
   },
   "not_published": "raw per-call steps.jsonl (2.4 MB), QA snapshot and image manifest stay in the archive",
   "files": [
@@ -21,18 +24,25 @@
     },
     {
       "name": "comparison_vs_sampled.csv",
-      "size_bytes": 2088,
-      "sha256": "68f816ff7cd462d7d2988e34a80759b27ced6d28081015b916b3ae1d2223da5b"
+      "size_bytes": 2051,
+      "sha256": "5bfca8a62dcb1ee339a42fd319a486640b4077ecd108c83eec43597460f63803",
+      "archive_size_bytes": 2088,
+      "archive_sha256": "68f816ff7cd462d7d2988e34a80759b27ced6d28081015b916b3ae1d2223da5b"
     },
     {
       "name": "leaderboard.csv",
-      "size_bytes": 905,
-      "sha256": "26d19d73ff697390a8f108a88f9a4ef0468b837ffb57b0e4771c47647b04aaee"
+      "size_bytes": 1501,
+      "sha256": "107a1d623c4b2d0c5a60762ba5efe6b9143ee46569745a80b1c438174ca1ad24"
+    },
+    {
+      "name": "metrics_asset_macro.csv",
+      "size_bytes": 783,
+      "sha256": "4094d6fff05910e49f9fec67ac6b6ab70d087e74f07f2eed2694cb5b3dd470dc"
     },
     {
       "name": "metrics_by_asset.csv",
-      "size_bytes": 2756,
-      "sha256": "9f0fd38c056f290fb36a4ba0498053df62ee749dea1b883ff1449a8ce9843f6d"
+      "size_bytes": 4532,
+      "sha256": "237541bb8e43fde5d60ecc46983c1ed659dea3f658c9262a2587304ccdae203e"
     },
     {
       "name": "run_metadata.json",
@@ -46,8 +56,11 @@
     },
     {
       "name": "significance.csv",
-      "size_bytes": 2597,
-      "sha256": "7d3f6b2c7904156005657a736b9c8e3b41fb7fda608a31d1314f04cdd7bd6846"
+      "size_bytes": 2575,
+      "sha256": "79d14ed402f5a56407a6a3a7ae59c7a8763ca4cce3b6412a360c88d78c8bf0f0",
+      "archive_size_bytes": 2597,
+      "archive_sha256": "7d3f6b2c7904156005657a736b9c8e3b41fb7fda608a31d1314f04cdd7bd6846"
     }
-  ]
+  ],
+  "checksums": "sha256/size_bytes are of the file as committed here (git stores these text files with LF line endings, which is what GitHub serves); archive_sha256/archive_size_bytes are of the same member inside source_archive (CRLF CSVs), given only where the bytes differ"
 }

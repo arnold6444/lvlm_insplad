@@ -24,10 +24,12 @@ Output: `MyDrive/lvlm_insplad_results/gold_v2_minicpm_greedy_v1/`. Re-running th
 - Invalid outputs count as wrong, as in the original evaluation. Metrics use `run_gold_v2_consistency_metrics`. Fed the published image-only predictions, these functions reproduce the published MiniCPM image-only row exactly.
 
 ## Outputs
-- `leaderboard.csv`: per condition Q1 F1, Q2 macro-F1, joint accuracy, consistency error, false defect rate, Q3 accuracy and invalid rates.
-- `metrics_by_asset.csv`
+- `leaderboard.csv`: per condition Q1 F1, Q2 macro-F1, joint accuracy, consistency error, false defect rate, Q3 accuracy and invalid rates, plus Q1 accuracy, balanced accuracy, precision, recall, specificity, TP/FP/TN/FN and invalid normal/anomalous counts (kept apart from FP/FN), and Q2 accuracy and defect balanced accuracy.
+- `metrics_by_asset.csv` (same columns per asset, with class support) and `metrics_asset_macro.csv` (asset-macro averages).
 - `comparison_vs_sampled.csv`: greedy values against the published sampled values.
 - `significance.csv`: image-only versus each reference condition, paired bootstrap 2,000.
 - Raw `steps.jsonl`, `image_manifest.csv`, `run_metadata.json` and `run_status.json`.
 
 A run is complete only when all four conditions have zero errors. The run stops on changed QA, manifest, code, image bytes or a reused-step identity mismatch; use a new folder in that case.
+
+The notebook passes a fresh `--invocation-id` to every run and keeps its exit code. The check cell accepts results only when that exit code is 0 and `run_status.json` and `run_metadata.json` carry the same invocation ID, so a re-run that fails early cannot pass on an earlier run's files. The runner loads the model only on a GPU with at least 20 GiB VRAM; a fully cached resume never loads it.

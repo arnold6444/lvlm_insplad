@@ -136,22 +136,32 @@ print("QA 534문항, 참조 목록 일치. 조건:", ", ".join(greedy.CONDITIONS
 
 RUN_CELL = '''print("code commit:", verify_code())
 # 추론 / 자동 채점. 중단되거나 오류가 남으면 이 셀만 다시 실행.
-run([sys.executable, REPO_DIR / "scripts/run_gold_v2_minicpm_greedy.py",
-     "--qa-dir", QA_DIR, "--sup-zip", SUP_ZIP, "--unsup-zip", UNSUP_ZIP,
-     "--out-dir", RUN_ROOT, "--checkpoint-every", str(CHECKPOINT_EVERY)], check=False)
+import uuid
+INVOCATION_ID = uuid.uuid4().hex  # 아래 확인 셀은 이 실행 ID가 적힌 결과 파일만 받아들입니다.
+RUN_RC = None  # 셀이 중간에 끊기면 이전 실행의 종료 코드가 남지 않게 비워 둡니다.
+RUN_RC = run([sys.executable, REPO_DIR / "scripts/run_gold_v2_minicpm_greedy.py",
+              "--qa-dir", QA_DIR, "--sup-zip", SUP_ZIP, "--unsup-zip", UNSUP_ZIP,
+              "--out-dir", RUN_ROOT, "--checkpoint-every", str(CHECKPOINT_EVERY),
+              "--invocation-id", INVOCATION_ID], check=False)
+print("종료 코드:", RUN_RC, "실행 ID:", INVOCATION_ID)
 '''
 
-CHECK_CELL = '''# 자동 결과 확인: 네 조건이 모두 오류 없이 끝나야 완료
+CHECK_CELL = '''# 자동 결과 확인: 이번 실행이 종료 코드 0으로 끝나고, 결과 파일이 같은 실행에서 나왔을 때만 완료
 pd.set_option("display.max_rows", 100)
+if globals().get("RUN_RC") != 0:
+    raise RuntimeError(f"이번 추론 실행이 실패했습니다(종료 코드 {globals().get('RUN_RC')}). 이전 실행의 결과 파일은 쓰지 않습니다. 추론 셀을 다시 실행하세요.")
 status = json.loads((RUN_ROOT / "run_status.json").read_text(encoding="utf-8"))
 meta = json.loads((RUN_ROOT / "run_metadata.json").read_text(encoding="utf-8"))
+if status.get("invocation_id") != INVOCATION_ID or meta.get("invocation_id") != INVOCATION_ID:
+    raise RuntimeError("결과 파일이 이번 실행에서 나온 것이 아닙니다. 추론 셀을 다시 실행하세요.")
 display(pd.DataFrame(status["conditions"]))
 if not status.get("complete") or meta.get("row_errors") or len(status["conditions"]) != 4:
     raise RuntimeError("오류/누락이 남았습니다. 추론 셀을 다시 실행하세요.")
 print("새 호출:", meta["called_this_run"], "저장분 재사용:", meta["reused_calls"], "무효 출력(오답 처리):", meta["invalid_outputs"])
 lb = pd.read_csv(RUN_ROOT / "leaderboard.csv")
-display(lb[["condition", "q1_anomaly_f1", "q2_defect_macro_f1", "joint_accuracy", "consistency_error",
-            "false_defect_rate", "q3_accuracy", "q1_invalid_rate", "q2_invalid_rate"]].round(3))
+display(lb[["condition", "q1_balanced_accuracy", "q1_anomaly_f1", "q1_fp", "q1_fn", "q2_defect_balanced_accuracy",
+            "q2_defect_macro_f1", "joint_accuracy", "consistency_error", "false_defect_rate", "q3_accuracy",
+            "q1_invalid_rate", "q2_invalid_rate"]].round(3))
 print("greedy vs 이전 샘플링(발표값)")
 cmp = pd.read_csv(RUN_ROOT / "comparison_vs_sampled.csv")
 display(cmp.pivot_table(index="condition", columns="metric", values=["greedy", "sampled_published"]).round(3))
