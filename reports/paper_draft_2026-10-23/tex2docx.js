@@ -114,7 +114,8 @@ const MATH = [[/\\rightarrow/g, "→"], [/\\times/g, "×"], [/\\le\b/g, "≤"], 
   [/\\dagger/g, "†"], [/\\,/g, " "], [/\^/g, ""], [/\\Delta/g, "Δ"], [/(^|[\s\[(,])-/g, "$1−"]];
 function mathText(s) { let t = s; for (const [a, b] of MATH) t = t.replace(a, b); return t.replace(/[{}]/g, ""); }
 function plain(s) {
-  return s.replace(/``/g, "“").replace(/''/g, "”").replace(/---/g, "—").replace(/--/g, "–")
+  return s.replace(/\\(['~"])\{?(\w)\}?/g, (_, a, ch) => (ACCENT[a] || {})[ch] || ch)
+    .replace(/``/g, "“").replace(/''/g, "”").replace(/---/g, "—").replace(/--/g, "–")
     .replace(/~/g, " ").replace(/\\,/g, " ").replace(/\\%/g, "%").replace(/\\&/g, "&").replace(/\\_/g, "_")
     .replace(/\\#/g, "#").replace(/\\ /g, " ").replace(/\s+/g, " ");
 }
@@ -224,6 +225,7 @@ const flush = () => {
   if (!t && !runIn) return;
   const kids = runIn ? [new D.TextRun({ text: plain(runIn) + " ", bold: true }), ...runs(t)] : runs(t);
   runIn = null;
+  if (!kids.length) return; // e.g. a bare \label after a heading
   children.push(P("", { children: kids }));
 };
 const isList = (env) => env === "itemize" || env === "enumerate";

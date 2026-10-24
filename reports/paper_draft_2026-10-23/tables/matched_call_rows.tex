@@ -1,10 +1,10 @@
 % Source: gold_matched_call_results.zip sha256 902a9f8a1752... (reports/gold_matched_call_evaluation_2026-10-23),
 % InternVL3.5-8B, NVIDIA L4, main@36458d5, 622 new calls + 1,606 reused, 0 errors, 0 invalid. CPU audit: audit_summary.json.
 % Columns: policy, Q2+Q3 calls per image, Q2 macro-F1, Q3 presence BAcc, normal false region (/107), defect false none (/139).
-Direct                           & 2.00 & .522 & .551 & 93 & 4 \\
-Matched re-ask (no new evidence) & 4.53 & .476 & .625 & 74 & 8 \\
+Direct                           & 2.00 & .522 & .551 & 93 & \textbf{4} \\
+Matched re-ask                   & 4.53 & .476 & .625 & 74 & 8 \\
 Verification agent               & 4.53 & \textbf{.640} & \textbf{.828} & \textbf{16} & 27 \\
 Revised candidate                & 3.53 & .623 & \textbf{.828} & \textbf{16} & 27 \\
 \midrule
 \multicolumn{6}{l}{Agent $-$ re-ask: Q2 macro-F1 $+.164$ $[+.093, +.242]$; Q3 presence BAcc $+.203$ $[+.145, +.257]$} \\
-\multicolumn{6}{l}{Re-ask $-$ direct: Q2 macro-F1 $-.046$ $[-.095, +.001]$; Q3 presence BAcc $+.074$ $[+.025, +.124]$} \\
+\multicolumn{6}{l}{Re-ask $-$ direct: Q2 macro-F1 $-.046$ $[-.095, +.000]$; Q3 presence BAcc $+.074$ $[+.025, +.124]$} \\
