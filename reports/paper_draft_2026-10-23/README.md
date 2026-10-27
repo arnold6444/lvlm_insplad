@@ -1,18 +1,26 @@
-# InsPLAD-QA 논문 초안 (최종, 2026-10-24)
+# InsPLAD-QA 논문 초안 (최종, 2026-10-27 팀 피드백 반영)
 
 | 파일 | 내용 |
 |---|---|
 | `main_en.tex` | 영어판 본문 |
 | `main_ko.tex` | 한국어판 본문 (kotex) |
 | `tables/*.tex` | 두 판이 같이 쓰는 표 숫자. 각 파일 첫 줄 주석에 출처 결과 파일이 있음 |
-| `refs.bib` | 참고문헌. 2026-10-24 웹·독립 검증으로 확인 |
-| `InsPLAD_QA_paper_en.docx`, `InsPLAD_QA_paper_ko.docx` | 위 LaTeX 원고를 그대로 변환한 Word판(표·인용 번호·참고문헌 포함) |
+| `figures/fig_*_{en,ko}.png` | 그림 4개(벤치마크 흐름, QA 예시, 결함 참조 예시, 에이전트 구조)의 영·한판 |
+| `make_figures.py` | 위 그림을 결과 CSV와 원본 이미지에서 다시 그리는 스크립트 |
+| `refs.bib` | 참고문헌. 2026-10-24 웹·독립 검증으로 확인, 2026-10-27 추가 4건(ReConPatch, 송전선 점검 리뷰, CPLID, STN PLAD)은 Crossref·arXiv로 확인 |
+| `InsPLAD_QA_paper_en.docx`, `InsPLAD_QA_paper_ko.docx` | 위 LaTeX 원고를 그대로 변환한 Word판(그림·표·인용 번호·참고문헌 포함) |
 | `VERIFICATION_2026-10-24.md` | 독립 검증 4개로 논문 주장 약 186개를 원본 결과와 대조한 보고서 |
 | `tex2docx.js` | LaTeX → docx 변환기 |
 | `compute_agent_vs_direct_ci.py` | "에이전트 − 직접" CI 재계산 스크립트(인자: 코드 폴더, gold 실행 원시 폴더) |
 
+## 그림 다시 그리기
+답과 참조는 `results/latest/` 결과 파일에서 읽고, 이미지는 원본 ZIP에서 꺼낸다(Python + matplotlib, Pillow). InsPLAD 이미지는 CC BY-NC 3.0이라 그림 캡션에 출처를 적었다.
+```
+python make_figures.py --sup-zip <supervised_fault_classification.zip>
+```
+
 ## Word 파일 다시 만들기
-원고는 LaTeX가 원본이다. 내용은 LaTeX에서 고치고 docx를 다시 만든다(Node.js + npm `docx@9` 필요).
+원고는 LaTeX가 원본이다. 내용은 LaTeX에서 고치고 docx를 다시 만든다(Node.js + npm `docx@9` 필요). 그림은 PNG만 지원한다.
 ```
 node tex2docx.js main_en.tex InsPLAD_QA_paper_en.docx en
 node tex2docx.js main_ko.tex InsPLAD_QA_paper_ko.docx ko

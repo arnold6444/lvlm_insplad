@@ -8,8 +8,8 @@ const [, , texPath, outPath, lang] = process.argv;
 const ROOT = path.dirname(texPath);
 const KO = lang === "ko";
 const L = KO
-  ? { abstract: "요약", references: "참고문헌", table: "표", appendix: "부록" }
-  : { abstract: "Abstract", references: "References", table: "Table", appendix: "Appendix" };
+  ? { abstract: "요약", references: "참고문헌", table: "표", figure: "그림", appendix: "부록" }
+  : { abstract: "Abstract", references: "References", table: "Table", figure: "Figure", appendix: "Appendix" };
 const FONT = { ascii: "Times New Roman", hAnsi: "Times New Roman", eastAsia: "Malgun Gothic", cs: "Times New Roman" };
 const PAGE_W = 11906, MARGIN = 1300, CONTENT_W = PAGE_W - 2 * MARGIN;
 // Korean text with long unbreakable number groups looks gappy when justified; Malgun Gothic also runs tall.
@@ -96,14 +96,15 @@ const bib = parseBib(fs.readFileSync(path.join(ROOT, "refs.bib"), "utf8"));
 // ---------- pass 1: numbering of sections, tables and citations ----------
 const labels = {}, citeOrder = [];
 {
-  let sec = 0, sub = 0, app = false, tab = 0;
-  const re = /\\(section|subsection)\{|\\appendix|\\begin\{table\}|\\label\{([^}]+)\}|\\cite\{([^}]+)\}/g;
+  let sec = 0, sub = 0, app = false, tab = 0, fig = 0;
+  const re = /\\(section|subsection)\{|\\appendix|\\begin\{table\}|\\begin\{figure\}|\\label\{([^}]+)\}|\\cite\{([^}]+)\}/g;
   let m, last = null;
   while ((m = re.exec(body))) {
     if (m[0] === "\\appendix") { app = true; sec = 0; continue; }
     if (m[1] === "section") { sec++; sub = 0; last = app ? String.fromCharCode(64 + sec) : String(sec); continue; }
     if (m[1] === "subsection") { sub++; last = (app ? String.fromCharCode(64 + sec) : sec) + "." + sub; continue; }
     if (m[0].startsWith("\\begin{table}")) { tab++; last = String(tab); continue; }
+    if (m[0].startsWith("\\begin{figure}")) { fig++; last = String(fig); continue; }
     if (m[2]) { labels[m[2]] = last; continue; }
     if (m[3]) m[3].split(",").map((k) => k.trim()).forEach((k) => { if (!citeOrder.includes(k)) citeOrder.push(k); });
   }
@@ -212,6 +213,25 @@ function tableBlock(content) {
 }
 const labelsSeen = {};
 
+// ---------- figures (PNG only; the width option is a fraction of \linewidth) ----------
+let figureCount = 0;
+function figureBlock(content) {
+  const g = /\\includegraphics(?:\[([^\]]*)\])?\{([^}]+)\}/.exec(content);
+  const [caption] = braced(content, content.indexOf("\\caption{") + 8);
+  const file = path.join(ROOT, g[2]);
+  const png = fs.readFileSync(file);
+  if (png.toString("ascii", 1, 4) !== "PNG") throw new Error(`figure must be a PNG: ${g[2]}`);
+  const wPx = png.readUInt32BE(16), hPx = png.readUInt32BE(20);
+  const frac = parseFloat((/width=([\d.]+)\\(?:line|text)width/.exec(g[1] || "") || [0, "1"])[1]);
+  const width = Math.round((CONTENT_W / 1440) * 96 * frac), height = Math.round(width * hPx / wPx);
+  figureCount++;
+  return [
+    new D.Paragraph({ alignment: D.AlignmentType.CENTER, keepNext: true, spacing: { before: 200, after: 80 },
+      children: [new D.ImageRun({ type: "png", data: png, transformation: { width, height } })] }),
+    new D.Paragraph({ alignment: BODY_ALIGN, spacing: { after: 200 }, children: [new D.TextRun({ text: `${L.figure} ${figureCount}. `, bold: true, size: 19 }), ...runs(caption, { size: 19 })] }),
+  ];
+}
+
 // ---------- pass 2: blocks ----------
 const children = [];
 const P = (s, opts = {}) => new D.Paragraph({ alignment: BODY_ALIGN, spacing: { after: 120, line: LINE }, ...opts, children: opts.children || runs(s) });
@@ -239,6 +259,8 @@ while (i < body.length) {
       children.push(P(content, { indent: { left: 400, right: 400 } }));
     } else if (env === "table") {
       children.push(...tableBlock(content));
+    } else if (env === "figure") {
+      children.push(...figureBlock(content));
     } else if (isList(env)) {
       listInstance++;
       content.split(/\\item\s+/).slice(1).forEach((it) => children.push(new D.Paragraph({
@@ -297,4 +319,4 @@ const doc = new D.Document({
     children,
   }],
 });
-D.Packer.toBuffer(doc).then((b) => { fs.writeFileSync(outPath, b); console.log("wrote", outPath, b.length, "bytes;", Object.keys(labelsSeen).length, "tables;", citeOrder.length, "citations"); });
+D.Packer.toBuffer(doc).then((b) => { fs.writeFileSync(outPath, b); console.log("wrote", outPath, b.length, "bytes;", Object.keys(labelsSeen).length, "tables;", figureCount, "figures;", citeOrder.length, "citations"); });
