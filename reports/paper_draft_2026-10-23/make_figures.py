@@ -22,51 +22,59 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 OUT = HERE / "figures"
 DPI = 300
+WIDTH = 7.0  # inches: the text width of a one-column page; still legible at one column of a two-column page
 # One gold image per class; normal/rust/bird nest are the same asset type, so only the condition differs.
 EXAMPLES = [("normal", "core-07f9ce99fdf16056"), ("rust", "core-28a24ec7956ea697"),
             ("bird-nest", "core-3df353cc203c9ed3"), ("missing-cap", "core-bb120ed6aa3fc6a1")]
 REF_EXAMPLES = ["core-bb120ed6aa3fc6a1", "core-28a24ec7956ea697"]
 NONE = "No localized defect region is present."
-GREEN, RED, GREY = "#1b7f3b", "#b3261e", "#555555"
-FACE = {"src": "#eef3fb", "mid": "#f4f4f4", "gold": "#fff4dc", "dev": "#e9f5ec"}
+
+# Muted, colour-blind-safe palette: (fill, edge and title colour) per role.
+ROLE = {"data": ("#E3EDF7", "#2C5D8A"), "gold": ("#FBEFD9", "#8A5A12"), "dev": ("#E1F1E6", "#2D6B45"),
+        "model": ("#EEEFF3", "#4A5160"), "control": ("#FFFFFF", "#6B7280")}
+INK, MUTED, ARROW, FRAME = "#1F2933", "#52606D", "#7B8794", "#D3D8DE"
+OK, BAD = "#1E7B45", "#B42318"
+OK_BG, BAD_BG = "#E6F4EA", "#FCE8E6"
 
 T = {
     "en": dict(
-        font="DejaVu Sans",
+        font="Arial",
         cls={"normal": "Normal", "rust": "Rust", "bird-nest": "Bird nest", "missing-cap": "Missing cap"},
         asset={"vari-grip": "vari-grip", "glass-insulator": "glass insulator"},
-        anomalous="Anomalous", normal="Normal", region="region", none="none",
-        gt="Truth", direct="Direct", agent_lbl="Agent", shared="shared",
-        ref_target="Target", ref_ref="Defect reference", minicpm="MiniCPM-V-4.5 Q1:",
-        ref_caption="{label}, cos {sim:.2f}",
+        anomalous="Anomalous", normal="Normal", region="Region", none="None",
+        gt="Truth", direct="Direct", agent_lbl="Agent", shared="same as direct",
+        legend="Green: correct.  Red: wrong.  Q3 is scored for presence (Region / None).",
+        ref_target="Target", ref_ref="Retrieved defect reference", sim="cosine {sim:.2f}",
+        verdict="MiniCPM-V-4.5 answers Q1: {v}",
+        lanes=("Gold set and baselines", "Dev set and verification agent"),
         pipe=dict(
-            ad="InsPLAD anomaly-\ndetection release\n17 assets, 6,481 test",
-            fc="InsPLAD fault-\nclassification release\n5 assets, 6,417 val",
-            align="Exact SHA-256\nalignment\n8,990 identical images\n−6 label conflicts\nAligned Core 1,378",
-            gold="Gold v2 (frozen)\n139 defective +\n107 normal images\n534 questions\nmanually reviewed",
-            cond="Conditions × models\nimage only, + normal ref.,\n+ defect ref., + both,\n+ expert cues (4 × 5)\n4 open LVLMs (+ API)",
-            dev="Dev set\n240 images from\nsupervised train\nleakage-checked",
-            design="Agent design\nchosen on dev\n(definitions,\npresence staging)",
-            run="Agent run once\non gold\nInternVL3.5-8B\n+ matched re-ask",
-            evalr="One evaluator\nQ1 F1/BAcc,\nQ2 macro-F1, joint,\nconsistency, FDR,\npaired bootstrap",
+            ad=("Anomaly detection", "InsPLAD release\n17 assets\n6,481 test images"),
+            fc=("Fault classification", "InsPLAD release\n5 assets\n6,417 val images"),
+            align=("SHA-256 alignment", "8,990 identical images\n6 label conflicts out\nAligned Core: 1,378"),
+            gold=("Gold v2 (frozen)", "139 defective\n107 normal\n534 questions"),
+            dev=("Dev set", "240 images from\nsupervised train\nleakage-checked"),
+            cond=("Conditions × models", "image only\n+ normal / defect ref.\n+ both references\n+ 20 expert cues\n4 open LVLMs + API"),
+            design=("Agent design", "chosen on dev:\noption definitions,\npresence-first Q3"),
+            run=("Single gold run", "InternVL3.5-8B\nagent + matched\nre-ask control"),
+            evalr=("One evaluator", "Q1 F1 / BAcc\nQ2 macro-F1\njoint accuracy\nconsistency, FDR\npaired bootstrap"),
         ),
         agent=dict(
-            inp="Target +\nretrieved normal\nreference\n(other capture date)",
-            direct="Direct\nanswers\nQ1, Q2, Q3\n(1 call each)",
-            q1="Q1 kept (never re-checked)",
-            q2="Q2 second look:\nown first answer +\none-line option definitions",
-            q3a="Q3 presence:\nis a defect region present?",
-            q3b="Q3 position:\nwhich 3 × 3 cell?",
-            yes="yes", no="no → none",
-            final="Final Q1, Q2, Q3 stored; contradictions computed only afterwards (no cross-question routing)",
-            ctrl="Matched re-ask control\nsame Q2/Q3 calls per image,\nown-answer re-checks only,\nno definitions, no staging",
+            inp=("Input", "target image +\nretrieved normal reference\n(other capture date)"),
+            direct=("Direct answers", "Q1, Q2, Q3\none call each"),
+            q1=("Q1 anomaly", "kept as answered\n(never re-checked)"),
+            q2=("Q2 defect type", "second look: own first answer\n+ one-line option definitions"),
+            q3a=("Q3 presence", "is a defect region present?"),
+            q3b=("Q3 position", "which of the 3 × 3 cells?"),
+            yes="yes", no="no → “none”",
+            final="Final answers are stored; contradictions between Q1, Q2 and Q3 are computed only afterwards",
+            ctrl=("Matched re-ask control", "same Q2 and Q3 calls per image, own-answer\nre-checks only, no definitions, no staging"),
         ),
     ),
     "ko": dict(
@@ -74,30 +82,32 @@ T = {
         cls={"normal": "정상", "rust": "녹", "bird-nest": "새집", "missing-cap": "캡 누락"},
         asset={"vari-grip": "vari-grip", "glass-insulator": "유리 애자"},
         anomalous="이상", normal="정상", region="영역", none="없음",
-        gt="정답", direct="직접", agent_lbl="에이전트", shared="공통",
-        ref_target="대상", ref_ref="결함 참조", minicpm="MiniCPM-V-4.5 Q1:",
-        ref_caption="{label}, 코사인 {sim:.2f}",
+        gt="정답", direct="직접", agent_lbl="에이전트", shared="직접과 같음",
+        legend="초록: 정답.  빨강: 오답.  Q3는 유무(영역 / 없음)로 채점한다.",
+        ref_target="대상", ref_ref="검색된 결함 참조", sim="코사인 {sim:.2f}",
+        verdict="MiniCPM-V-4.5의 Q1 답: {v}",
+        lanes=("gold 세트와 기준선", "dev 세트와 검증 에이전트"),
         pipe=dict(
-            ad="InsPLAD\n이상탐지 공개본\n설비 17종, test 6,481장",
-            fc="InsPLAD\n결함분류 공개본\n설비 5종, val 6,417장",
-            align="SHA-256\n정확 일치 정렬\n동일 이미지 8,990장\n라벨 충돌 6장 제외\nAligned Core 1,378장",
-            gold="gold v2 (동결)\n결함 139장 +\n정상 107장\n534문항\n수작업 검토",
-            cond="조건 × 모델\n이미지만, + 정상 참조,\n+ 결함 참조, + 둘 다,\n+ expert 단서 (4 × 5)\n공개 LVLM 4종 (+ API)",
-            dev="dev 세트\nsupervised train\n240장\n누출 검사",
-            design="에이전트 설계\ndev에서 선택\n(정의, 유무 먼저\n묻는 단계)",
-            run="gold에서\n1회 실행\nInternVL3.5-8B\n+ 호출 수 대조",
-            evalr="같은 채점기\nQ1 F1/BAcc,\nQ2 macro-F1, 동시 정답,\n모순율, 결함 오판율,\n대응 bootstrap",
+            ad=("이상탐지 공개본", "InsPLAD\n설비 17종\ntest 6,481장"),
+            fc=("결함분류 공개본", "InsPLAD\n설비 5종\nval 6,417장"),
+            align=("SHA-256 정렬", "동일 이미지 8,990장\n라벨 충돌 6장 제외\nAligned Core 1,378장"),
+            gold=("gold v2 (동결)", "결함 139장\n정상 107장\n534문항"),
+            dev=("dev 세트", "supervised train\n240장\n누출 검사"),
+            cond=("조건 × 모델", "이미지만\n+ 정상 / 결함 참조\n+ 두 참조\n+ expert 단서 20가지\n공개 LVLM 4종 + API"),
+            design=("에이전트 설계", "dev에서 선택:\n보기 정의,\n유무 먼저 묻는 Q3"),
+            run=("gold 1회 실행", "InternVL3.5-8B\n에이전트 +\n호출 수 대조군"),
+            evalr=("같은 채점기", "Q1 F1 / BAcc\nQ2 macro-F1\n동시 정답\n모순율, 결함 오판율\n대응 bootstrap"),
         ),
         agent=dict(
-            inp="대상 +\n검색한 정상 참조\n(다른 촬영일)",
-            direct="직접 답\nQ1, Q2, Q3\n(각 1회 호출)",
-            q1="Q1 유지 (재확인 안 함)",
-            q2="Q2 재확인:\n자기 첫 답 +\n보기별 한 줄 정의",
-            q3a="Q3 유무:\n결함 영역이 있는가?",
-            q3b="Q3 위치:\n3 × 3 중 어느 칸?",
-            yes="예", no="아니오 → 없음",
-            final="최종 Q1·Q2·Q3를 저장한 뒤에만 모순을 계산 (문항 간 답 전달·덮어쓰기 없음)",
-            ctrl="호출 수 대조군\n이미지마다 Q2·Q3 호출 수 동일,\n자기 답 재확인만,\n정의 없음, 단계 없음",
+            inp=("입력", "대상 이미지 +\n검색한 정상 참조\n(다른 촬영일)"),
+            direct=("직접 답", "Q1, Q2, Q3\n각 1회 호출"),
+            q1=("Q1 이상 여부", "처음 답 그대로\n(재확인 안 함)"),
+            q2=("Q2 결함 종류", "재확인: 자기 첫 답\n+ 보기별 한 줄 정의"),
+            q3a=("Q3 유무", "결함 영역이 있는가?"),
+            q3b=("Q3 위치", "3 × 3 중 어느 칸인가?"),
+            yes="예", no="아니오 → ‘없음’",
+            final="최종 답을 모두 저장한 뒤에만 Q1·Q2·Q3 사이의 모순을 계산한다",
+            ctrl=("호출 수 대조군", "이미지마다 Q2·Q3 호출 수 동일, 자기 답\n재확인만, 정의 없음, 단계 없음"),
         ),
     ),
 }
@@ -109,80 +119,103 @@ def read(rel):
 
 
 def setup(lang):
-    plt.rcParams.update({"font.family": T[lang]["font"], "font.size": 7, "axes.unicode_minus": False})
+    plt.rcParams.update({"font.family": [T[lang]["font"], "DejaVu Sans"], "font.size": 7,
+                         "axes.unicode_minus": False, "text.color": INK})
 
 
-def canvas(w, h):
-    fig = plt.figure(figsize=(w, h))
+def canvas(h):
+    fig = plt.figure(figsize=(WIDTH, h))
     ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(0, WIDTH)
+    ax.set_ylim(0, h)
     ax.axis("off")
     return fig, ax
 
 
-def box(ax, x, y, w, h, text, kind, size=6.6, dashed=False):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.006,rounding_size=0.012", linewidth=0.8,
-                                edgecolor="#444444", facecolor=FACE[kind], linestyle="--" if dashed else "-"))
-    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=size, linespacing=1.25)
+def card(ax, x, y, w, h, title, body, role, dashed=False, title_size=7.4, body_size=6.5):
+    """Rounded box with a bold title in the role colour and a body below it, centred vertically (inches)."""
+    fill, edge = ROLE[role]
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=0.06", linewidth=0.9,
+                                edgecolor=edge, facecolor=fill, linestyle=(0, (3, 2)) if dashed else "-"))
+    if not body:
+        ax.text(x + w / 2, y + h / 2, title, ha="center", va="center", fontsize=title_size, weight="bold", color=edge)
+        return
+    title_h = title_size / 72 * 1.25
+    body_h = body_size / 72 * 1.3 * (body.count("\n") + 1)
+    top = y + h / 2 + (title_h + 0.05 + body_h) / 2
+    ax.text(x + w / 2, top, title, ha="center", va="top", fontsize=title_size, weight="bold", color=edge)
+    ax.text(x + w / 2, top - title_h - 0.05, body, ha="center", va="top", fontsize=body_size, color=INK, linespacing=1.3)
 
 
-def arrow(ax, a, b, text=None, ls="-", text_dy=0.015):
-    ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=8, linewidth=0.8, color="#333333",
-                                 linestyle=ls, shrinkA=0, shrinkB=0))
-    if text:
-        ax.text((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + text_dy, text, ha="center", va="bottom", fontsize=6.2, color=GREY)
+def arrow(ax, a, b, label=None, dashed=False):
+    ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=9, linewidth=1.0, color=ARROW,
+                                 linestyle=(0, (3, 2)) if dashed else "-", shrinkA=1, shrinkB=1))
+    if label:
+        ax.text((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 0.06, label, ha="center", va="bottom", fontsize=6.3,
+                color=MUTED, style="italic")
+
+
+def lane(ax, y, h, label):
+    ax.add_patch(Rectangle((0.02, y), WIDTH - 0.04, h, facecolor="#F7F8FA", edgecolor="none", zorder=0))
+    ax.text(0.12, y + h - 0.05, label, ha="left", va="top", fontsize=7.0, weight="bold", color=MUTED)
 
 
 def pipeline(lang):
-    t = T[lang]["pipe"]
-    fig, ax = canvas(7.0, 2.7)
-    w = 0.17
-    xs = [0.01, 0.215, 0.42, 0.625, 0.83]
-    top_y, top_h, bot_y, bot_h = 0.55, 0.42, 0.04, 0.42
-    box(ax, xs[0], 0.775, w, 0.195, t["ad"], "src")
-    box(ax, xs[0], 0.55, w, 0.195, t["fc"], "src")
-    box(ax, xs[1], top_y, w, top_h, t["align"], "mid")
-    box(ax, xs[2], top_y, w, top_h, t["gold"], "gold")
-    box(ax, xs[3], top_y, w, top_h, t["cond"], "mid")
-    box(ax, xs[4], 0.29, w, 0.42, t["evalr"], "gold")
-    box(ax, xs[0], bot_y, w, bot_h, t["dev"], "dev")
-    box(ax, xs[1], bot_y, w, bot_h, t["design"], "dev")
-    box(ax, xs[3], bot_y, w, bot_h, t["run"], "dev")
-    arrow(ax, (xs[0] + w, 0.87), (xs[1], 0.82))
-    arrow(ax, (xs[0] + w, 0.65), (xs[1], 0.70))
-    arrow(ax, (xs[1] + w, 0.76), (xs[2], 0.76))
-    arrow(ax, (xs[2] + w, 0.76), (xs[3], 0.76))
-    arrow(ax, (xs[3] + w, 0.76), (xs[4] + w / 2, 0.71))
-    arrow(ax, (xs[0] + w / 2, 0.55), (xs[0] + w / 2, bot_y + bot_h))      # dev comes from the fault-classification train split
-    arrow(ax, (xs[0] + w, 0.25), (xs[1], 0.25))
-    arrow(ax, (xs[1] + w, 0.25), (xs[3], 0.25))
-    arrow(ax, (xs[2] + w / 2, top_y), (xs[3] + 0.02, bot_y + bot_h), ls="--")  # the single gold run uses the frozen gold set
-    arrow(ax, (xs[3] + w, 0.25), (xs[4] + w / 2, 0.29))
+    t, lanes = T[lang]["pipe"], T[lang]["lanes"]
+    fig, ax = canvas(2.95)
+    lane(ax, 1.50, 1.42, lanes[0])
+    lane(ax, 0.04, 1.42, lanes[1])
+    w, gap, x0 = 1.22, 0.175, 0.12
+    xs = [x0 + i * (w + gap) for i in range(5)]
+    top, bot, h = 1.56, 0.10, 1.06
+    card(ax, xs[0], top, w, h, *t["ad"], "data")
+    card(ax, xs[0], bot, w, h, *t["fc"], "data")
+    card(ax, xs[1], top, w, h, *t["align"], "data")
+    card(ax, xs[1], bot, w, h, *t["dev"], "dev")
+    card(ax, xs[2], top, w, h, *t["gold"], "gold")
+    card(ax, xs[2], bot, w, h, *t["design"], "dev")
+    card(ax, xs[3], top, w, h, *t["cond"], "model")
+    card(ax, xs[3], bot, w, h, *t["run"], "dev")
+    card(ax, xs[4], bot, w, top + h - bot, *t["evalr"], "gold")
+    mid_t, mid_b = top + h / 2, bot + h / 2
+    arrow(ax, (xs[0] + w, mid_t), (xs[1], mid_t))                    # anomaly-detection release -> alignment
+    arrow(ax, (xs[0] + w, mid_b + 0.28), (xs[1], mid_t - 0.28))      # fault-classification val -> alignment
+    arrow(ax, (xs[0] + w, mid_b), (xs[1], mid_b))                    # fault-classification train -> dev
+    arrow(ax, (xs[1] + w, mid_t), (xs[2], mid_t))                    # alignment -> gold
+    arrow(ax, (xs[1] + w, mid_b), (xs[2], mid_b))                    # dev -> agent design
+    arrow(ax, (xs[2] + w, mid_t), (xs[3], mid_t))                    # gold -> baselines
+    arrow(ax, (xs[2] + w, mid_b), (xs[3], mid_b))                    # design -> single gold run
+    arrow(ax, (xs[2] + w, mid_t - 0.28), (xs[3], mid_b + 0.28), dashed=True)  # the frozen gold set is used once
+    arrow(ax, (xs[3] + w, mid_t), (xs[4], mid_t))
+    arrow(ax, (xs[3] + w, mid_b), (xs[4], mid_b))
     return fig
 
 
 def agent(lang):
     t = T[lang]["agent"]
-    fig, ax = canvas(7.0, 3.0)
-    box(ax, 0.01, 0.42, 0.15, 0.30, t["inp"], "src")
-    box(ax, 0.20, 0.42, 0.13, 0.30, t["direct"], "mid")
-    arrow(ax, (0.16, 0.57), (0.20, 0.57))
-    box(ax, 0.39, 0.83, 0.25, 0.12, t["q1"], "mid")
-    box(ax, 0.39, 0.53, 0.25, 0.22, t["q2"], "gold")
-    box(ax, 0.39, 0.27, 0.25, 0.18, t["q3a"], "gold")
-    box(ax, 0.72, 0.27, 0.20, 0.18, t["q3b"], "gold")
-    for y in (0.89, 0.64, 0.36):
-        arrow(ax, (0.33, 0.57), (0.39, y))
-    arrow(ax, (0.64, 0.36), (0.72, 0.36), text=t["yes"])
-    box(ax, 0.01, 0.03, 0.98, 0.10, t["final"], "dev", size=6.4)
-    arrow(ax, (0.515, 0.27), (0.515, 0.13))
-    ax.text(0.525, 0.20, t["no"], ha="left", va="center", fontsize=6.2, color=GREY)
-    arrow(ax, (0.82, 0.27), (0.82, 0.13))
-    for x0, y0 in ((0.64, 0.89), (0.64, 0.64)):  # Q1 and Q2 finals go straight down the right margin
-        ax.plot([x0, 0.96, 0.96], [y0, y0, 0.45], color="#333333", linewidth=0.8)
-    arrow(ax, (0.96, 0.45), (0.96, 0.13))
-    box(ax, 0.01, 0.17, 0.32, 0.20, t["ctrl"], "mid", size=6.0, dashed=True)
+    fig, ax = canvas(2.95)
+    card(ax, 0.10, 1.42, 1.18, 0.86, *t["inp"], "data")
+    card(ax, 1.50, 1.42, 0.95, 0.86, *t["direct"], "model")
+    arrow(ax, (1.28, 1.85), (1.50, 1.85))
+    cx, cw = 2.78, 1.86
+    card(ax, cx, 2.30, cw, 0.58, *t["q1"], "model")
+    card(ax, cx, 1.50, cw, 0.66, *t["q2"], "gold")
+    card(ax, cx, 0.72, cw, 0.58, *t["q3a"], "gold")
+    card(ax, cx + cw + 0.40, 0.72, 1.60, 0.58, *t["q3b"], "gold")
+    for y in (2.59, 1.83, 1.01):
+        arrow(ax, (2.45, 1.85), (cx, y))
+    arrow(ax, (cx + cw, 1.01), (cx + cw + 0.40, 1.01), label=t["yes"])
+    card(ax, 0.10, 0.06, WIDTH - 0.20, 0.38, t["final"], None, "dev", title_size=6.8)
+    arrow(ax, (cx + cw / 2, 0.72), (cx + cw / 2, 0.44))
+    ax.text(cx + cw / 2 + 0.06, 0.58, t["no"], ha="left", va="center", fontsize=6.3, color=MUTED, style="italic")
+    q3b_mid = cx + cw + 0.40 + 0.80
+    arrow(ax, (q3b_mid, 0.72), (q3b_mid, 0.44))
+    rail = 6.82
+    for y in (2.59, 1.83):  # Q1 and Q2 finals go down the right margin to the stored answers
+        ax.plot([cx + cw, rail], [y, y], color=ARROW, linewidth=1.0)
+    ax.plot([rail, rail], [2.59, 1.36], color=ARROW, linewidth=1.0)
+    arrow(ax, (rail, 1.36), (rail, 0.44))
+    card(ax, 0.10, 0.62, 2.35, 0.60, *t["ctrl"], "control", dashed=True, title_size=6.8, body_size=5.9)
     return fig
 
 
@@ -191,41 +224,69 @@ def answers():
             for r in read("results/latest/gold_v2_matched_call/answers.csv")}
 
 
+def square(img):
+    w, h = img.size
+    s = min(w, h)
+    return img.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s))
+
+
+def image_axes(fig, x, y, size, fig_h, img):
+    iax = fig.add_axes([x / WIDTH, y / fig_h, size / WIDTH, size / fig_h])
+    iax.imshow(square(img))
+    iax.set_xticks([]); iax.set_yticks([])
+    for s in iax.spines.values():
+        s.set_edgecolor(FRAME)
+
+
 def qa_examples(lang, z, labels):
+    """2 x 2 panels: image on the left, a Q1-Q3 by truth/direct/agent table on the right."""
     t = T[lang]
     a = answers()
-    q1t = {"Anomalous.": t["anomalous"], "Normal.": t["normal"]}
+    q1t = {"Anomalous.": "anomalous", "Normal.": "normal"}
     q2t = {"Normal / no defect.": "normal", "Rust / corrosion.": "rust",
            "Missing cap / missing insulator component.": "missing-cap", "Bird nest / foreign nesting material.": "bird-nest"}
-    fig = plt.figure(figsize=(7.0, 2.9))
-    # row label, Q1, Q2, Q3 (fraction of figure width, per panel); the Korean row label "에이전트" is wider
-    cols = [0.0, 0.047, 0.118, 0.198] if lang == "en" else [0.0, 0.062, 0.118, 0.198]
+    H = 3.42
+    fig, ax = canvas(H)
+    pw, ph = 3.38, 1.52
     for k, (cls, core) in enumerate(EXAMPLES):
         lab = labels[core]
-        left = 0.005 + k * 0.25
-        ax = fig.add_axes([left, 0.33, 0.24, 0.60])
-        ax.imshow(Image.open(io.BytesIO(z.read(lab["image"]))).convert("RGB"))
-        ax.set_xticks([]); ax.set_yticks([])
-        ax.set_title(f"({'abcd'[k]}) {t['cls'][cls]}, {t['asset'].get(lab['asset_category'], lab['asset_category'])}",
-                     fontsize=7.2, pad=3)
+        x = 0.08 + (k % 2) * (pw + 0.08)
+        y = 0.30 + (1 - k // 2) * (ph + 0.08)
+        ax.add_patch(FancyBboxPatch((x, y), pw, ph, boxstyle="round,pad=0,rounding_size=0.05", linewidth=0.8,
+                                    edgecolor=FRAME, facecolor="white"))
+        image_axes(fig, x + 0.08, y + 0.13, 1.26, H, Image.open(io.BytesIO(z.read(lab["image"]))).convert("RGB"))
+        tx = x + 1.44
+        ax.text(tx, y + ph - 0.14, f"({'abcd'[k]}) {t['cls'][cls]}", fontsize=7.6, weight="bold", va="center")
+        ax.text(tx, y + ph - 0.31, t["asset"].get(lab["asset_category"], lab["asset_category"]), fontsize=6.3,
+                color=MUTED, va="center")
         anom = lab["anomaly_gt"] == "anomalous"
-        rows = [("", [("Q1", None), ("Q2", None), ("Q3", None)]),
-                (t["gt"], [(t["anomalous"] if anom else t["normal"], None), (t["cls"][cls], None),
-                           (t["region"] if anom else t["none"], None)])]
-        for pol, name in (("baseline", t["direct"]), ("previous_agent", t["agent_lbl"])):
-            q1 = a[(pol, core, "anomaly_detection")]
+        truth = {"Q1": t["anomalous"] if anom else t["normal"], "Q2": t["cls"][cls], "Q3": t["region"] if anom else t["none"]}
+        got = {}
+        for pol in ("baseline", "previous_agent"):
+            q1 = q1t[a[(pol, core, "anomaly_detection")]]
             q2 = q2t[a[(pol, core, "defect_classification")]]
             q3 = a[(pol, core, "defect_localization")] != NONE
-            rows.append((name, [(q1t[q1] if pol == "baseline" else t["shared"], None if pol != "baseline" else (q1 == "Anomalous.") == anom),
-                                (t["cls"][q2], q2 == cls), (t["region"] if q3 else t["none"], q3 == anom)]))
-        y = 0.27
-        for name, cells in rows:
-            fig.text(left + 0.004 + cols[0], y, name, fontsize=5.8, va="top", weight="bold")
-            for (text, ok), cx in zip(cells, cols[1:]):
-                colour = "black" if ok is None and name else (GREY if ok is None else (GREEN if ok else RED))
-                fig.text(left + 0.004 + cx, y, text, fontsize=5.8, va="top", color=colour,
-                         weight="bold" if not name else "normal")
-            y -= 0.065
+            got[pol] = {"Q1": (t["anomalous"] if q1 == "anomalous" else t["normal"], (q1 == "anomalous") == anom),
+                        "Q2": (t["cls"][q2], q2 == cls), "Q3": (t["region"] if q3 else t["none"], q3 == anom)}
+        cols = [tx, tx + 0.22, tx + 0.80, tx + 1.37]
+        cw = [0.22, 0.58, 0.57, 0.55]
+        hy = y + ph - 0.56
+        for cx, head in zip(cols[1:], (t["gt"], t["direct"], t["agent_lbl"])):
+            ax.text(cx + 0.04, hy, head, fontsize=6.3, weight="bold", color=MUTED, va="center")
+        for i, q in enumerate(("Q1", "Q2", "Q3")):
+            ry = hy - 0.25 * (i + 1)
+            ax.text(cols[0], ry, q, fontsize=6.3, weight="bold", va="center")
+            ax.text(cols[1] + 0.04, ry, truth[q], fontsize=6.2, va="center")
+            for j, pol in enumerate(("baseline", "previous_agent")):
+                cx = cols[2 + j]
+                if pol == "previous_agent" and q == "Q1":
+                    ax.text(cx + 0.03, ry, t["shared"], fontsize=5.5, color=MUTED, va="center", style="italic")
+                    continue
+                text, ok = got[pol][q]
+                ax.add_patch(FancyBboxPatch((cx, ry - 0.09), cw[2 + j] - 0.03, 0.18, boxstyle="round,pad=0,rounding_size=0.03",
+                                            linewidth=0, facecolor=OK_BG if ok else BAD_BG))
+                ax.text(cx + 0.03, ry, text, fontsize=6.0, va="center", color=OK if ok else BAD)
+    ax.text(WIDTH / 2, 0.14, t["legend"], ha="center", va="center", fontsize=6.4, color=MUTED)
     return fig
 
 
@@ -233,23 +294,30 @@ def defect_reference(lang, z, labels):
     t = T[lang]
     man = {r["core_id"]: r for r in read("results/latest/gold_v2_reference/reference_manifest.csv")}
     mc = {(r["core_id"], r["condition"], r["question_type"]): r for r in read("results/latest/gold_v2_minicpm_greedy/answers.csv")}
-    fig = plt.figure(figsize=(7.0, 2.25))
+    H = 2.42
+    fig, ax = canvas(H)
+    cw, gap, x0 = 3.38, 0.08, 0.08
     for k, core in enumerate(REF_EXAMPLES):
         lab, ref = labels[core], man[core]
+        x = x0 + k * (cw + gap)
+        ax.add_patch(FancyBboxPatch((x, 0.06), cw, H - 0.12, boxstyle="round,pad=0,rounding_size=0.05",
+                                    linewidth=0.8, edgecolor=FRAME, facecolor="white"))
         q1 = mc[(core, "positive_reference", "anomaly_detection")]
         said_normal = q1["correct"] not in ("True", "true", "1") and lab["anomaly_gt"] == "anomalous"
         ref_label = t["cls"].get(ref["positive_reference_defect_label"], ref["positive_reference_defect_label"])
-        panels = ((lab["image"], f"{t['ref_target']}: {t['cls'][lab['defect_gt']]}"),
-                  (ref["positive_reference_image"],
-                   f"{t['ref_ref']}: " + t["ref_caption"].format(label=ref_label, sim=float(ref["positive_reference_similarity"]))))
-        for j, (member, title) in enumerate(panels):
-            ax = fig.add_axes([0.01 + k * 0.5 + j * 0.24, 0.17, 0.225, 0.72])
-            ax.imshow(Image.open(io.BytesIO(z.read(member))).convert("RGB"))
-            ax.set_xticks([]); ax.set_yticks([])
-            ax.set_title(title, fontsize=7.0, pad=3)
+        panels = ((lab["image"], t["ref_target"], t["cls"][lab["defect_gt"]], "data"),
+                  (ref["positive_reference_image"], t["ref_ref"],
+                   f"{ref_label}, " + t["sim"].format(sim=float(ref["positive_reference_similarity"])), "gold"))
+        for j, (member, head, sub, role) in enumerate(panels):
+            px = x + 0.08 + j * 1.64
+            ax.text(px + 0.78, H - 0.17, head, ha="center", va="center", fontsize=6.9, weight="bold", color=ROLE[role][1])
+            ax.text(px + 0.78, H - 0.32, sub, ha="center", va="center", fontsize=6.2, color=MUTED)
+            image_axes(fig, px, 0.46, 1.56, H, Image.open(io.BytesIO(z.read(member))).convert("RGB"))
         verdict = t["normal"] if said_normal else t["anomalous"]
-        fig.text(0.01 + k * 0.5 + 0.235, 0.075, f"{t['minicpm']} {verdict}", ha="center", fontsize=7.2,
-                 color=RED if said_normal else GREEN, weight="bold")
+        ax.add_patch(FancyBboxPatch((x + 0.55, 0.14), cw - 1.10, 0.22, boxstyle="round,pad=0,rounding_size=0.05",
+                                    linewidth=0, facecolor=BAD_BG if said_normal else OK_BG))
+        ax.text(x + cw / 2, 0.25, t["verdict"].format(v=verdict), ha="center", va="center", fontsize=6.9,
+                weight="bold", color=BAD if said_normal else OK)
     return fig
 
 
