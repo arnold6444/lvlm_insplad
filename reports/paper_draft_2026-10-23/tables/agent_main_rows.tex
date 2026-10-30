@@ -1,13 +1,20 @@
 % Source: gold run ZIP 0c577ffe3bdd (reports/q23_gold_evaluation_2026-10-15), InternVL3.5-8B, L4, 1,606 calls, 0 errors, 0 invalid.
+% Q1 counts and Q2 defective-image counts: results/latest/gold_v2_matched_call (leaderboard.csv, q2_by_defect.csv).
+% Q3 position: results/latest/gold_v2_q3_position/leaderboard.csv (post hoc, saved answers, no new inference).
 % Columns: metric, direct, verification agent, revised candidate.
-Q1 anomaly F1 (fixed in all policies)        & .776 & .776 & .776 \\
-Q2 defect macro-F1                           & .522 & \textbf{.640} & .623 \\
-Q2 defect balanced accuracy                  & .510 & \textbf{.659} & .639 \\
+Q1 anomaly F1 (asked once, shared)           & .776 & .776 & .776 \\
+Q1 anomaly balanced accuracy                 & .777 & .777 & .777 \\
+Q1 false alarms (/107) / misses (/139)       & 17 / 40 & 17 / 40 & 17 / 40 \\
+\midrule
+Q2 four-way macro-F1 (incl.\ normal)         & .522 & \textbf{.640} & .623 \\
+Q2 four-way balanced accuracy                & .510 & \textbf{.659} & .639 \\
 Q2 correct (/246)                            & 156 & 183 & \textbf{187} \\
+Q2 correct on defective images (/139)        & 93 & \textbf{97} & 94 \\
 Q1--Q2 joint correct (/246)                  & 142 & 163 & \textbf{165} \\
 Q1--Q2 consistency error                     & .211 & .167 & \textbf{.150} \\
 \midrule
-Q3 presence balanced accuracy                & .551 & \textbf{.828} & \textbf{.828} \\
+Q3 region presence BAcc (constant: .500)     & .551 & \textbf{.828} & \textbf{.828} \\
 Q3 false region on normal images (/107)      & 93 & \textbf{16} & \textbf{16} \\
 Q3 false ``none'' on defective images (/139) & \textbf{4} & 27 & 27 \\
-Q1--Q2--Q3 joint correct (/246)              & 91 & 156 & \textbf{157} \\
+Q3 position hit (/133; constant center: 72)  & 29 & \textbf{31} & \textbf{31} \\
+Q1--Q2--Q3 presence joint correct (/246)     & 91 & 156 & \textbf{157} \\

@@ -1,0 +1,17 @@
+{
+  "protocol": "gold_v2_q3_position_offline_v1",
+  "new_lvlm_inference": false,
+  "model_id": "OpenGVLab/InternVL3_5-8B",
+  "source_run": "gold_v2_matched_call (agent gold run 0c577ffe3bdd + matched re-ask 902a9f8a1752)",
+  "location_images": 133,
+  "label_basis": {
+    "manual_box_annotation": 113,
+    "insplad_seg_instance_annotation": 20
+  },
+  "cell_rule": "each box center mapped to a 3x3 cell (q3_multiregion.boxes_to_regions); hit = the single reported cell is one of those cells",
+  "post_hoc": true,
+  "inputs": {
+    "answers": "c3aed38dd3be403b71364a7a3a77003dc9d50db38158499df3d24a454f0f8290",
+    "loc_qa": "80f563a5e7339baf8b6896f9bfbb5a96abb8e11f027b7076d2ec1fad41bd5324"
+  }
+}
