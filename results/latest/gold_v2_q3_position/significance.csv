@@ -1,0 +1,2 @@
+comparison,metric,delta,ci_low,ci_high,resamples,seed
+previous_agent - baseline,position_hit_rate,0.015037593984962405,-0.045112781954887216,0.07518796992481203,2000,42

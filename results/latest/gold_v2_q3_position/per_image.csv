@@ -1,0 +1,134 @@
+core_id,defect_gt,asset_category,label_basis,gt_cells,baseline,matched_reask,previous_agent,candidate
+core-0228fafc380359f0,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-0535bdc124a47fa8,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,3,3,3,3
+core-056d8ecc56d08755,missing-cap,glass-insulator,manual_box_annotation,3 7,,,,
+core-06035bdc38dd3482,missing-cap,glass-insulator,manual_box_annotation,2 6,6,6,,
+core-07f763ca4be991eb,rust,vari-grip,manual_box_annotation,5,1,,,
+core-097e8e8b6d1d6dc1,missing-cap,glass-insulator,manual_box_annotation,5,,,,
+core-0e959385a74b789a,rust,vari-grip,manual_box_annotation,5,6,6,6,6
+core-0f341fe7e1fbf590,missing-cap,glass-insulator,manual_box_annotation,5,,,,
+core-123610a6cea7e280,rust,vari-grip,manual_box_annotation,5,5,5,5,5
+core-1237388fc5a60fb9,rust,lightning-rod-suspension,insplad_seg_instance_annotation,5 8,2,2,3,3
+core-1259d15d7934e5fd,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-147ed57ee838af31,rust,yoke-suspension,manual_box_annotation,5,1,1,1,1
+core-15039e01cbef8c02,rust,lightning-rod-suspension,insplad_seg_instance_annotation,1 2 5 8,2,2,3,3
+core-161edc8c6af1aa43,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 3 5 8,3,3,3,3
+core-1649058f31adda54,rust,polymer-insulator-upper-shackle,manual_box_annotation,2 5,3,3,3,3
+core-16c8d80125e38a15,bird-nest,vari-grip,manual_box_annotation,2,5,5,3,3
+core-17e7144dde326086,bird-nest,vari-grip,manual_box_annotation,6,1,1,1,1
+core-190dd925063aed04,rust,vari-grip,manual_box_annotation,2,1,1,3,3
+core-1aa2ea34dae047cd,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,5,2,2,2
+core-1b83824f1222254f,rust,yoke-suspension,manual_box_annotation,2,1,1,3,3
+core-1cfce561eb824704,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,8,8,8,8
+core-224fd90754834523,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-264cc4a2fe252ecd,missing-cap,glass-insulator,manual_box_annotation,8,3,3,,
+core-28a24ec7956ea697,rust,vari-grip,manual_box_annotation,5,4,4,5,5
+core-2e7ae5a3c54051f2,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,2,2,8,8
+core-30be542d7e1937d5,missing-cap,glass-insulator,manual_box_annotation,4 5,4,4,,
+core-30f5b262327e26c5,missing-cap,glass-insulator,manual_box_annotation,4 6,9,6,6,6
+core-31eb0ac0184e1e3e,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,2,2,2,2
+core-3492b3946cda8909,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,6,6,,
+core-3882a62eee76920e,rust,yoke-suspension,manual_box_annotation,5,3,3,3,3
+core-38f5f178bb82f2e5,bird-nest,vari-grip,manual_box_annotation,1,5,5,5,5
+core-3a43189275686dd3,rust,vari-grip,manual_box_annotation,5,3,3,3,3
+core-3aac769971f3e583,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,5,5,5,5
+core-3bb96b357b8e685a,missing-cap,glass-insulator,manual_box_annotation,4 5,1,1,,
+core-3df353cc203c9ed3,bird-nest,vari-grip,manual_box_annotation,5,3,3,3,3
+core-3eb58a1be437dc07,bird-nest,vari-grip,manual_box_annotation,2,2,2,2,2
+core-3f0c2611fdb971b8,bird-nest,vari-grip,manual_box_annotation,5,5,5,5,5
+core-3f8490271dce7708,missing-cap,glass-insulator,manual_box_annotation,2 4,5,5,,
+core-3ff385e696b565db,missing-cap,glass-insulator,manual_box_annotation,5,7,,,
+core-49fb159875d150ce,rust,vari-grip,manual_box_annotation,5,6,6,6,6
+core-4eafbc569a47da83,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-50b0afe8e7a47455,missing-cap,glass-insulator,manual_box_annotation,4 6,7,7,,
+core-5661a4a8ff919fa9,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,1,1,3,3
+core-5780ab2f29006b45,missing-cap,glass-insulator,manual_box_annotation,5,1,1,1,1
+core-57f8c8a4e58bb5bb,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,6,6,5,5
+core-5947a901b0e77027,rust,vari-grip,manual_box_annotation,5,3,3,3,3
+core-5c65177d638a5cae,rust,yoke-suspension,manual_box_annotation,9,3,3,3,3
+core-5dd4aa85ba3cf277,bird-nest,vari-grip,manual_box_annotation,6,3,3,,
+core-5fc7ddf056ac27a8,rust,yoke-suspension,manual_box_annotation,2,3,3,1,1
+core-60e5216a3f997b82,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,5,5,,
+core-60fa161c48c6eb51,rust,vari-grip,manual_box_annotation,5,1,1,3,3
+core-6141dccb026d1f01,bird-nest,vari-grip,manual_box_annotation,6,5,5,,
+core-663e3a7f56431652,missing-cap,glass-insulator,manual_box_annotation,5,9,9,6,6
+core-66e9206471993380,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,2,2,2,2
+core-6d4af90c129ea9cf,rust,yoke-suspension,manual_box_annotation,5,1,1,1,1
+core-6de54da228c47b27,missing-cap,glass-insulator,manual_box_annotation,3 5,6,6,6,6
+core-6e49941a214eedda,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,8,3,8,8
+core-6fa9564922abd11a,missing-cap,glass-insulator,manual_box_annotation,5,3,,,
+core-71b2adf393f94510,rust,vari-grip,manual_box_annotation,5,5,5,5,5
+core-71ef59627ba1d01a,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,6,6,6,6
+core-752543a389df2034,missing-cap,glass-insulator,manual_box_annotation,3,7,7,5,5
+core-75a08301eedcc781,rust,vari-grip,manual_box_annotation,5,4,4,3,3
+core-763429a84c8635c8,rust,yoke-suspension,manual_box_annotation,5,3,3,3,3
+core-776fd76a364abd8b,rust,yoke-suspension,manual_box_annotation,5,1,1,1,1
+core-7e7b6e25b9eb1624,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,3,3,3,3
+core-80ea058826ab0a7d,rust,lightning-rod-suspension,insplad_seg_instance_annotation,5 8,3,3,5,5
+core-81e04d8a83b65b75,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,2,2,2,2
+core-827073119f32c341,rust,yoke-suspension,manual_box_annotation,2,3,3,3,3
+core-838f653fb25fdca7,bird-nest,vari-grip,manual_box_annotation,4,1,1,1,1
+core-87c1fb9083d94847,bird-nest,vari-grip,manual_box_annotation,5,5,5,5,5
+core-883c0e007a8f6817,rust,yoke-suspension,manual_box_annotation,2,1,1,2,2
+core-8bed183963865bb0,rust,lightning-rod-suspension,insplad_seg_instance_annotation,5 8,5,5,5,5
+core-8c246f56a57b6a15,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,6,6
+core-8c7d377d7fd7c954,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,5,5,3,3
+core-8dfd09a8227d7952,rust,vari-grip,manual_box_annotation,6,1,1,1,1
+core-94f44f87d6de00f5,rust,yoke-suspension,manual_box_annotation,4,1,1,1,1
+core-9655d9797c31dd47,missing-cap,glass-insulator,manual_box_annotation,3 5,9,9,3,3
+core-9dd98e00506b6d25,rust,vari-grip,manual_box_annotation,5,5,5,5,5
+core-a77a457b79443d82,missing-cap,glass-insulator,manual_box_annotation,2,9,9,,
+core-aab2b676f5537727,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,1,1,3,3
+core-abe693e3798e688e,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-ae850c0a3ae84527,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,4,4,2,2
+core-b05545de31ad1e42,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,9,9,5,5
+core-b0c1931cd3fee2f2,rust,polymer-insulator-upper-shackle,manual_box_annotation,3,3,3,3,3
+core-b0c7f7013be0fbdf,missing-cap,glass-insulator,manual_box_annotation,6,4,4,,
+core-b1bc9ca65402a782,rust,yoke-suspension,manual_box_annotation,5,3,3,2,2
+core-b1edf610f06f5fd4,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,5,2,2,2
+core-b38fd75d36fc7cc4,rust,yoke-suspension,manual_box_annotation,1,1,1,1,1
+core-b71998ba341a7152,rust,yoke-suspension,manual_box_annotation,5,1,1,3,3
+core-b753ce854714bdf4,rust,yoke-suspension,manual_box_annotation,5,1,1,1,1
+core-bb120ed6aa3fc6a1,missing-cap,glass-insulator,manual_box_annotation,6,9,9,,
+core-bc76b1f6b437721e,missing-cap,glass-insulator,manual_box_annotation,5,,,3,3
+core-bd196636c6760a5b,bird-nest,vari-grip,manual_box_annotation,5,5,5,5,5
+core-bda2b0761bc3f09b,bird-nest,vari-grip,manual_box_annotation,2,3,3,,
+core-c3a33daff82c1ff5,missing-cap,glass-insulator,manual_box_annotation,5,9,9,9,9
+core-c3ae2680e29f8d94,rust,vari-grip,manual_box_annotation,3,3,3,5,5
+core-c4c3911124aac157,bird-nest,vari-grip,manual_box_annotation,5,3,3,3,3
+core-c4d0aed59e3bb533,missing-cap,glass-insulator,manual_box_annotation,8,3,3,,
+core-c6491cbf6877b349,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,5,5,5,5
+core-c6bf9596afdfca15,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,6,6,2,2
+core-c89884fd0b28c33a,bird-nest,vari-grip,manual_box_annotation,4,1,1,7,7
+core-cce39bf9fdfcb0f6,bird-nest,vari-grip,manual_box_annotation,2,5,5,5,5
+core-ce04bd738cde28a8,missing-cap,glass-insulator,manual_box_annotation,5,8,8,,
+core-ce4708eccc039934,bird-nest,vari-grip,manual_box_annotation,5,5,5,,
+core-ceba686ef79b8dac,rust,yoke-suspension,manual_box_annotation,2,2,2,2,2
+core-d34b9aaf0e01a562,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,3,3,3,3
+core-d87e2dd5e260d259,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-d9867edb1dacc0af,rust,vari-grip,manual_box_annotation,5,3,3,3,3
+core-d9d31ae2164edbfa,rust,vari-grip,manual_box_annotation,5,4,4,1,1
+core-dbbbac04a14e4311,rust,yoke-suspension,manual_box_annotation,5,2,3,2,2
+core-dc762b334178c6ba,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,8,8,8,8
+core-dfc1a14448cd9b77,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5 8,5,5,5,5
+core-e07764d9683feaac,rust,yoke-suspension,manual_box_annotation,2,2,2,2,2
+core-e0a191a2a7f249ae,bird-nest,vari-grip,manual_box_annotation,5,2,2,2,2
+core-e13e13b5b3652e27,bird-nest,vari-grip,manual_box_annotation,5,1,1,3,3
+core-e14ed842830f8c8a,bird-nest,vari-grip,manual_box_annotation,5,1,1,9,9
+core-e1807fb09f25823f,missing-cap,glass-insulator,manual_box_annotation,4,6,6,,
+core-e2acf125e277d026,rust,vari-grip,manual_box_annotation,5,4,4,7,7
+core-e37a1c31bef7ae16,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,5,5,5,5
+core-e7b8a56641e0d81d,bird-nest,vari-grip,manual_box_annotation,2,3,3,3,3
+core-e93ab564261bead3,rust,vari-grip,manual_box_annotation,5,2,2,1,1
+core-e985af29447f7591,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-e9eb4eb2d30804bc,bird-nest,vari-grip,manual_box_annotation,5,1,1,3,3
+core-e9fa5d3e0e52f7ef,missing-cap,glass-insulator,manual_box_annotation,3 5,3,,,
+core-eac371063c99b3ba,rust,vari-grip,manual_box_annotation,5,3,3,3,3
+core-ed667d7e40854af9,rust,lightning-rod-suspension,insplad_seg_instance_annotation,2 5,8,8,3,3
+core-edfc2b9bc8cc4b6f,rust,yoke-suspension,manual_box_annotation,2,1,1,8,8
+core-f0185ce5c061299e,rust,vari-grip,manual_box_annotation,5,4,4,,
+core-f0ff09826d314703,bird-nest,vari-grip,manual_box_annotation,6,3,3,3,3
+core-f53a45c043fe0a68,bird-nest,vari-grip,manual_box_annotation,2,1,1,,
+core-f6a66c644477f585,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3
+core-fd12044fda93f960,missing-cap,glass-insulator,manual_box_annotation,5,3,3,3,3
+core-ff55fa241d553536,rust,polymer-insulator-upper-shackle,manual_box_annotation,2,3,3,3,3

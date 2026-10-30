@@ -2,6 +2,7 @@
 % Candidate rows are the published significance.csv. Agent-vs-direct rows were recomputed on CPU from the saved
 % answers.csv with the same repository functions (no new inference); that recomputation reproduces the
 % published candidate rows exactly. Q3 is shared by agent and candidate.
+% Q3 position row: results/latest/gold_v2_q3_position/significance.csv (133 located defects, seed 42).
 % Columns: comparison, metric, difference, 95% CI.
 Agent $-$ direct        & Q2 macro-F1                 & $+.118$ & $[+.043, +.199]$ \\
 Agent $-$ direct        & Q1--Q2 joint                & $+.085$ & $[+.033, +.142]$ \\
@@ -13,3 +14,4 @@ Candidate $-$ agent     & Q1--Q2 joint                & $+.008$ & $[-.028, +.045
 Agent/candidate $-$ direct & Q3 presence BAcc            & $+.277$ & $[+.222, +.328]$ \\
 Agent/candidate $-$ direct & Q3 normal false-region rate & $-.720$ & $[-.800, -.625]$ \\
 Agent/candidate $-$ direct & Q3 defect false-none rate   & $+.165$ & $[+.103, +.234]$ \\
+Agent/candidate $-$ direct & Q3 position hit rate (/133) & $+.015$ & $[-.045, +.075]$ \\

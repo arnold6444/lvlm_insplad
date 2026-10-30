@@ -43,6 +43,8 @@ node tex2docx.js main_ko.tex InsPLAD_QA_paper_ko.docx ko
 - MiniCPM-V-4.5: 기준선과 참조 3조건은 greedy 재실행 결과다(`results/latest/gold_v2_minicpm_greedy`, 감사 `reports/gold_minicpm_greedy_evaluation_2026-10-23/`). vision expert 20구성 평균 행만 샘플링 결과이고, 표에 †로 표시했다. 비교는 부록 표 `tab:minicpm`에 있다.
 - 에이전트 본표·클래스별: gold 실행 `0c577ffe3bdd`(요약 `reports/q23_gold_evaluation_2026-10-15/0c577ffe3bdd/analysis.md`). 같은 세 정책은 `results/latest/gold_v2_matched_call`에도 들어 있다.
 - 호출 수 대조: `results/latest/gold_v2_matched_call`(감사 `reports/gold_matched_call_evaluation_2026-10-23/`).
+- Q3 위치 적중(에이전트 표·CI 표의 위치 행): `results/latest/gold_v2_q3_position`. 위 저장 답을 위치 박스 133장과 대조한 사후 채점이고 새 추론은 없다(`scripts/score_gold_v2_q3_position.py`).
+- 조건 표의 Q1 BAcc: 각 리더보드의 정확도·재현율에서 계산했다(계산식은 `tables/conditions_rows.tex` 머리 주석).
 - dev·후속 실험: `reports/paper_tables/latest_results.md`와 각 실험 폴더의 `analysis.md`.
 - 원시 호출 기록과 Colab 결과 ZIP은 git에 없다. SHA-256과 함께 보관하며 요청하면 제공한다.
 

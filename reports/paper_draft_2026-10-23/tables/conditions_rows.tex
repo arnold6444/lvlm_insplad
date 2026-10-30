@@ -1,27 +1,30 @@
 % Source: results/latest/gold_v2_consistency_metrics/consistency_leaderboard.csv (generated, not hand-copied).
 % MiniCPM-V-4.5 image/reference rows: greedy re-run 1661680ed362; its vision-expert row is still the sampled run (dagger).
-% Columns: model, condition, Q1 F1, Q2 macro-F1, joint acc, consistency error, false defect rate.
+% Q1 BAcc: (TP/139 + TN/107)/2 with TP = recall x 139 and TN = accuracy x 246 - TP, from the anomaly accuracy and recall in
+% results/latest/gold_v2_baseline, gold_v2_reference and gold_v2_vision_expert_full (mean of 20) leaderboards;
+% MiniCPM greedy rows read q1_balanced_accuracy from results/latest/gold_v2_minicpm_greedy/leaderboard.csv.
+% Columns: model, condition, Q1 F1, Q1 BAcc, Q2 macro-F1, joint acc, consistency error, false defect rate.
 % \CondImg etc. are defined in each main file so the condition labels can be localized.
-\multirow{5}{*}{Qwen3.5-4B}     & \CondImg  & .646 & .445 & .407 & .264 & .607 \\
-                                & \CondNorm & .735 & .595 & .476 & .341 & .430 \\
-                                & \CondPos  & .596 & .412 & .276 & .435 & .589 \\
-                                & \CondBoth & .632 & .522 & .354 & .382 & .748 \\
-                                & \CondVX   & .589 & .457 & .362 & .389 & .460 \\
+\multirow{5}{*}{Qwen3.5-4B}     & \CondImg  & .646 & .579 & .445 & .407 & .264 & .607 \\
+                                & \CondNorm & .735 & .625 & .595 & .476 & .341 & .430 \\
+                                & \CondPos  & .596 & .526 & .412 & .276 & .435 & .589 \\
+                                & \CondBoth & .632 & .556 & .522 & .354 & .382 & .748 \\
+                                & \CondVX   & .589 & .550 & .457 & .362 & .389 & .460 \\
 \midrule
-\multirow{5}{*}{InternVL3.5-8B} & \CondImg  & .597 & .438 & .435 & .301 & .346 \\
-                                & \CondNorm & .794 & .468 & .496 & .215 & .617 \\
-                                & \CondPos  & .000 & .365 & .346 & .264 & .178 \\
-                                & \CondBoth & .735 & .490 & .537 & .228 & .393 \\
-                                & \CondVX   & .382 & .470 & .369 & .423 & .284 \\
+\multirow{5}{*}{InternVL3.5-8B} & \CondImg  & .597 & .663 & .438 & .435 & .301 & .346 \\
+                                & \CondNorm & .794 & .751 & .468 & .496 & .215 & .617 \\
+                                & \CondPos  & .000 & .486 & .365 & .346 & .264 & .178 \\
+                                & \CondBoth & .735 & .749 & .490 & .537 & .228 & .393 \\
+                                & \CondVX   & .382 & .551 & .470 & .369 & .423 & .284 \\
 \midrule
-\multirow{5}{*}{MiniCPM-V-4.5}  & \CondImg  & .618 & .483 & .496 & .280 & .308 \\
-                                & \CondNorm & .753 & .461 & .484 & .110 & .841 \\
-                                & \CondPos  & .014 & .328 & .415 & .142 & .047 \\
-                                & \CondBoth & .648 & .488 & .447 & .301 & .607 \\
-                                & \CondVX$^\dagger$ & .417 & .477 & .412 & .367 & .235 \\
+\multirow{5}{*}{MiniCPM-V-4.5}  & \CondImg  & .618 & .656 & .483 & .496 & .280 & .308 \\
+                                & \CondNorm & .753 & .587 & .461 & .484 & .110 & .841 \\
+                                & \CondPos  & .014 & .494 & .328 & .415 & .142 & .047 \\
+                                & \CondBoth & .648 & .645 & .488 & .447 & .301 & .607 \\
+                                & \CondVX$^\dagger$ & .417 & .564 & .477 & .412 & .367 & .235 \\
 \midrule
-\multirow{5}{*}{LLaVA-OV-7B}    & \CondImg  & .718 & .505 & .512 & .244 & .252 \\
-                                & \CondNorm & .749 & .446 & .333 & .593 & .009 \\
-                                & \CondPos  & .000 & .173 & .427 & .012 & .000 \\
-                                & \CondBoth & .663 & .429 & .309 & .451 & .262 \\
-                                & \CondVX   & .697 & .543 & .484 & .362 & .096 \\
+\multirow{5}{*}{LLaVA-OV-7B}    & \CondImg  & .718 & .600 & .505 & .512 & .244 & .252 \\
+                                & \CondNorm & .749 & .616 & .446 & .333 & .593 & .009 \\
+                                & \CondPos  & .000 & .491 & .173 & .427 & .012 & .000 \\
+                                & \CondBoth & .663 & .502 & .429 & .309 & .451 & .262 \\
+                                & \CondVX   & .697 & .602 & .543 & .484 & .362 & .096 \\
