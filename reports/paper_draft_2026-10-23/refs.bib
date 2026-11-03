@@ -1,6 +1,9 @@
 % Bibliography for the InsPLAD-QA paper draft.
 % InsPLAD, Dinomaly, InternVL3.5 and Qwen3.5 were checked on the web on 2026-10-23; ReConPatch, the power-line
 % review, CPLID (Crossref) and STN PLAD (arXiv/SIBGRAPI) on 2026-10-27; others are well-known entries.
+% Added 2026-11-03 after team feedback: Power-LLaVA (arXiv PDF), PowerGPT (Crossref/OpenAlex), ElecVQA-Bench
+% (arXiv 2609.27457v1 + Crossref for the Electronics version), MVTec LOCO, POPE, VLMs-are-blind and
+% MLLMs-know-where-to-look (publisher/arXiv pages). The ElecVQA numbers cited in the text come from arXiv v1.
 
 @inproceedings{jiang2025mmad,
   title     = {{MMAD}: A Comprehensive Benchmark for Multimodal Large Language Models in Industrial Anomaly Detection},
@@ -147,4 +150,68 @@
   pages     = {215--222},
   year      = {2021},
   note      = {arXiv:2108.07944}
+}
+
+@inproceedings{wang2024powerllava,
+  title     = {{Power-LLaVA}: Large Language and Vision Assistant for Power Transmission Line Inspection},
+  author    = {Wang, Jiahao and Li, Mingxuan and Luo, Haichen and Zhu, Jinguo and Yang, Aijun and Rong, Mingzhe and Wang, Xiaohua},
+  booktitle = {IEEE International Conference on Image Processing (ICIP)},
+  year      = {2024},
+  note      = {arXiv:2407.19178}
+}
+
+@article{zhong2026powergpt,
+  title   = {{PowerGPT}: A Multimodal Foundation Model for Power Inspection},
+  author  = {Zhong, Yangyang and Luo, Pengxin and Yan, Yunfeng and Jia, Tong and Qi, Donglian},
+  journal = {Applied Soft Computing},
+  volume  = {186},
+  pages   = {113939},
+  year    = {2026},
+  doi     = {10.1016/j.asoc.2025.113939}
+}
+
+@article{zhang2026elecvqa,
+  title   = {Trustworthy Evaluation of Vision--Language Models for {UAV} Power-Line Inspection: A Resolution- and Parity-Controlled Benchmark},
+  author  = {Zhang, Linghao and Xiang, Siyu and Kuang, Junwei and Yi, Peiyu},
+  journal = {Electronics},
+  volume  = {15},
+  number  = {21},
+  pages   = {5049},
+  year    = {2026},
+  doi     = {10.3390/electronics15215049},
+  note    = {ElecVQA-Bench; arXiv:2609.27457}
+}
+
+@article{bergmann2022loco,
+  title   = {Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization},
+  author  = {Bergmann, Paul and Batzner, Kilian and Fauser, Michael and Sattlegger, David and Steger, Carsten},
+  journal = {International Journal of Computer Vision},
+  volume  = {130},
+  number  = {4},
+  pages   = {947--969},
+  year    = {2022},
+  doi     = {10.1007/s11263-022-01578-9}
+}
+
+@inproceedings{li2023pope,
+  title     = {Evaluating Object Hallucination in Large Vision-Language Models},
+  author    = {Li, Yifan and Du, Yifan and Zhou, Kun and Wang, Jinpeng and Zhao, Wayne Xin and Wen, Ji-Rong},
+  booktitle = {Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {292--305},
+  year      = {2023}
+}
+
+@inproceedings{rahmanzadehgervi2024blind,
+  title     = {Vision Language Models Are Blind},
+  author    = {Rahmanzadehgervi, Pooyan and Bolton, Logan and Taesiri, Mohammad Reza and Nguyen, Anh Totti},
+  booktitle = {Asian Conference on Computer Vision (ACCV)},
+  year      = {2024},
+  note      = {arXiv:2407.06581}
+}
+
+@inproceedings{zhang2025mllmsknow,
+  title     = {{MLLMs} Know Where to Look: Training-free Perception of Small Visual Details with Multimodal {LLMs}},
+  author    = {Zhang, Jiarui and Khayatkhoei, Mahyar and Chhikara, Prateek and Ilievski, Filip},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2025}
 }

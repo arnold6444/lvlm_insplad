@@ -7,7 +7,7 @@
 | `tables/*.tex` | 두 판이 같이 쓰는 표 숫자. 각 파일 첫 줄 주석에 출처 결과 파일이 있음 |
 | `figures/fig_*_{en,ko}.png` | 그림 4개(벤치마크 흐름, QA 예시, 결함 참조 예시, 에이전트 구조)의 영·한판 |
 | `make_figures.py` | 위 그림을 결과 CSV와 원본 이미지에서 다시 그리는 스크립트 |
-| `refs.bib` | 참고문헌. 2026-10-24 웹·독립 검증으로 확인, 2026-10-27 추가 4건(ReConPatch, 송전선 점검 리뷰, CPLID, STN PLAD)은 Crossref·arXiv로 확인 |
+| `refs.bib` | 참고문헌. 2026-10-24 웹·독립 검증으로 확인, 2026-10-27 추가 4건(ReConPatch, 송전선 점검 리뷰, CPLID, STN PLAD)은 Crossref·arXiv로 확인, 2026-11-03 추가 7건(Power-LLaVA, PowerGPT, ElecVQA-Bench, MVTec LOCO, POPE, VLMs are blind, MLLMs know where to look)은 arXiv·Crossref·OpenAlex·학회 페이지로 확인. 6절의 ElecVQA 캡 누락 재현율 69.85%는 그 논문 arXiv v1 표 17 값 |
 | `InsPLAD_QA_paper_en.docx`, `InsPLAD_QA_paper_ko.docx` | 위 LaTeX 원고를 그대로 변환한 Word판(그림·표·인용 번호·참고문헌 포함) |
 | `VERIFICATION_2026-10-24.md` | 독립 검증 4개로 논문 주장 약 186개를 원본 결과와 대조한 보고서 |
 | `tex2docx.js` | LaTeX → docx 변환기 |
