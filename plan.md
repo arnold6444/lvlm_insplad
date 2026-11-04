@@ -37,3 +37,15 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 
 ## Next action
 Upload the paper folder to Overleaf and compile both versions.
+
+## Requirement delta — tool-choice pilot (2026-11-04)
+
+- User authorized a bounded follow-up and GitHub upload after local verification. This does not reopen training or the frozen paper experiments.
+- Goal: prepare one Colab notebook for a training-free InternVL tool-choice pilot; use one >=20 GiB GPU, dev40 first, then dev240 only if the pilot is useful. No local HF inference, SFT, GRPO, web search, gold tuning, automatic publication of results, or fabricated expected scores.
+- Preserve existing QA, predictions, paper drafts and the older dev/gold protocols. Work is isolated on `codex/agent-tool-pilot`.
+- Flow: each Q1/Q2/Q3 independently uses original image, optional retrieved different-date normal and at most one normalized original-frame crop. The model emits strict JSON for reference/crop/finish; Python executes tools and feeds results back. Maximum three LVLM calls per question.
+- Controls: direct normal-reference answer, fixed reference+central crop, adaptive tools, and reference-only re-ask matching the adaptive call count. These are new pilot controls, not a rerun of the older verification pipeline. Keep image/tile and prompt confounds explicit.
+- Dev spatial GT is absent. Report Q1/Q2 metrics, FDR/consistency and Q3 presence metrics. True Q3 location and Q1+Q2+Q3-location joint stay null; never substitute presence joint for location joint.
+- Steps: implement runner and strict resume/input identity; add CPU contract tests; create SHA-pinned Colab with Drive input discovery, GPU guard and result ZIP; inspect diff, test, publish branch/PR, verify remote files.
+- Done when: CPU tests cover adaptive execution, invalid/tool failures, budget, label isolation, resume, extraction safety and missing spatial GT; notebook cells compile and source pin is verified; branch/PR and Colab links work. Neural effectiveness remains unrun until a Colab GPU run returns evidence.
+- Checkpoint: runner, notebook builder and protocol implemented. Targeted CPU verification: 36 passed (20 new contracts plus 16 related existing tests), `git diff --check` clean. Critical self-review added a CLI GPU-memory guard, model-load abort, resolved-model revision guard, same-date/content checks, per-call identity and invocation matching. No synthetic scores are published. Remaining: generate notebook against committed source, verify its cells/pin, publish and check remote artifacts.
