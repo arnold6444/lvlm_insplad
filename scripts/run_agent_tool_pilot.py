@@ -37,6 +37,22 @@ def file_sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def source_commit():
+    """Embedded Colab source carries the same immutable commit and file hashes."""
+    receipt_path = ROOT / ".agent_pilot_source.json"
+    if not receipt_path.exists():
+        return agent.git_commit()
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    own_name = Path(__file__).resolve().relative_to(ROOT.resolve()).as_posix()
+    if not re.fullmatch(r"[0-9a-f]{40}", receipt.get("commit", "")) or own_name not in receipt["files"]:
+        raise ValueError("invalid embedded source receipt")
+    for name, expected in receipt["files"].items():
+        path = (ROOT / name).resolve()
+        if not path.is_relative_to(ROOT.resolve()) or file_sha(path) != expected:
+            raise ValueError("embedded source changed")
+    return receipt["commit"]
+
+
 def require_gpu(torch_module=None):
     if torch_module is None:
         import torch as torch_module
@@ -272,7 +288,7 @@ def main(argv=None, *, loader=None, infer=None):
     run_id = str(uuid.uuid4())
     meta = dict(protocol=PROTOCOL, signature=signature, identity=identity, model=spec, run_id=run_id, software=software,
                 resolved_model_revision=(old_meta or {}).get("resolved_model_revision"),
-                benchmark_commit=agent.git_commit(), images=args.n_images, max_calls=args.max_calls,
+                benchmark_commit=source_commit(), images=args.n_images, max_calls=args.max_calls,
                 training=False, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
                 execution="real_hf" if loader is None and infer is None else "injected_test_backend",
                 spatial_gt="absent; no Q3 location or location-joint claim", tile_budget=spec.get("max_total_tiles"),

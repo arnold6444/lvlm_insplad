@@ -1,13 +1,74 @@
-"""Build the SHA-pinned Colab pilot; this does not execute neural inference."""
+"""Build a self-contained, single-run Colab; this does not execute inference."""
 from __future__ import annotations
 
 import argparse
+import base64
+import hashlib
+import inspect
+import io
 import json
 from pathlib import Path
 import re
+import subprocess
 import textwrap
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def source_bundle(commit):
+    """Only immutable tracked source/config; never local data, weights or credentials."""
+    names = subprocess.check_output(["git", "ls-tree", "-r", "--name-only", commit,
+                                     "--", "scripts", "src", "configs", "pyproject.toml"], cwd=ROOT, text=True).splitlines()
+    names = sorted(n for n in names if n.endswith((".py", ".json", ".toml")))
+    files = {n: subprocess.check_output(["git", "show", f"{commit}:{n}"], cwd=ROOT) for n in names}
+    if "scripts/run_agent_tool_pilot.py" not in files:
+        raise ValueError("source commit does not contain the pilot runner")
+    receipt = dict(commit=commit, files={n: hashlib.sha256(data).hexdigest() for n, data in files.items()})
+    files[".agent_pilot_source.json"] = (json.dumps(receipt, sort_keys=True)+"\n").encode()
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, data in sorted(files.items()):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, data)
+    return buffer.getvalue()
+
+
+def extract_source_bundle(encoded, expected_sha, destination, commit):
+    """Colab bootstrap: validate all bytes and refuse changed existing source."""
+    import base64
+    import hashlib
+    import io
+    import json
+    from pathlib import Path
+    import zipfile
+    payload = base64.b64decode(encoded, validate=False)
+    if hashlib.sha256(payload).hexdigest() != expected_sha:
+        raise ValueError("embedded source archive hash mismatch")
+    root = Path(destination).resolve()
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        names = archive.namelist()
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate source member")
+        receipt = json.loads(archive.read(".agent_pilot_source.json"))
+        if receipt["commit"] != commit or set(names) != set(receipt["files"]) | {".agent_pilot_source.json"}:
+            raise ValueError("source receipt/commit mismatch")
+        for name in names:
+            target = (root / name).resolve()
+            if not target.is_relative_to(root) or "\\" in name:
+                raise ValueError("unsafe source member")
+            data = archive.read(name)
+            if name in receipt["files"] and hashlib.sha256(data).hexdigest() != receipt["files"][name]:
+                raise ValueError("source member hash mismatch")
+            if target.exists() and target.read_bytes() != data:
+                raise ValueError("existing source changed; use a fresh runtime")
+        for name in names:
+            target = root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.exists():
+                target.write_bytes(archive.read(name))
+    return receipt
 
 
 def cell(kind, source):
@@ -21,57 +82,56 @@ def cell(kind, source):
 def build(execution_commit):
     if not re.fullmatch(r"[0-9a-f]{40}", execution_commit):
         raise ValueError("execution commit must be a full immutable SHA")
+    bundle = source_bundle(execution_commit)
+    encoded = base64.b64encode(bundle).decode("ascii")
     cells = [cell("markdown", """
-        # 학습 없는 도구 선택 실험 — dev40 → dev240
+        # 도구 선택 비교 실험 — 240장 한 번에 실행
         L4/A100 GPU(20 GiB 이상)에서 **모두 실행**하세요. 추가 학습·웹 검색·gold 실행·결과 GitHub 게시는 하지 않습니다.
 
-        기존 Drive의 FROZEN dev 세트와 원본 ZIP 2개를 사용합니다. 40장 점검 뒤 유용할 때만 N_IMAGES=240으로 변경해 같은 설정으로 한 번 비교합니다. 두 결과는 독립 반복이 아닙니다.
+        기존 Drive의 FROZEN dev 세트와 원본 ZIP 2개를 사용합니다. **설정 변경 없이 모두 실행 한 번으로 240장 전체 비교와 결과 ZIP 다운로드까지 진행합니다.** 실행 소스를 파일 안에 포함해 GitHub 업로드나 git push가 필요 없습니다.
 
-        정상참조 직접 질문 / 고정 확대+참조 / 모델의 도구 선택 / 동일 호출 수 재질문을 비교합니다. 최대 40장 960회, 240장 5,760회 호출이며 실제 시간과 성능은 미측정입니다.
+        정상참조 직접 질문 / 고정 확대+참조 / 모델의 도구 선택 / 동일 호출 수 재질문을 비교합니다. 최대 5,760회 호출이며 실제 시간과 성능은 미측정입니다. 중단되면 같은 파일을 다시 실행해 저장한 결과를 재사용합니다.
 
         **dev에는 결함 위치 정답이 없습니다. Q3 위치 정확도와 세 질문 위치 포함 종합 성공률은 계산하지 않습니다.** 영역 유무 종합 점수를 과거 11.7%/37.9%와 비교하지 마세요.
         마지막 셀은 실제 오류·무효·도구 호출을 확인하고 결과 ZIP을 내려받습니다. 테스트 통과는 GPU 성능 개선 결과가 아닙니다.
         """), cell("code", f'''
+        #@title 1. 실행 설정 (수정 불필요)
         EXECUTION_COMMIT = "{execution_commit}"
-        N_IMAGES = 40  # 40 또는 240; 설정 탐색은 dev에서만
+        SOURCE_ZIP_SHA256 = "{hashlib.sha256(bundle).hexdigest()}"
+        SOURCE_ZIP_B64 = "{encoded}"
+        N_IMAGES = 240
         MODEL = "internvl3_5_8b"
-        RUN_TAG = "v1"  # 설정/코드/입력이 바뀌면 새 태그
+        RUN_TAG = "once_v2"
         MAX_CALLS = 3
         DEV_FOLDER = "lvlm_insplad_qa/gold_v2_dev"
         SUP_ZIP_PATH = ""  # 자동 탐색이 모호할 때만 Drive의 절대 경로 입력
         UNSUP_ZIP_PATH = ""
-        '''), cell("code", '''
+        '''), cell("code", inspect.getsource(extract_source_bundle) + '\n' + textwrap.dedent('''
         import csv, json, os, re, subprocess, sys, zipfile
         from pathlib import Path
         from google.colab import drive
 
-        def run(command, cwd=None):
+        def run(command, cwd=None, check=True):
             command = [str(x) for x in command]
             print("+", " ".join(command[:10]), flush=True)
             process = subprocess.Popen(command, cwd=cwd, stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT, text=True, bufsize=1)
             for line in process.stdout:
                 print(line, end="", flush=True)
-            if process.wait():
+            result = process.wait()
+            if result and check:
                 raise RuntimeError("명령 실패: 위 오류를 확인하세요. 결과를 성공으로 처리하지 않습니다.")
+            return result
 
-        if N_IMAGES not in (40, 240) or not re.fullmatch(r"[A-Za-z0-9_-]+", RUN_TAG):
-            raise ValueError("N_IMAGES=40/240, 안전한 RUN_TAG를 사용하세요.")
+        if N_IMAGES != 240 or not re.fullmatch(r"[A-Za-z0-9_-]+", RUN_TAG):
+            raise ValueError("240장 한 번 실행 설정을 유지하세요.")
         if MODEL not in ("internvl3_5_8b", "qwen3_5_4b") or MAX_CALLS != 3:
             raise ValueError("고정 pilot 설정을 유지하세요.")
         drive.mount("/content/drive", force_remount=False)
         DRIVE = Path("/content/drive/MyDrive")
-        REPO_DIR = Path("/content/insplad_agent_tool_pilot")
-        REPO_URL = "https://github.com/arnold6444/lvlm_insplad.git"
-        if not REPO_DIR.exists():
-            run(["git", "clone", "--no-checkout", REPO_URL, REPO_DIR])
-            run(["git", "checkout", "--detach", EXECUTION_COMMIT], cwd=REPO_DIR)
+        REPO_DIR = Path("/content/insplad_agent_tool_pilot_once")
         def verify_code():
-            remote = subprocess.check_output(["git", "remote", "get-url", "origin"], cwd=REPO_DIR, text=True).strip()
-            head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR, text=True).strip()
-            dirty = subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=REPO_DIR, text=True).strip()
-            if remote != REPO_URL or head != EXECUTION_COMMIT or dirty:
-                raise RuntimeError("소스/커밋/수정 상태가 다릅니다. 새 런타임을 사용하세요.")
+            extract_source_bundle(SOURCE_ZIP_B64, SOURCE_ZIP_SHA256, REPO_DIR, EXECUTION_COMMIT)
         verify_code()
         run([sys.executable, "-m", "pip", "install", "-q", "transformers==5.14.0", "accelerate==1.14.0",
              "sentencepiece==0.2.2", "numpy>=1.26", "pillow>=10", "pandas>=2.2", "tqdm>=4.66", "timm"])
@@ -117,35 +177,50 @@ def build(execution_commit):
         if not REFS_CSV.is_file():
             raise FileNotFoundError("다른 촬영일 정상 참조 CSV가 없습니다.")
         print("출력:", RUN_ROOT)
-        '''), cell("code", '''
+        ''')), cell("code", '''
         verify_code()
-        run([sys.executable, REPO_DIR / "scripts/run_agent_tool_pilot.py", "--dev-qa", DEV_QA,
+        INFERENCE_EXIT_CODE = run([sys.executable, REPO_DIR / "scripts/run_agent_tool_pilot.py", "--dev-qa", DEV_QA,
              "--refs-csv", REFS_CSV, "--sup-zip", SUP_ZIP, "--unsup-zip", UNSUP_ZIP,
-             "--out-dir", RUN_ROOT, "--model", MODEL, "--n-images", N_IMAGES, "--max-calls", MAX_CALLS])
+             "--out-dir", RUN_ROOT, "--model", MODEL, "--n-images", N_IMAGES, "--max-calls", MAX_CALLS], check=False)
         '''), cell("code", '''
         import pandas as pd
         from google.colab import files
-        status = json.loads((RUN_ROOT / "run_status.json").read_text(encoding="utf-8"))
-        metadata = json.loads((RUN_ROOT / "run_metadata.json").read_text(encoding="utf-8"))
-        if (not status.get("complete") or metadata.get("execution") != "real_hf"
+        def read_receipt(name):
+            p = RUN_ROOT / name
+            return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+        status = read_receipt("run_status.json")
+        metadata = read_receipt("run_metadata.json")
+        verified_complete = (INFERENCE_EXIT_CODE == 0 and status.get("complete") and metadata.get("execution") == "real_hf"
+                and status.get("run_id") == metadata.get("run_id")
+                and metadata.get("benchmark_commit") == EXECUTION_COMMIT)
+        if not verified_complete:
+            print("실행 오류 또는 완료 미확인: 아래 ZIP은 진단용이며 성공 결과가 아닙니다.")
+        if (metadata and (metadata.get("execution") != "real_hf"
                 or status.get("run_id") != metadata.get("run_id")
-                or metadata.get("benchmark_commit") != EXECUTION_COMMIT):
-            raise RuntimeError("실제 GPU 추론 완료를 확인하지 못했습니다. 상태/오류를 확인하세요.")
+                or metadata.get("benchmark_commit") != EXECUTION_COMMIT)):
+            print("실행 출처/메타데이터를 확인하지 못했습니다.")
         print(json.dumps(status, ensure_ascii=False, indent=2))
-        display(pd.read_csv(RUN_ROOT / "leaderboard.csv"))
-        display(pd.read_csv(RUN_ROOT / "q2_by_defect.csv"))
-        display(pd.read_csv(RUN_ROOT / "significance.csv"))
+        for name in ("leaderboard.csv", "q2_by_defect.csv", "significance.csv"):
+            p = RUN_ROOT / name
+            if p.is_file() and p.stat().st_size:
+                display(pd.read_csv(p))
         print("Q3 위치 정확도/위치 포함 종합 성공률은 미평가입니다.")
         if not status.get("pilot_format_gate"):
-            print("도구 형식 성공률이 부족합니다. dev240으로 자동 확대하지 마세요.")
+            print("도구 형식 성공률이 부족합니다. 무효 응답을 포함한 결과로 해석하세요.")
+        RUN_ROOT.mkdir(parents=True, exist_ok=True)
+        (RUN_ROOT / "notebook_execution.json").write_text(json.dumps(dict(
+            exit_code=INFERENCE_EXIT_CODE, verified_complete=bool(verified_complete),
+            execution_commit=EXECUTION_COMMIT, status_run_id=status.get("run_id"),
+            metadata_run_id=metadata.get("run_id")), indent=2), encoding="utf-8")
         archive = RUN_ROOT.parent / (RUN_ROOT.name + "_results.zip")
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
             for p in sorted(RUN_ROOT.rglob("*")):
                 if p.is_file() and not any(part.startswith("_") for part in p.relative_to(RUN_ROOT).parts):
                     z.write(p, p.relative_to(RUN_ROOT))
         files.download(str(archive))
-        print("이 ZIP은 GPU 실행 결과이며 GitHub에는 자동 게시하지 않습니다.")
+        print("비교 완료 결과" if verified_complete else "미완료 실행 진단", "ZIP 저장:", archive)
         ''')]
+    cells[1]["metadata"]["cellView"] = "form"
     return dict(cells=cells, metadata=dict(kernelspec=dict(display_name="Python 3", name="python3"),
                                           language_info=dict(name="python"), accelerator="GPU", colab=dict(provenance=[])),
                 nbformat=4, nbformat_minor=5)

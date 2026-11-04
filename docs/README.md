@@ -3,7 +3,7 @@
 Each file describes one Colab experiment: its inputs, fixed settings, pass/failure gates and outputs. All experiments are finished; the results are in [`reports/paper_tables/latest_results.md`](../reports/paper_tables/latest_results.md) and the paper.
 
 ## Separate follow-up, not a completed paper experiment
-- [agent_tool_pilot.md](agent_tool_pilot.md): training-free model-selected crops/references, dev40 then dev240; GPU effectiveness unrun, no Q3 spatial GT.
+- [agent_tool_pilot.md](agent_tool_pilot.md): training-free model-selected crops/references, one self-contained dev240 run; GPU effectiveness unrun, no Q3 spatial GT.
 
 ## Vision-expert cues (paper §4)
 - [vision_expert_smoke.md](vision_expert_smoke.md): detector screening smoke; its artifacts feed the gold v2 selection notebook

@@ -1,8 +1,10 @@
 """CPU contracts for tool execution, fail-closed scoring and deterministic resume."""
 import json
+import hashlib
 from pathlib import Path
 import re
 import sys
+import subprocess
 from types import SimpleNamespace
 import zipfile
 
@@ -179,19 +181,36 @@ def test_model_load_failure_stops_immediately(tmp_path):
     assert json.loads((out / "run_status.json").read_text())["status"] == "fatal_error"
 
 
-def test_notebook_builder_uses_full_source_pin_and_compiles_all_cells():
+def test_notebook_builder_uses_full_source_pin_and_compiles_all_cells(tmp_path):
     import build_agent_tool_pilot_notebook as builder
-    notebook = builder.build("a" * 40)
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    notebook = builder.build(commit)
     assert notebook["nbformat"] == 4
     code = [c["source"] for c in notebook["cells"] if c["cell_type"] == "code"]
     assert len(code) == 4
     for source in code:
         compile(source, "<test notebook>", "exec")
-    assert 'EXECUTION_COMMIT = "' + "a" * 40 + '"' in code[0]
+    assert 'EXECUTION_COMMIT = "' + commit + '"' in code[0]
+    config = {}
+    exec(code[0], config)
+    assert config["N_IMAGES"] == 240 and config["RUN_TAG"] == "once_v2"
+    assert '"git", "clone"' not in code[1]
+    unpacked = tmp_path / "embedded"
+    receipt = builder.extract_source_bundle(config["SOURCE_ZIP_B64"], config["SOURCE_ZIP_SHA256"], unpacked, commit)
+    assert receipt["commit"] == commit and not (unpacked / ".git").exists()
+    assert (unpacked / "scripts/run_agent_tool_pilot.py").is_file()
+    # Standalone extracted source can import its helpers and expose the CLI with no GitHub access.
+    result = subprocess.run([sys.executable, unpacked / "scripts/run_agent_tool_pilot.py", "--help"], capture_output=True, text=True)
+    assert result.returncode == 0 and "--n-images" in result.stdout
     assert 'status.get("run_id") != metadata.get("run_id")' in code[-1]
     assert 'metadata.get("execution") != "real_hf"' in code[-1]
     with pytest.raises(ValueError):
         builder.build("main")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        builder.extract_source_bundle(config["SOURCE_ZIP_B64"], "0" * 64, tmp_path / "bad", commit)
+    (unpacked / "scripts/run_agent_tool_pilot.py").write_text("changed")
+    with pytest.raises(ValueError, match="source changed"):
+        builder.extract_source_bundle(config["SOURCE_ZIP_B64"], config["SOURCE_ZIP_SHA256"], unpacked, commit)
 
 
 def test_gpu_guard_refuses_local_6gib_and_accepts_l4_memory():
@@ -213,3 +232,45 @@ def test_adaptive_can_finish_immediately_and_matched_control_uses_one_call(tmp_p
     answers = pilot.agent.read_jsonl(out / "answers.jsonl")
     assert len(calls) == 72
     assert all(r["calls"] == 1 and not r["tool_actions"] for r in answers if r["policy"] == "adaptive_tools")
+
+
+def test_embedded_source_commit_checks_receipt_and_all_bytes(tmp_path, monkeypatch):
+    script = tmp_path / "scripts/run_agent_tool_pilot.py"
+    script.parent.mkdir()
+    script.write_bytes(b"source fixture")
+    receipt = dict(commit="a" * 40, files={"scripts/run_agent_tool_pilot.py": hashlib.sha256(script.read_bytes()).hexdigest()})
+    (tmp_path / ".agent_pilot_source.json").write_text(json.dumps(receipt))
+    monkeypatch.setattr(pilot, "ROOT", tmp_path)
+    monkeypatch.setattr(pilot, "__file__", str(script))
+    assert pilot.source_commit() == "a" * 40
+    script.write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="source changed"):
+        pilot.source_commit()
+
+
+def test_report_downloads_diagnostics_on_inference_error(tmp_path, monkeypatch):
+    import types
+    import build_agent_tool_pilot_notebook as builder
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    notebook = builder.build(commit)
+    root = tmp_path / "run"
+    root.mkdir()
+    (root / "run_status.json").write_text(json.dumps(dict(complete=False, run_id="r", pilot_format_gate=False)))
+    (root / "run_metadata.json").write_text(json.dumps(dict(execution="real_hf", run_id="r", benchmark_commit=commit)))
+    private = root / "_images"
+    private.mkdir()
+    (private / "raw.png").write_bytes(b"must not export raw images")
+    downloads = []
+    google, colab = types.ModuleType("google"), types.ModuleType("google.colab")
+    colab.files = SimpleNamespace(download=downloads.append)
+    google.colab = colab
+    monkeypatch.setitem(sys.modules, "google", google)
+    monkeypatch.setitem(sys.modules, "google.colab", colab)
+    namespace = dict(RUN_ROOT=root, EXECUTION_COMMIT=commit, INFERENCE_EXIT_CODE=1,
+                     json=json, zipfile=zipfile, display=lambda x: None)
+    exec(notebook["cells"][-1]["source"], namespace)
+    assert not namespace["verified_complete"] and len(downloads) == 1
+    with zipfile.ZipFile(downloads[0]) as archive:
+        assert "run_status.json" in archive.namelist()
+        assert not json.loads(archive.read("notebook_execution.json"))["verified_complete"]
+        assert not any(n.startswith("_images") for n in archive.namelist())
