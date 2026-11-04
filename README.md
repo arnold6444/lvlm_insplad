@@ -6,6 +6,8 @@ InsPLAD-QA is an MMAD-style question-answering benchmark built on the public Ins
 
 **Separate follow-up (2026-11-04):** a [training-free tool-choice pilot](docs/agent_tool_pilot.md) is prepared for Colab dev40/dev240. CPU contract checks are separate from unrun GPU effectiveness. The frozen paper results are preserved; this pilot does not train SFT/GRPO or evaluate Q3 spatial accuracy.
 
+Open the [pilot notebook](notebooks/lvlm_agent_tool_pilot_colab.ipynb); [preparation verification](reports/agent_tool_pilot_preparation_2026-11-04.md) records executed CPU checks and remaining GPU evaluation.
+
 - **Paper (English/Korean, LaTeX and Word):** [`reports/paper_draft_2026-10-23/`](reports/paper_draft_2026-10-23/README.md)
 - **All results in one place:** [`reports/paper_tables/latest_results.md`](reports/paper_tables/latest_results.md)
 - **Independent check of every number in the paper:** [`VERIFICATION_2026-10-24.md`](reports/paper_draft_2026-10-23/VERIFICATION_2026-10-24.md)
