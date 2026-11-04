@@ -273,7 +273,7 @@ def main(argv=None, *, loader=None, infer=None):
     meta = dict(protocol=PROTOCOL, signature=signature, identity=identity, model=spec, run_id=run_id, software=software,
                 resolved_model_revision=(old_meta or {}).get("resolved_model_revision"),
                 benchmark_commit=agent.git_commit(), images=args.n_images, max_calls=args.max_calls,
-                training=False, gpu=agent.gpu_info() if loader is None else None,
+                training=False, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
                 execution="real_hf" if loader is None and infer is None else "injected_test_backend",
                 spatial_gt="absent; no Q3 location or location-joint claim", tile_budget=spec.get("max_total_tiles"),
                 limitations="Prompt and available images differ across controls; extra images share visual budget. Dev is repeatedly explored.")

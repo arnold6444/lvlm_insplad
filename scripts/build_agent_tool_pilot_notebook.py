@@ -41,7 +41,7 @@ def build(execution_commit):
         SUP_ZIP_PATH = ""  # 자동 탐색이 모호할 때만 Drive의 절대 경로 입력
         UNSUP_ZIP_PATH = ""
         '''), cell("code", '''
-        import json, os, re, subprocess, sys, zipfile
+        import csv, json, os, re, subprocess, sys, zipfile
         from pathlib import Path
         from google.colab import drive
 
@@ -105,7 +105,11 @@ def build(execution_commit):
         SUP_ZIP = find_zip("supervised_fault_classification.zip", 874_753_167, SUP_ZIP_PATH)
         UNSUP_ZIP = find_zip("unsupervised_anomaly_detection.zip", 1_170_967_719, UNSUP_ZIP_PATH)
         REFS_CSV = DEV_DIR / "refs/retrieved_refs.csv"
-        if not REFS_CSV.is_file():
+        has_diffdate = False
+        if REFS_CSV.is_file():
+            with REFS_CSV.open(encoding="utf-8-sig", newline="") as stream:
+                has_diffdate = "retrieved_diffdate" in (csv.DictReader(stream).fieldnames or [])
+        if not has_diffdate:
             prepared = DRIVE / "lvlm_insplad_results" / f"agent_tool_pilot_reference_{RUN_TAG}"
             run([sys.executable, REPO_DIR / "scripts/build_retrieved_refs.py", "--qa", DEV_QA,
                  "--sup-zip", SUP_ZIP, "--unsup-zip", UNSUP_ZIP, "--out-dir", prepared, "--device", "cuda"])
