@@ -2,15 +2,16 @@
 
 ## Confirmed delivery
 
-One Colab notebook and a dev-only runner are prepared for a training-free adaptive reference/crop loop. This report contains **implementation verification, not neural model performance**. No Colab inference, SFT or GRPO has been executed for this new pilot.
+One self-contained Colab notebook and a dev-only runner are prepared for a training-free adaptive reference/crop loop. One Run all executes dev240 and all four controls, displays scores and downloads results. This report contains **implementation verification, not neural model performance**. No Colab inference, SFT or GRPO has been executed for this method.
 
-Source execution pin: `150aa27f8840870729b9f842ac62c5b79d1e35c6`. The notebook checks exact HEAD, remote and tracked-tree cleanliness, then runs the committed source. The notebook is delivered in a later commit so its source pin is immutable.
+Current source execution pin: `c9b3f10a996f52f3bec20904da006533de05eb23`. The notebook embeds 105 tracked source/config files from that commit, validates the archive and per-file SHA-256 hashes, and refuses changed existing source. It needs no git repository, remote source access, token or GitHub publication. The delivered notebook is 589,701 bytes with empty output cells.
 
 ## CPU verification
 
 - `python -m pytest tests/test_agent_tool_pilot.py tests/test_gold_v2_q2_q3_agent_dev.py tests/test_dev_prompt_diagnostic.py -q --basetemp=.pytest-tmp`: **36 passed**.
 - After final provenance/reference compatibility fixes, `python -m pytest tests/test_agent_tool_pilot.py -q --basetemp=.pytest-tmp`: **20 passed**.
-- Notebook: four code cells compile, the full source pin exists and includes the runner, and all output cells are empty.
+- After the one-run/self-contained update, the same targeted file: **22 passed**, including no-Git standalone source import, source tamper refusal and diagnostic ZIP delivery on failure.
+- Notebook: four code cells compile. Its embedded source was independently unpacked without `.git`; the extracted runner reports the exact source commit through its validated receipt. All output cells are empty.
 - `git diff --check`: clean.
 - Tests execute real image cropping and file/checkpoint handling with injected model responses, not a real VLM. Test metadata says `injected_test_backend`.
 
@@ -18,9 +19,9 @@ Covered behaviors: strict JSON/coordinates, actual requested crop, early finish,
 
 ## GPU run still required
 
-Use one >=20 GiB L4/A100-class GPU. Start with 40 images (at most 960 LVLM calls); after inspecting the functionality gate and class-level results, the same settings may be run on 240 (at most 5,760 calls). Actual speed, format reliability, accuracy gains and costs remain unmeasured. There is no expected-score range backed by data for this method.
+Use one >=20 GiB L4/A100-class GPU. Run all once on 240 images (at most 5,760 LVLM calls); no separate 40-image run or setting change is required. Actual speed, format reliability, accuracy gains and costs remain unmeasured. There is no expected-score range backed by data for this method.
 
-These two runs finish a bounded exploratory inference comparison. They do not complete training, an untouched holdout evaluation or Q3 spatial validation. Dev lacks defective spatial GT, so Q3 location and Q1/Q2/Q3-location joint are null. The historical 11.7%/37.9% location joint must not be compared with this pilot's presence joint.
+This one run finishes a bounded exploratory inference comparison. It does not complete training, an untouched holdout evaluation or Q3 spatial validation. Dev lacks defective spatial GT, so Q3 location and Q1/Q2/Q3-location joint are null. The historical 11.7%/37.9% location joint must not be compared with this method's presence joint.
 
 ## Scope and preservation
 
@@ -28,8 +29,4 @@ Original gold/dev files and paper artifacts are not modified. The separate workt
 
 ## Publication status
 
-GitHub upload was requested by the user and attempted after verification. Automatic approval review rejected `git push -u origin codex/agent-tool-pilot`: approval is required, but the current approval policy is Never. The branch does not exist remotely (`git ls-remote --heads origin codex/agent-tool-pilot` returned no match), so no PR or usable remote Colab link is claimed. Local commits and notebook are ready for manual publication. A generated test scratch directory remains untracked because automatic review also denied its deletion; it is not part of any commit.
-
-```powershell
-git -C C:\Users\user\Desktop\lvlm_insplad_agent_pilot push -u origin codex/agent-tool-pilot
-```
+GitHub upload remains unperformed after the earlier automatic approval rejection; no retry or alternate remote-write mechanism was used. This no longer blocks notebook execution: upload the local notebook file in Colab and use Run all. Model/dependency downloads, GPU availability and authorization to the existing Drive are still required. A generated test scratch directory remains untracked and is not part of any commit.
