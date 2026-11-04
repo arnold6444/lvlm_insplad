@@ -25,3 +25,11 @@ These two runs finish a bounded exploratory inference comparison. They do not co
 ## Scope and preservation
 
 Original gold/dev files and paper artifacts are not modified. The separate worktree/branch is `lvlm_insplad_agent_pilot` / `codex/agent-tool-pilot`. Existing uncommitted paper and offline joint-scoring changes remain in `lvlm_insplad_fresh`.
+
+## Publication status
+
+GitHub upload was requested by the user and attempted after verification. Automatic approval review rejected `git push -u origin codex/agent-tool-pilot`: approval is required, but the current approval policy is Never. The branch does not exist remotely (`git ls-remote --heads origin codex/agent-tool-pilot` returned no match), so no PR or usable remote Colab link is claimed. Local commits and notebook are ready for manual publication. A generated test scratch directory remains untracked because automatic review also denied its deletion; it is not part of any commit.
+
+```powershell
+git -C C:\Users\user\Desktop\lvlm_insplad_agent_pilot push -u origin codex/agent-tool-pilot
+```
