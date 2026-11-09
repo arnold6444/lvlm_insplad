@@ -237,5 +237,5 @@ def test_sft_notebook_compiles_and_embeds_the_training_scripts(tmp_path):
     for script in ("build_agent_sft_data.py", "train_agent_sft_lora.py", "run_agent_tool_pilot.py"):
         result = subprocess.run([sys.executable, tmp_path / "src/scripts" / script, "--help"], capture_output=True, text=True)
         assert result.returncode == 0, result.stderr
-    assert '"--adapter-dir", TRAIN_DIR / "adapter"' in code[3] and "load_in_4bit" not in "".join(code)
-    assert 'bool(meta.get("training")) == (label == "lora")' in code[4]
+    assert '"--adapter-dir", TRAIN_DIR / "adapter"' in code[4] and "load_in_4bit" not in "".join(code)
+    assert 'bool(meta.get("training")) == (label == "lora")' in code[5]

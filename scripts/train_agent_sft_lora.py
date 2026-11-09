@@ -52,7 +52,7 @@ def encode(processor, sample, end_ids):
     prompt = processor.apply_chat_template(_make_chat(sample["images"], sample["prompt"]), add_generation_prompt=True,
                                            enable_thinking=False, tokenize=True, return_dict=True, return_tensors="pt")
     target = processor.tokenizer(sample["target"], add_special_tokens=False, return_tensors="pt")["input_ids"]
-    target = torch.cat([target, torch.tensor([end_ids])], dim=1)
+    target = torch.cat([target, torch.tensor([[end_ids]], dtype=target.dtype)], dim=1)
     n_prompt = prompt["input_ids"].shape[1]
     batch = {}
     for key, value in prompt.items():
