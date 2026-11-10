@@ -243,7 +243,16 @@ def main(argv=None, *, loader=None, infer=None):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-calls", type=int, choices=(2, 3), default=3)
     parser.add_argument("--n-boot", type=int, default=2000)
+    parser.add_argument("--adapter-dir", type=Path, default=None,
+                        help="LoRA adapter from train_agent_sft_lora.py (qwen3_5_4b only); omit for the base model")
     args = parser.parse_args(argv)
+    adapter_files = None
+    if args.adapter_dir is not None:
+        if args.model != "qwen3_5_4b":
+            raise ValueError("LoRA adapters are supported for qwen3_5_4b only")
+        adapter_files = {p.name: file_sha(p) for p in sorted(args.adapter_dir.glob("adapter_*")) if p.is_file()}
+        if not {"adapter_config.json", "adapter_model.safetensors"} <= set(adapter_files):
+            raise FileNotFoundError(f"no complete LoRA adapter in {args.adapter_dir}")
     if not args.out_dir.name.startswith("agent_tool_pilot_dev"):
         raise ValueError("use a new agent_tool_pilot_dev* output directory")
     if args.n_boot < 20:
@@ -264,8 +273,11 @@ def main(argv=None, *, loader=None, infer=None):
     source_files = [Path(__file__), Path(support.__file__), Path(agent.__file__), Path(base.__file__),
                     ROOT / "scripts/run_dev_prompt_diagnostic.py", ROOT / "src/insplad_benchmark/hf_adapters.py",
                     ROOT / "scripts/run_gold_v2_consistency_metrics.py", ROOT / "src/insplad_benchmark/metrics.py"]
-    signature = digest(dict(protocol=PROTOCOL, rows=rows, q3=q3, model=spec, max_calls=args.max_calls,
-                            seed=args.seed, refs=refs, sources={p.name: file_sha(p) for p in source_files}))
+    identity_inputs = dict(protocol=PROTOCOL, rows=rows, q3=q3, model=spec, max_calls=args.max_calls,
+                           seed=args.seed, refs=refs, sources={p.name: file_sha(p) for p in source_files})
+    if adapter_files is not None:
+        identity_inputs["lora_adapter"] = adapter_files
+    signature = digest(identity_inputs)
     meta_path = args.out_dir / "run_metadata.json"
     old_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
     if old_meta and old_meta["signature"] != signature:
@@ -289,7 +301,7 @@ def main(argv=None, *, loader=None, infer=None):
     meta = dict(protocol=PROTOCOL, signature=signature, identity=identity, model=spec, run_id=run_id, software=software,
                 resolved_model_revision=(old_meta or {}).get("resolved_model_revision"),
                 benchmark_commit=source_commit(), images=args.n_images, max_calls=args.max_calls,
-                training=False, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
+                training=adapter_files is not None, lora_adapter=adapter_files, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
                 execution="real_hf" if loader is None and infer is None else "injected_test_backend",
                 spatial_gt="absent; no Q3 location or location-joint claim", tile_budget=spec.get("max_total_tiles"),
                 limitations="Prompt and available images differ across controls; extra images share visual budget. Dev is repeatedly explored.")
@@ -303,7 +315,10 @@ def main(argv=None, *, loader=None, infer=None):
         require_gpu()
         from insplad_benchmark.hf_adapters import load_hf_adapter
         adapter = load_hf_adapter(model_spec)
-        revision = getattr(getattr(adapter.get("model"), "config", None), "_commit_hash", None)
+        if args.adapter_dir is not None:
+            from peft import PeftModel
+            adapter["model"] = PeftModel.from_pretrained(adapter["model"], str(args.adapter_dir)).eval()
+        revision =getattr(getattr(adapter.get("model"), "config", None), "_commit_hash", None)
         if (old_meta or {}).get("resolved_model_revision") not in (None, revision):
             raise RuntimeError("downloaded model revision changed; use a new run folder")
         return adapter
