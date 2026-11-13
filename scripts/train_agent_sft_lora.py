@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import random
 import sys
 import time
@@ -67,6 +68,22 @@ def encode(processor, sample, end_ids):
     labels[:, n_prompt:] = target
     batch["labels"] = labels
     return batch, n_prompt
+
+
+def action_loss(model, batch, n_prompt):
+    """Mean cross-entropy over the action tokens only.
+
+    Same value as ``model(**batch).loss`` but the LM head runs only on the last ``n_target + 1`` positions
+    (``logits_to_keep``); full-length logits over the ~248k-token vocabulary took several GB per sample on L4.
+    """
+    import torch
+    labels = batch["labels"]
+    keep = labels.shape[1] - n_prompt + 1
+    out = model(**{k: v for k, v in batch.items() if k != "labels"}, logits_to_keep=keep)
+    logits = out.logits[:, :-1].float()          # position i predicts token i+1: covers tokens n_prompt..end
+    if logits.shape[1] != keep - 1:
+        raise RuntimeError("model ignored logits_to_keep; refusing to train on misaligned logits")
+    return torch.nn.functional.cross_entropy(logits.reshape(-1, logits.shape[-1]), labels[:, n_prompt:].reshape(-1))
 
 
 def to_device(batch, model):
@@ -135,6 +152,8 @@ def main(argv=None) -> int:
             return 0
     out.mkdir(parents=True, exist_ok=True)
 
+    # Less fragmentation from variable-length multi-image samples; must be set before CUDA initialises.
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     import torch
     from peft import LoraConfig, get_peft_model, set_peft_model_state_dict
     from safetensors.torch import load_file
@@ -189,29 +208,34 @@ def main(argv=None) -> int:
         model.eval()
         losses = []
         with torch.no_grad():
-            for s in val:
-                batch, _ = encode(processor, s, end_id)
-                losses.append(float(model(**to_device(batch, model)).loss))
+            for i, s in enumerate(val, 1):
+                batch, n = encode(processor, s, end_id)
+                losses.append(float(action_loss(model, to_device(batch, model), n)))
+                if i % 25 == 0 or i == len(val):
+                    print(f"val loss {i}/{len(val)}", flush=True)
         model.train()
         return sum(losses) / len(losses) if losses else None
 
     write_status(complete=False, status="training", step=step, total_steps=total_steps)
     log = (out / "train_log.jsonl").open("a", encoding="utf-8")
     model.train()
+    print(f"train samples {len(train)}, val samples {len(val)}, optimizer steps {step}/{total_steps}", flush=True)
     start, running, seen = time.monotonic(), 0.0, 0
     val_before = evaluate() if step == 0 else None
     if val_before is not None:
         log.write(json.dumps(dict(step=0, val_loss=val_before)) + "\n")
     optimizer.zero_grad(set_to_none=True)
+    t0, step0 = time.monotonic(), step
+    start = t0                                   # rates exclude the validation pass above
     while step < total_steps:
         epoch, pos = divmod(micro, len(train))
         sample = train[epoch_order(len(train), args.seed, epoch)[pos]]
-        batch, _ = encode(processor, sample, end_id)
-        loss = model(**to_device(batch, model)).loss
-        if loss is None or not torch.isfinite(loss):
+        batch, n = encode(processor, sample, end_id)
+        loss = action_loss(model, to_device(batch, model), n)
+        if not torch.isfinite(loss):
             raise RuntimeError(f"non-finite loss at sample {sample['sample_id']}")
         (loss / args.grad_accum).backward()
-        running += float(loss)
+        running += float(loss.detach())
         seen += 1
         micro += 1
         if micro % args.grad_accum == 0 or micro == total_micro:
@@ -227,6 +251,10 @@ def main(argv=None) -> int:
                 log.flush()
                 print(f"step {step}/{total_steps} loss {running / seen:.4f} ({rate:.2f}s/sample)", flush=True)
                 running, seen = 0.0, 0
+            elif step - step0 <= 3:
+                left = (total_steps - step) * (time.monotonic() - t0) / (step - step0)
+                print(f"step {step}/{total_steps} peak GPU {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB, "
+                      f"about {left / 3600:.1f} h of training left", flush=True)
             if step % args.checkpoint_every == 0 and step < total_steps:
                 ckpt.mkdir(parents=True, exist_ok=True)
                 model.save_pretrained(ckpt)
