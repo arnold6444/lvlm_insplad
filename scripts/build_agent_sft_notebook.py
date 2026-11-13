@@ -82,6 +82,11 @@ def build(execution_commit):
         verify_code()
         run([sys.executable, "-m", "pip", "install", "-q", "transformers==5.14.0", "accelerate==1.14.0", "peft>=0.18",
              "safetensors", "sentencepiece==0.2.2", "numpy>=1.26", "pillow>=10", "pandas>=2.2", "tqdm>=4.66", "timm"])
+        # Colab ships torchao 0.10; peft refuses to build LoRA layers when an old torchao is importable.
+        # This run never uses torchao (BF16, no quantization), so remove it instead of upgrading torch-coupled code.
+        run([sys.executable, "-m", "pip", "uninstall", "-y", "-q", "torchao"], check=False)
+        if subprocess.run([sys.executable, "-c", "import torchao"], capture_output=True).returncode == 0:
+            raise RuntimeError("torchao를 제거하지 못했습니다. 런타임을 다시 시작한 뒤 모두 실행하세요.")
         import torch
         if not torch.cuda.is_available() or torch.cuda.get_device_properties(0).total_memory < 20 * 1024**3:
             raise RuntimeError("VRAM 20 GiB 이상 L4/A100 GPU를 선택하세요. 양자화로 우회하지 않습니다.")

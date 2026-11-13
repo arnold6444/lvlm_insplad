@@ -239,3 +239,4 @@ def test_sft_notebook_compiles_and_embeds_the_training_scripts(tmp_path):
         assert result.returncode == 0, result.stderr
     assert '"--adapter-dir", TRAIN_DIR / "adapter"' in code[4] and "load_in_4bit" not in "".join(code)
     assert 'bool(meta.get("training")) == (label == "lora")' in code[5]
+    assert '"uninstall", "-y", "-q", "torchao"' in code[1] and code[1].index("torchao") > code[1].index('"peft>=0.18"')
