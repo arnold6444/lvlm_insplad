@@ -218,6 +218,38 @@ def test_label_mask_covers_only_the_action_and_end_token():
     assert batch["pixel_values"].shape == (3, 4)
 
 
+def test_action_loss_equals_full_length_loss_and_refuses_ignored_logits_to_keep():
+    torch = pytest.importorskip("torch")
+    import train_agent_sft_lora as train
+
+    class Out:
+        def __init__(self, logits):
+            self.logits = logits
+
+    class Tiny(torch.nn.Module):
+        def __init__(self, honour=True):
+            super().__init__()
+            torch.manual_seed(0)
+            self.emb, self.head, self.honour = torch.nn.Embedding(50, 8), torch.nn.Linear(8, 50), honour
+        def forward(self, input_ids, attention_mask=None, logits_to_keep=0):
+            h = self.emb(input_ids)
+            if self.honour and logits_to_keep:
+                h = h[:, -logits_to_keep:]
+            return Out(self.head(h))
+
+    ids = torch.randint(0, 50, (1, 12))
+    n_prompt = 8
+    labels = torch.full_like(ids, -100)
+    labels[:, n_prompt:] = ids[:, n_prompt:]
+    batch = dict(input_ids=ids, attention_mask=torch.ones_like(ids), labels=labels)
+    model = Tiny()
+    full = model(ids).logits[:, :-1]
+    expected = torch.nn.functional.cross_entropy(full.reshape(-1, 50), labels[:, 1:].reshape(-1), ignore_index=-100)
+    assert torch.allclose(train.action_loss(model, batch, n_prompt), expected)
+    with pytest.raises(RuntimeError, match="logits_to_keep"):
+        train.action_loss(Tiny(honour=False), batch, n_prompt)
+
+
 def test_sft_notebook_compiles_and_embeds_the_training_scripts(tmp_path):
     import build_agent_sft_notebook as builder
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()

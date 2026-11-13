@@ -48,6 +48,7 @@ AgentIAD reports the same pattern: tools help only after SFT/RL. This step teach
 
 - **What one sample is.** One agent step. The input comes from the eval adapter's own `apply_chat_template` call (`enable_thinking=False`).
 - **Loss.** Only on the action JSON plus `<|im_end|>`.
+  - The LM head runs only on those positions (`logits_to_keep`). Full-length logits over the ~248k-token vocabulary needed 2–3 GB per sample and pushed the L4 to its memory limit (2026-11-13). The loss value is the same; a tiny Qwen3.5 check gave identical numbers.
 - **LoRA settings.**
   - Applied to every language-model `Linear`; the vision tower is frozen.
   - r 16, α 32, dropout .05.
