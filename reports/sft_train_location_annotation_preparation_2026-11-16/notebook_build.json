@@ -1,12 +1,14 @@
 {
-  "source_bundle_sha256": "da18780eef5f0783d7be739bdcc4e49b1cb395e94320e9e376daf3a8a23238ca",
+  "cohort": "sft_v1",
+  "run_folder": "sft_train_location_annotation_sft_v1",
+  "source_bundle_sha256": "2e52c49acc8bf0666ebd89ff8e70c0fea7fcb843dac899eab652c58f9d097c2c",
   "source_files": {
-    "scripts/sft_train_location_annotation.py": "32aa44d55a0ca9fdee9ad9db2887df5bfa58a7151ca0cadd4ad07cf9aa06e7e9",
+    "scripts/sft_train_location_annotation.py": "95e9ed380b473b202c75e2a7257d834f26078e843d30491682adc48121c0d70a",
     "scripts/dev_missing_location_annotation.py": "3ff033e86b871f7052ea10b05cd06158bce4774801799f44449861f6440ead20",
     "scripts/sft_train_location_ui.html": "6c4417e1b88534e65742a50d25bf92315494faf9da4f9a974cc1fee71284ee1d",
     "inputs/manifest.json": "82bcedbf69b4ebb79839ac4d1555b3cf095f10a87c12fa0849d7faca375a3993"
   },
-  "notebook_sha256": "7cebbed976ecf88d886c08504d4a4133581737c1eee4245552134058601bad67",
+  "notebook_sha256": "735d4b3fb74a0e0c782ab6675ff7dde6eaaef2bcb7c2f814c796ddbed47b7fac",
   "images": 300,
   "images_by_class": {
     "glass-insulator:missing-cap": 60,
@@ -16,7 +18,6 @@
     "yoke-suspension:rust": 60
   },
   "manifest_identity": "420301ada209af2e5bc008ed51700e15438810fc8c3e4784f75d6e8736ce4676",
-  "sft_samples_sha256": "a12ae43330bf6a5e0d190c42027b6f528a0d723b8b649ae28ea762e9567b9b55",
   "code_cells_compiled": 4,
   "neural_calls": 0,
   "annotation_completed": false

@@ -1,4 +1,4 @@
-# 학습 사진 결함 위치 표시 (300장)
+# 학습 사진 결함 위치 표시 (300장 + polymer 녹 60장)
 
 파일: **`lvlm_sft_train_location_annotation_colab.ipynb`**.
 [Colab 열기](https://colab.research.google.com/github/arnold6444/lvlm_insplad/blob/main/notebooks/lvlm_sft_train_location_annotation_colab.ipynb)
@@ -39,12 +39,36 @@ LoRA SFT(`sft_v1`)는 확대할 위치를 자동 DINOv2 박스로 배웠다. 결
 | sft_train_location_gt.json | 확정 박스와 박스 중심의 9칸 정답. 나머지는 null |
 | annotation_summary.json | 확정·판단 불가·이견 수, 종류별 박스 수, 9칸 분포 |
 
-마지막 셀이 `sft_train_location_annotation_results.zip`을 만든다(사진 제외). 중간 백업도 된다.
+마지막 셀이 `<저장 폴더 이름>_results.zip`을 만든다(사진 제외). 중간 백업도 된다.
+
+## 300장 표시 결과 (2026-11-16)
+
+300장 모두 박스 확정, 판단 불가·이견 0, 박스 348개(여러 박스 38장). 대상 목록과 사진 SHA가 학습 데이터와 일치한다.
+
+| 종류 | 가장 흔한 칸 | 박스 면적 중앙값 |
+|---|---|---|
+| glass-insulator 누락 | 가운데 28/60, 나머지는 퍼짐 | 1% |
+| lightning-rod-suspension 녹 | 위-가운데 37/60 | 9% |
+| yoke-suspension 녹 | 위-가운데 42/60 | 19% |
+| vari-grip 녹 | 가운데 48/60 | 30% |
+| vari-grip 새 둥지 | 가운데 48/60 | 73% |
+
+- 기준선: 가운데를 포함한 사진 159/300(53%), 종류별 최빈 칸 203/300(68%). gold 133장에서는 "항상 가운데" 72/133(54%), 학습 라벨의 종류별 최빈 칸 67/133(50%).
+- 새 둥지는 박스가 사진 대부분이라 확대의 의미가 작다.
+
+## polymer 녹 60장 추가 (2026-11-16 사용자 결정)
+
+- gold 결함 133장 중 24장이 polymer-insulator-upper-shackle의 녹(`val/rust`, 위-가운데 23/24)이다. `sft_v1` 학습에는 polymer 결함이 없었다. supervised train의 폴더명이 `corrosão`라서 dev240과 `sft_v1`이 이 종류를 쓰지 않았기 때문이다. 양쪽 사진을 직접 보면 같은 고리의 같은 부식이다.
+- 다음 SFT 세트는 train `corrosão` 60장을 넣고, Q2 정답은 gold와 같은 "Rust / corrosion."으로 둔다. 평가용 라벨과 gold는 바꾸지 않는다. 학습 쪽에서만 두 이름을 같은 답으로 쓴다.
+- 60장은 SFT 선정 코드(`select_train_images` + `POLYMER_CORROSION`)가 같은 제외 규칙으로 뽑는다. 기존 600장 선정은 그대로다(테스트와 실제 데이터로 확인).
+- 표시 노트북: **`lvlm_sft_train_location_annotation_polymer_colab.ipynb`**. [Colab 열기](https://colab.research.google.com/github/arnold6444/lvlm_insplad/blob/main/notebooks/lvlm_sft_train_location_annotation_polymer_colab.ipynb)
+- 저장 폴더는 `MyDrive/lvlm_insplad_results/sft_train_location_annotation_sft_v2_polymer/`로 300장 폴더와 분리된다. 결과는 `sft_train_location_annotation_sft_v2_polymer_results.zip`.
+- 대상 목록: `reports/sft_polymer_location_annotation_preparation_2026-11-16/manifest.json`.
 
 ## 표시가 끝난 뒤
 
 1. `annotation_summary.json`의 9칸 분포를 먼저 본다. gold 위치 정답은 "항상 가운데"가 72/133을 맞힌다. 학습용 정답도 가운데에만 몰려 있으면 위치 학습은 의미가 없다.
-2. 분포가 괜찮으면 자동 박스 대신 이 박스로 SFT 데이터를 다시 만들어 학습한다(별도 작업, 아직 없음).
+2. polymer 60장 표시까지 끝나면, 자동 박스 대신 사람 박스 360장으로 SFT 데이터를 다시 만들어 학습한다(별도 작업, 아직 없음).
 
 ## 검증
 

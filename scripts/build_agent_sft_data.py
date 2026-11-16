@@ -67,7 +67,15 @@ def photo_key(path: str):
     return (date, frame.group(1)) if date and frame else None
 
 
-def select_train_images(sup_rows, unsup_rows, dev_images: set[str], per_class: int, seed: int):
+# Supervised train names the polymer shackle defect ``corrosão``; val and gold v2 name the same corroded shackle
+# ``rust``. dev240 has no polymer defect, so the first SFT set (sft_v1) had none and the adapter saw polymer only as
+# normal, while gold v2 has 24 such defect photos. Adding the class is opt-in so sft_v1 stays reproducible.
+POLYMER_CORROSION = ("polymer-insulator-upper-shackle", "corrosao")
+
+
+def select_train_images(sup_rows, unsup_rows, dev_images: set[str], per_class: int, seed: int,
+                        extra_classes: Sequence[tuple[str, str]] = ()):
+    """``extra_classes`` adds (asset, defect) classes; each class has its own RNG, so the other picks do not move."""
     dev_rows = [r for r in sup_rows if r["relative_path"] in dev_images]
     if len(dev_rows) != len(dev_images):
         raise ValueError("dev240 images missing from the supervised manifest")
@@ -86,6 +94,9 @@ def select_train_images(sup_rows, unsup_rows, dev_images: set[str], per_class: i
                 continue
         kept.append(r)
     quota = devset.quotas(per_class, per_class, per_class)
+    if set(extra_classes) & set(quota):
+        raise ValueError("extra class is already in the base quota")
+    quota.update({key: per_class for key in extra_classes})
     fixed = select_reference_by_asset(unsup_rows, devset.ASSETS, seed=42)
     chosen, stats = devset.select_dev_images(kept, unsup_rows, set(), quota, seed, fixed)
     stats["excluded_before_sampling"] = dict(reasons)

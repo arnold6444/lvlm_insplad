@@ -1,7 +1,13 @@
-"""Build the CPU-only Colab where a person boxes the defect in the anomalous SFT training photos.
+"""Build the CPU-only Colabs where a person boxes the defect in anomalous SFT training photos.
 
-The target list is fixed here from the data folder of the trained adapter (``sft_samples.jsonl`` hash = the ``data``
-field of its ``train_status.json``) and from the original supervised ZIP. No model output or automatic box goes in.
+Two fixed target lists, each with its own notebook and Drive folder:
+
+- ``sft_v1``: the 300 anomalous photos of the trained adapter's data folder (``sft_samples.jsonl`` hash = the ``data``
+  field of its ``train_status.json``).
+- ``polymer``: 60 polymer-shackle corrosion photos that the next SFT set adds (see ``POLYMER_CORROSION`` in
+  build_agent_sft_data.py). They are picked by the same selection code, with the 600 sft_v1 photos unchanged.
+
+Every photo is checked against the original supervised ZIP. No model output or automatic box goes in.
 """
 import argparse
 import ast
@@ -22,6 +28,9 @@ SUP_ZIP_BYTES = 874753167
 BLOCK = 12            # photos of one class in a row; five classes x 12 = one balanced round of 60
 BUNDLE = ("scripts/sft_train_location_annotation.py", "scripts/dev_missing_location_annotation.py",
           "scripts/sft_train_location_ui.html")
+NOTEBOOKS = {"sft_v1": "notebooks/lvlm_sft_train_location_annotation_colab.ipynb",
+             "polymer": "notebooks/lvlm_sft_train_location_annotation_polymer_colab.ipynb"}
+RUN_FOLDERS = {"sft_v1": annotation.PREFIX + "_sft_v1", "polymer": annotation.PREFIX + "_sft_v2_polymer"}
 
 
 def source_bytes(name):
@@ -29,8 +38,27 @@ def source_bytes(name):
     return (ROOT / name).read_bytes().replace(bytes([13, 10]), bytes([10]))
 
 
-def targets(train_qa, samples, boxes_csv, archive, expected_sha=DATA_SHA, per_class=60):
+def photo_entry(z, core, image, asset, defect, fingerprint, split):
+    """One manifest target, after checking the photo against the original ZIP."""
     from PIL import Image
+    info = z.getinfo(image)
+    size, crc = fingerprint.split(":")
+    if (int(size), int(crc, 16)) != (info.file_size, info.CRC):
+        raise ValueError("training photo differs from the original ZIP: " + core)
+    b = z.read(info)
+    with Image.open(io.BytesIO(b)) as im:
+        if im.getexif().get(274, 1) != 1:
+            raise ValueError("unsupported EXIF rotation: " + core)
+        dims = list(im.size)
+    return dict(core_id=core, image=image, sha256=annotation.sha(b), size=dims, asset_category=asset, defect_gt=defect,
+                anomaly_gt="anomalous", sft_split=split, content_fingerprint=fingerprint)
+
+
+def screen_order(t):
+    return annotation.sha(("sft-location/" + t["core_id"]).encode())
+
+
+def targets(train_qa, samples, boxes_csv, archive, expected_sha=DATA_SHA, per_class=60):
     if annotation.sha(Path(samples).read_bytes()) != expected_sha:
         raise ValueError("sft_samples.jsonl is not the data the adapter was trained on")
     rows = {}
@@ -43,23 +71,12 @@ def targets(train_qa, samples, boxes_csv, archive, expected_sha=DATA_SHA, per_cl
     by_class = defaultdict(list)
     with ZipFile(archive) as z:
         for core, r in rows.items():
-            info = z.getinfo(r["image"])
-            size, crc = r["content_fingerprint"].split(":")
-            if (int(size), int(crc, 16)) != (info.file_size, info.CRC):
-                raise ValueError("training photo differs from the original ZIP: " + core)
-            b = z.read(info)
-            with Image.open(io.BytesIO(b)) as im:
-                if im.getexif().get(274, 1) != 1:
-                    raise ValueError("unsupported EXIF rotation: " + core)
-                dims = list(im.size)
-            by_class[r["asset_category"], r["defect_gt"]].append(dict(
-                core_id=core, image=r["image"], sha256=annotation.sha(b), size=dims, asset_category=r["asset_category"],
-                defect_gt=r["defect_gt"], anomaly_gt="anomalous", sft_split=split[core],
-                content_fingerprint=r["content_fingerprint"]))
+            by_class[r["asset_category"], r["defect_gt"]].append(photo_entry(
+                z, core, r["image"], r["asset_category"], r["defect_gt"], r["content_fingerprint"], split[core]))
     if any(len(v) != per_class for v in by_class.values()) or not by_class:
         raise ValueError(f"expected {per_class} anomalous photos per class: " + str({k: len(v) for k, v in by_class.items()}))
     for v in by_class.values():
-        v.sort(key=lambda t: annotation.sha(("sft-location/" + t["core_id"]).encode()))
+        v.sort(key=screen_order)
     # Rounds of BLOCK photos per class: any finished round is class-balanced, and one defect type stays on screen
     # for a stretch so the annotator applies one rule at a time.
     ordered = [t for start in range(0, per_class, BLOCK) for key in sorted(by_class) for t in by_class[key][start:start + BLOCK]]
@@ -69,9 +86,47 @@ def targets(train_qa, samples, boxes_csv, archive, expected_sha=DATA_SHA, per_cl
     return manifest
 
 
-def build(args):
-    manifest = targets(args.train_qa, args.samples, args.boxes_csv, args.sup_zip)
+def polymer_targets(dev_qa, train_qa, sup_zip, unsup_zip, work_dir, per_class=60, seed=42):
+    """The polymer corrosion photos the next SFT set adds, chosen by the SFT selection code itself."""
+    import build_agent_sft_data as sft
+    dev_images = {json.loads(x)["image"] for x in Path(dev_qa).read_text(encoding="utf-8").splitlines() if x.strip()}
+    trained = {json.loads(x)["image"] for x in Path(train_qa).read_text(encoding="utf-8").splitlines() if x.strip()}
+    unsup_rows = sft.parse_unsupervised_manifest(sft.devset.zip_manifest(Path(unsup_zip), Path(work_dir) / "unsupervised.csv"))
+    sup_rows, _ = sft.parse_supervised_manifest(sft.devset.zip_manifest(Path(sup_zip), Path(work_dir) / "supervised.csv"))
+    chosen, _, _ = sft.select_train_images(sup_rows, unsup_rows, dev_images, per_class, seed, [sft.POLYMER_CORROSION])
+    extra = [r for r in chosen if (r["asset_category"], r["defect_class"]) == sft.POLYMER_CORROSION]
+    if {r["relative_path"] for r in chosen} - {r["relative_path"] for r in extra} != trained or len(extra) != per_class:
+        raise ValueError("adding the polymer class moved the sft_v1 selection, or the class is short")
+    with ZipFile(sup_zip) as z:
+        entries = [photo_entry(z, "sft-" + sft.devset.stable_id("dev", str(r["relative_path"])).removeprefix("dev-"),
+                               str(r["relative_path"]), r["asset_category"], r["defect_class"],
+                               str(r["content_fingerprint"]), "pending") for r in extra]
+    manifest = dict(protocol=annotation.PROTOCOL,
+                    source=dict(selection="build_agent_sft_data.select_train_images + POLYMER_CORROSION",
+                                per_class=per_class, seed=seed,
+                                sft_v1_train_qa_sha256=annotation.sha(Path(train_qa).read_bytes())),
+                    cohort=f"{len(entries)}_polymer_corrosion_photos_added_to_the_sft_set",
+                    targets=sorted(entries, key=screen_order))
+    annotation.validate_manifest(manifest)
+    return manifest
+
+
+INTRO = {
+    "sft_v1": """
+    LoRA 학습에 쓴 결함 사진 {n}장입니다(누락 60, 녹 180, 새 둥지 60). dev240이나 gold 사진이 아니며, 둘 다 바꾸지 않습니다.
+    같은 종류가 12장씩 묶여 나옵니다. 60장을 끝낼 때마다 다섯 종류가 같은 수만큼 채워집니다.
+    """,
+    "polymer": """
+    다음 LoRA 학습에 새로 넣을 **polymer 절연체 위쪽 고리의 녹** 사진 {n}장입니다. gold에 있는 polymer 녹 24장과 같은 종류의 결함인데,
+    첫 학습(sft_v1)에는 한 장도 없었습니다. dev240이나 gold 사진이 아니며, 둘 다 바꾸지 않습니다.
+    앞서 표시한 300장과는 다른 폴더에 따로 저장됩니다. 300장 표시는 그대로 남습니다.
+    """,
+}
+
+
+def build(manifest, cohort, output, evidence_dir=None):
     n = len(manifest["targets"])
+    run_folder = RUN_FOLDERS[cohort]
     counts = Counter(t["asset_category"] + ":" + t["defect_gt"] for t in manifest["targets"])
     payloads = {name: source_bytes(name) for name in BUNDLE}
     payloads["inputs/manifest.json"] = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode()
@@ -85,10 +140,11 @@ def build(args):
     payload = buf.getvalue()
     source_sha = annotation.sha(payload)
     cells = []
+    intro = textwrap.dedent(INTRO[cohort]).strip().format(n=n)
 
     def cell(kind, text):
         c = {"id": "sft-location-label-" + str(len(cells)), "cell_type": kind, "metadata": {},
-             "source": textwrap.dedent(text).strip().splitlines(keepends=True)}
+             "source": textwrap.dedent(text).strip().replace("@@INTRO@@", intro).splitlines(keepends=True)}
         if kind == "code":
             ast.parse("".join(c["source"]))
             c.update(execution_count=None, outputs=[])
@@ -97,11 +153,10 @@ def build(args):
     cell("markdown", f"""
     # 학습 사진 결함 위치 표시 — {n}장
 
-    파일: `lvlm_sft_train_location_annotation_colab.ipynb`
+    파일: `{Path(NOTEBOOKS[cohort]).name}`
 
     **GPU 불필요(일반 CPU). 위에서부터 실행 → 표시 화면에서 박스 표시 → 마지막 결과 저장 셀을 실행하세요.**
-
-    LoRA 학습에 쓴 결함 사진 {n}장입니다(누락 60, 녹 180, 새 둥지 60). dev240이나 gold 사진이 아니며, 둘 다 바꾸지 않습니다.
+    @@INTRO@@
     화면에는 사진과 **결함 종류**만 나옵니다. 모델 답이나 자동으로 만든 박스는 보이지 않습니다.
 
     - 마우스로 끌어서 **결함을 감싸는 박스**를 그리세요. 결함이 여러 곳이면 각각 그립니다.
@@ -109,12 +164,11 @@ def build(args):
     - 위치를 정하기 어려우면 `위치 판단 불가`, 결함 라벨 자체가 이상하면 `라벨 이견`을 누르고 사유를 적으세요. 이 사진들은 위치 학습에서 빠집니다.
     - 박스를 그리거나 지우면 Drive에 **초안이 자동 저장**됩니다. `저장 후 다음(Enter)`을 눌러야 확정입니다. `Z`는 마지막 박스 지우기입니다.
     - 중간에 나가도 됩니다. `초안 저장됨` 표시를 확인하고 나가면, 다음에 같은 노트북을 실행했을 때 첫 미완료 사진부터 이어집니다.
-    - 같은 종류가 {BLOCK}장씩 묶여 나옵니다. 60장을 끝낼 때마다 다섯 종류가 같은 수만큼 채워집니다.
 
-    결과 파일: `{annotation.RESULT_ZIP}`. 다 못 끝내도 마지막 셀로 중간 백업을 만들 수 있습니다.
+    결과 파일: `{run_folder}_results.zip`. 다 못 끝내도 마지막 셀로 중간 백업을 만들 수 있습니다.
     """)
     cell("code", f"""
-    RUN_FOLDER = "lvlm_insplad_results/{annotation.PREFIX}_sft_v1"
+    RUN_FOLDER = "lvlm_insplad_results/{run_folder}"
     SUP_ZIP_PATH = ""  # 자동 검색이 안 될 때만 Drive의 실제 ZIP 경로를 입력
     """)
     cell("code", f"""
@@ -152,7 +206,7 @@ def build(args):
     assert OUT.name.startswith(annotation.PREFIX)
     manifest=annotation.read(CODE/'inputs/manifest.json')
     print('사진 {n}장을 원본 ZIP에서 꺼내 확인합니다. 1~2분 걸릴 수 있습니다.')
-    session=annotation.prepare(manifest,find_zip(),OUT,cache=Path('/content/sft_train_location_images'),
+    session=annotation.prepare(manifest,find_zip(),OUT,cache=Path('/content/sft_train_location_images_'+SOURCE_SHA256[:12]),
         progress=lambda i,n:print(f'  사진 확인 {{i}}/{{n}}',flush=True))
     (OUT/'source_bundle.zip').write_bytes(SOURCE_BYTES)
     annotation.atomic(OUT/'source_manifest.json',SOURCE_MANIFEST)
@@ -163,7 +217,7 @@ def build(args):
     # 이 화면에서 박스를 표시합니다. 박스 추가/삭제는 초안 저장, Enter는 확정 후 다음.
     annotation.register_colab(session)
     """)
-    cell("markdown", f"""
+    cell("markdown", """
     ## 표시를 마친 뒤(또는 중간 백업할 때) 아래 셀 실행
 
     화면에서 `저장 후 다음`으로 확정한 사진만 위치 정답으로 들어갑니다.
@@ -183,23 +237,35 @@ def build(args):
     nb = {"cells": cells, "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                                        "language_info": {"name": "python"}, "colab": {"provenance": []}},
           "nbformat": 4, "nbformat_minor": 5}
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(nb, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    receipt = {"source_bundle_sha256": source_sha, "source_files": hashes,
-               "notebook_sha256": annotation.sha(args.output.read_bytes()), "images": n, "images_by_class": dict(sorted(counts.items())),
-               "manifest_identity": annotation.digest(manifest), "sft_samples_sha256": DATA_SHA, "code_cells_compiled": 4,
-               "neural_calls": 0, "annotation_completed": False}
-    if args.evidence_dir:
-        annotation.atomic(args.evidence_dir / "manifest.json", manifest)
-        annotation.atomic(args.evidence_dir / "notebook_build.json", receipt)
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(nb, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    receipt = {"cohort": cohort, "run_folder": run_folder, "source_bundle_sha256": source_sha, "source_files": hashes,
+               "notebook_sha256": annotation.sha(output.read_bytes()), "images": n, "images_by_class": dict(sorted(counts.items())),
+               "manifest_identity": annotation.digest(manifest), "code_cells_compiled": 4, "neural_calls": 0,
+               "annotation_completed": False}
+    if evidence_dir:
+        annotation.atomic(Path(evidence_dir) / "manifest.json", manifest)
+        annotation.atomic(Path(evidence_dir) / "notebook_build.json", receipt)
     print(json.dumps(receipt, indent=2))
     return nb
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    for key in ("train-qa", "samples", "boxes-csv", "sup-zip"):
-        p.add_argument("--" + key, type=Path, required=True)
-    p.add_argument("--output", type=Path, default=ROOT / "notebooks/lvlm_sft_train_location_annotation_colab.ipynb")
+    p.add_argument("--cohort", choices=sorted(NOTEBOOKS), required=True)
+    p.add_argument("--train-qa", type=Path, required=True, help="sft_train_qa.jsonl of the sft_v1 data folder")
+    p.add_argument("--sup-zip", type=Path, required=True)
+    p.add_argument("--samples", type=Path, help="sft_v1 only: sft_samples.jsonl")
+    p.add_argument("--boxes-csv", type=Path, help="sft_v1 only: boxes.csv (its split column)")
+    p.add_argument("--dev-qa", type=Path, help="polymer only: FROZEN gold_v2_dev QA")
+    p.add_argument("--unsup-zip", type=Path, help="polymer only")
+    p.add_argument("--work-dir", type=Path, help="polymer only: scratch folder for the ZIP manifests")
+    p.add_argument("--output", type=Path)
     p.add_argument("--evidence-dir", type=Path)
-    build(p.parse_args())
+    a = p.parse_args()
+    if a.cohort == "sft_v1":
+        m = targets(a.train_qa, a.samples, a.boxes_csv, a.sup_zip)
+    else:
+        m = polymer_targets(a.dev_qa, a.train_qa, a.sup_zip, a.unsup_zip, a.work_dir)
+    build(m, a.cohort, a.output or ROOT / NOTEBOOKS[a.cohort], a.evidence_dir)
