@@ -69,3 +69,26 @@ AgentIAD reports the same pattern: tools help only after SFT/RL. This step teach
   - dev240 has been explored repeatedly. It has no spatial GT, so Q3 is scored on presence only.
   - A gain here is a dev result, not a generalisation claim.
 - **Not done:** GRPO, gold evaluation, and a new holdout.
+
+## Result (2026-11-16, L4, dev240, run `sft_v1`)
+
+Training finished 587/587 steps; validation loss went from .826 to .134. Both evaluations completed with 0 row errors.
+
+| Condition | Q1 F1 | Q2 macro-F1 | Joint | Q3 presence BAcc | Invalid episodes | Calls |
+|---|---|---|---|---|---|---|
+| base, direct_reference | .375 | .421 | .292 | 0 (all invalid) | 419 | 720 |
+| base, adaptive_tools | .463 | .494 | .292 | .144 | 313 | 720 |
+| LoRA, direct_reference | .987 | .963 | .971 | .988 | 0 | 720 |
+| LoRA, fixed_evidence | .987 | .969 | .975 | .988 | 0 | 720 |
+| LoRA, adaptive_tools | .979 | .960 | .967 | .976 | 1 | 1,805 |
+
+- **Fine-tuning helps a lot.** The base scores are low mostly because of format: 419 of 720 direct answers were prose, not JSON.
+- **Tools add nothing.** LoRA adaptive vs LoRA direct: every bootstrap interval includes 0, and adaptive is slightly lower with 2.5 times the calls.
+- **The learned tool policy is degenerate.**
+  - Cropping equals the anomaly decision: all 115 anomalous photos get reference then crop; 119 of 125 normal photos get reference only.
+  - 341 of 365 crop boxes are the same corner `[0, 0, .221, .221]`. That box was 15 of the 300 training boxes. The automatic boxes cannot be predicted from the photo, so the policy fell back to the most frequent one.
+  - Q3 cell on anomalous photos: adaptive says upper-left 105/115, direct says center 92/115. dev240 has no location GT, so this is not scored.
+- **Inflation check.** No dev photo shares a drone frame with training. 60 dev photos have a same-date, same-asset, same-label training photo within 5 frames; accuracy is the same for them (58/60) as for the other 180 (175/180). dev240 still comes from the same supervised-train pool and dates as the training photos.
+- **Supported claim:** fine-tuning on 600 labelled photos nearly solves Q1/Q2 on dev240. **Not supported:** that tool use helps, or that location is learned.
+- **Known logging bug:** `sec_per_sample` in `train_log.jsonl` is cumulative time over the last 80 samples. Real speed was about 4.5 s per sample. Results are unaffected.
+- **Next:** manual boxes for the 300 anomalous training photos, [sft_train_location_annotation.md](sft_train_location_annotation.md).
