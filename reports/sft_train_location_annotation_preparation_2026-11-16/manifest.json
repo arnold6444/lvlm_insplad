@@ -1,0 +1,4210 @@
+{
+  "protocol": "sft_train_location_annotation_v1",
+  "source": {
+    "sft_samples_sha256": "a12ae43330bf6a5e0d190c42027b6f528a0d723b8b649ae28ea762e9567b9b55",
+    "run_tag": "sft_v1"
+  },
+  "cohort": "all_300_anomalous_sft_training_photos",
+  "targets": [
+    {
+      "core_id": "sft-85fab9da7ffc5e52",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0539_cadeia_isolador_vidro_1617_4.jpg",
+      "sha256": "a3ec85fcbb16d8896eaa4f9264260c48933005b3c91786b7563cda1229847f20",
+      "size": [
+        955,
+        956
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "365086:db779473"
+    },
+    {
+      "core_id": "sft-eee4d4c58166b87c",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0347_cadeia_isolador_vidro_893_8.jpg",
+      "sha256": "7f8b8d3910fa43cfc6302c3c6692f95d81577c9eef0dc766f927519e9b5bc5bb",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "561869:567af514"
+    },
+    {
+      "core_id": "sft-8d8a53b763313d14",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0361_cadeia_isolador_vidro_912_0.jpg",
+      "sha256": "c9fd72d7cfbcbeee8d6b9d2be5f39226727a3304dc52ddee39708762b227ed2e",
+      "size": [
+        1170,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "832439:b168efa2"
+    },
+    {
+      "core_id": "sft-ed45fd22f1b14e1a",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0362_cadeia_isolador_vidro_913_7.jpg",
+      "sha256": "edaeb7194fb226b8afe163a25810a3209fa1d9a5058bc45863251f40574ee959",
+      "size": [
+        1459,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "875728:bc793166"
+    },
+    {
+      "core_id": "sft-222179a55ef7301b",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 07-12-2020_DJI_0194_cadeia_isolador_vidro_1328_5.jpg",
+      "sha256": "1f375beab95bdf9f01f0a36b5f832f1a39dfbe14766de8a78cdaa068553c85ba",
+      "size": [
+        475,
+        476
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "87814:d5b4fcd4"
+    },
+    {
+      "core_id": "sft-978b5b921dadb36f",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0555_cadeia_isolador_vidro_1626_2.jpg",
+      "sha256": "d9c08fc9c80ff795908ff8358dd6f0e2698997d2081234b12e1a642847c3a7b3",
+      "size": [
+        763,
+        763
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "319440:5ed5ce5e"
+    },
+    {
+      "core_id": "sft-eb71b6c75af24b03",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0368_cadeia_isolador_vidro_922_5.jpg",
+      "sha256": "18fcd0dc285a7ac2993d8f8c34759ba35c505d5d75a288763e61cca21d6e1770",
+      "size": [
+        681,
+        680
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "155728:257ec3f4"
+    },
+    {
+      "core_id": "sft-c3dcd41b0b4cfe55",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 08-12-2020_DJI_0379_cadeia_isolador_vidro_1423_4.jpg",
+      "sha256": "12ab9a77477c5386d3a6c7daba72d17215a85da22fa0d71d93602e04a02444e0",
+      "size": [
+        1426,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "691546:fdc12320"
+    },
+    {
+      "core_id": "sft-b651f05452eeda65",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 01-12-2020_DJI_0349_cadeia_isolador_vidro_140_4.jpg",
+      "sha256": "1bd36761515e4369f740cba1e67013b9d494cf10367758ec65fdbcf2f409b24f",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "321489:fa96fddd"
+    },
+    {
+      "core_id": "sft-083759424a3c0027",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0347_cadeia_isolador_vidro_893_4.jpg",
+      "sha256": "f9928a8d4a928c28446bca9299de47943ce7718b9c96c30aa70815fcf35b0480",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "803516:124a0066"
+    },
+    {
+      "core_id": "sft-ee2fab68e418fd38",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0361_cadeia_isolador_vidro_912_2.jpg",
+      "sha256": "b067ed6a31097056be7f10effc6f1699993ab0dde4da3742bbfbc98741e9662d",
+      "size": [
+        1170,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "622047:9619df09"
+    },
+    {
+      "core_id": "sft-84ac1fdb6f1dd68a",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0366_cadeia_isolador_vidro_918_0.jpg",
+      "sha256": "e7ac993501c5eb12ef3be01d883e0cd2d663ee4bf84a79cd1d9b7d99fc37ae8c",
+      "size": [
+        822,
+        723
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "222434:2f67fa71"
+    },
+    {
+      "core_id": "sft-ec3f01291c6551a8",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_4.jpg",
+      "sha256": "873324ae4036c32ec08e0f12a85e333e489eefd7af1969ea3d80bb65f0422695",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "158667:5778209f"
+    },
+    {
+      "core_id": "sft-510858f5a923200d",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0451_139_8.jpg",
+      "sha256": "76b33d3dbf2b3b933dbae3aa5c26debf85f193eb8202f6880902c40f4e63ad01",
+      "size": [
+        458,
+        457
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "112351:834e027f"
+    },
+    {
+      "core_id": "sft-ffaa51b2ef880f28",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/Fotos 09-12-2020_DJI_0298_suspensao_para_raio_131_0.jpg",
+      "sha256": "e0af8fa6d14eb2f66c4d4e724786c03fab5f475f18827ef0d370f8678dcfee9b",
+      "size": [
+        1027,
+        1026
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "463980:01230b7b"
+    },
+    {
+      "core_id": "sft-a87958a0913e0bc0",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_8.jpg",
+      "sha256": "cf2e67cd68dacf98be3011d4b6aac8f519a592284e2671dcf480782572d44d09",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "172682:5ca79da8"
+    },
+    {
+      "core_id": "sft-cc211ca18785a890",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/Fotos 09-12-2020_DJI_0298_suspensao_para_raio_131_7.jpg",
+      "sha256": "c7ce2d64730355b44c1f3c1bf572ea60a2204bd2e5d4c85aec0eb8d92cdc8b1c",
+      "size": [
+        1027,
+        1026
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "216802:c2a4edf1"
+    },
+    {
+      "core_id": "sft-369ea880ec52421f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0245_72_4.jpg",
+      "sha256": "b334a062c5f28310b0c3724985593ae4cf1ae5e9394c8d6f56790c4f031c51bd",
+      "size": [
+        406,
+        406
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "109211:802f20b4"
+    },
+    {
+      "core_id": "sft-2b966ce2f6955e93",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0402_539.jpg",
+      "sha256": "1a78ee9202c58f40cef8110e9fab89ef866ad8617c1bda69ff7bd2bd9b7f1fb2",
+      "size": [
+        741,
+        741
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "113722:392c4f25"
+    },
+    {
+      "core_id": "sft-aa1bfa88be5a7db4",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0370_409_7.jpg",
+      "sha256": "779243ee137b904c31d478d2c2b2d38588858c9c5cc91b01b25a824020ab0183",
+      "size": [
+        899,
+        899
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "326371:b7217c75"
+    },
+    {
+      "core_id": "sft-0199726f24da0fa9",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430.jpg",
+      "sha256": "82c3a89b8b9a26439f127999e971a7626eba2d5b058edf558ea255a323c4c88b",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "149466:7b874a2c"
+    },
+    {
+      "core_id": "sft-66d1be01adfd67ad",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0451_139_0.jpg",
+      "sha256": "852d9f26939454537bb44a51bcb803b03f71ed0b48cd00f56091ca2802734ec1",
+      "size": [
+        458,
+        457
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "109356:85109996"
+    },
+    {
+      "core_id": "sft-012243cef628fea7",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0049_727_4.jpg",
+      "sha256": "f90b14e8a7cd2fa2b62f5a0dae106939a99a6e3eefac5b0ba056935f106528bf",
+      "size": [
+        568,
+        567
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "135959:3c84621f"
+    },
+    {
+      "core_id": "sft-85eb82393ab8c4ce",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_5.jpg",
+      "sha256": "c3706132560adb967cb9b99833157c6d3e1314f98b1e36fe12dc7c8c0acbd2f7",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "229155:2123e9fe"
+    },
+    {
+      "core_id": "sft-ccae82de4966cf24",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_5.jpg",
+      "sha256": "5864429784a91db2782a9ef832f9ed26fc130589fa3a612db7b282a993c0465e",
+      "size": [
+        713,
+        712
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "183953:9853c624"
+    },
+    {
+      "core_id": "sft-3be037952026f916",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_844_8.jpg",
+      "sha256": "f2673fa5e68c921ddd769775fb859cbf5146eb3a7aa9bd3857f4caf8cf2173d2",
+      "size": [
+        567,
+        568
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "96191:c5c85945"
+    },
+    {
+      "core_id": "sft-0f888db804b51088",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_908_6.jpg",
+      "sha256": "0c65529ed535f4fef2d687a7365971f5807112091a6817fd2f2ecd617914c9d4",
+      "size": [
+        488,
+        487
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "79992:d5a8ed40"
+    },
+    {
+      "core_id": "sft-2e99f4ea6eeb6bdb",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_843_7.jpg",
+      "sha256": "ac86cab8b3b829259d0ee00e90602c750c4a39ad877509905cc898ff9de2d276",
+      "size": [
+        585,
+        586
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "70886:9ffa03ad"
+    },
+    {
+      "core_id": "sft-402d6a68eefc8117",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_571_2.jpg",
+      "sha256": "8db593cc3244c9e69501bafa127ee3344da845629ae2d47bf19ad1e3a419c4f7",
+      "size": [
+        388,
+        388
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "33270:de47848f"
+    },
+    {
+      "core_id": "sft-23375b744b9506f1",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_908_2.jpg",
+      "sha256": "5a6feb31a3d210326da116e130d262464846629677d92e66d0db402d0140237c",
+      "size": [
+        488,
+        487
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "140214:1d6adb7b"
+    },
+    {
+      "core_id": "sft-fa16dc0dab2c23db",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_719_2.jpg",
+      "sha256": "0776b734cd7803bdec9523bf2c829d17a10e3dd8a163b82f0255660deae1164c",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "46430:271201c6"
+    },
+    {
+      "core_id": "sft-ba8de6eb9a77c901",
+      "image": "defect_supervised/vari-grip/train/bird-nest/11-06-2021_DJI_0132_6_7.jpg",
+      "sha256": "b09056068d71e5858b20a4b00ccd00368a2c6ff89c6ca060abd6f19709d33c57",
+      "size": [
+        625,
+        625
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "125491:2071f2af"
+    },
+    {
+      "core_id": "sft-1b7802c16ea4807b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_718_0.jpg",
+      "sha256": "4475a09fa2ea4cd4e11cf90a4ab809320fee9d5f5add0c205180703b1ae2eea6",
+      "size": [
+        540,
+        540
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "64879:0e5dbbbf"
+    },
+    {
+      "core_id": "sft-1233d60c09c35b62",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657_0.jpg",
+      "sha256": "cf0f4fd61c16296fa19b648b1a38dce4b6754d2e49847c76f2ee0eecee178a52",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "80817:fadf8dc1"
+    },
+    {
+      "core_id": "sft-cf8d9aa9788c5861",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_843_3.jpg",
+      "sha256": "3276e9e93b58bc34ba05b86a608d7fb917055a48a9741a97db6def2f0a7ccae6",
+      "size": [
+        585,
+        586
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "65830:3039a567"
+    },
+    {
+      "core_id": "sft-75f6cdda31b34e97",
+      "image": "defect_supervised/vari-grip/train/bird-nest/11-06-2021_DJI_0132_6_2.jpg",
+      "sha256": "1dc981ce0069fd501d2a1210852c6e2cd1e8f51db293efcdeb2e76782068e3b6",
+      "size": [
+        625,
+        625
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "176828:88346560"
+    },
+    {
+      "core_id": "sft-44d8aa6e51e73910",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0018_611.jpg",
+      "sha256": "9b55959bae0cfd19820c8f2277c99b05410267a68d7278fbdf8babba8d7f0789",
+      "size": [
+        748,
+        748
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "79281:c3640c3c"
+    },
+    {
+      "core_id": "sft-4f13b158ad7a6ff5",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_5.jpg",
+      "sha256": "9639dd1d50ec0ea36e8241b2d036d850ea69f8e3ecac9d68949819486d3a1cce",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "101127:9732c3e9"
+    },
+    {
+      "core_id": "sft-1dd924a3b27b3d52",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_2.jpg",
+      "sha256": "e2ba3a8c12761b00c80ec2850755409dbef13ba1a3d3bed537b9bbea5f24fce6",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "110659:7b03fd7f"
+    },
+    {
+      "core_id": "sft-9ba625dfc9ed88fa",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_422_4.jpg",
+      "sha256": "ec5027f0e8cb214cf12a95136cea16c9439a9b7e9bcfeeb3885a06236eddf727",
+      "size": [
+        723,
+        723
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "129407:a1c7c009"
+    },
+    {
+      "core_id": "sft-ce4854a5854f3274",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_0.jpg",
+      "sha256": "933d913d86716472ca1d7674eceb9073235be113f2a72ac549a4694f453d9a43",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "51802:e4c32c49"
+    },
+    {
+      "core_id": "sft-dda4963e30761502",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0114_vari_grip_744_6.jpg",
+      "sha256": "ba0373708ab2ff6d079265a7b2c8cd992c1875ae0fdee10554b95ba8d02b88aa",
+      "size": [
+        432,
+        432
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "66055:0549f26e"
+    },
+    {
+      "core_id": "sft-4564dbf274e6413f",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0018_611_1.jpg",
+      "sha256": "3b787785688814504ae561354b5a918e02b246df31b65d9e08a4db6c1c518ffa",
+      "size": [
+        748,
+        748
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "135727:998c0dfa"
+    },
+    {
+      "core_id": "sft-4cd0fcb6c9fa1e82",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613.jpg",
+      "sha256": "295567216faa3ed7a5b253ac223bb6fbde690b79bccf028258fcfe8f13396d5c",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "91622:281b6160"
+    },
+    {
+      "core_id": "sft-c51765f944a195a1",
+      "image": "defect_supervised/vari-grip/train/rust/01-06-2021_DJI_0162_46_5.jpg",
+      "sha256": "2caf4af5a73d855be5cd65aa9299f9489e2d60d75d91f192d6d42de0f96c2b5f",
+      "size": [
+        769,
+        770
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "99713:9dbb9e37"
+    },
+    {
+      "core_id": "sft-7aa89dd4b8ca795d",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0074_vari_grip_739_2.jpg",
+      "sha256": "9a24a6ff5a11ae8d9bf42d0accbf696a61a52efb1b8ae3665477ef38406fbbc8",
+      "size": [
+        748,
+        749
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "181845:03285a9f"
+    },
+    {
+      "core_id": "sft-a90731627f1296c7",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_748_8.jpg",
+      "sha256": "fdbffbc65e21de4171c74a49cdf2872843b555fbff4af0fac1b4b117f5537412",
+      "size": [
+        405,
+        405
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "44824:a9b3e4fb"
+    },
+    {
+      "core_id": "sft-af9905443accc1c2",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0018_611_2.jpg",
+      "sha256": "f00070251a0add2853c952e4e61eb34e8af46a0745333acdac3fe66975c0be09",
+      "size": [
+        748,
+        748
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "119225:5b97304b"
+    },
+    {
+      "core_id": "sft-ec415914e4068251",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_134_5.jpg",
+      "sha256": "997e46467cab73f9642e2c935213ba303eb316dbaff3e1bc4e6d700464e830a3",
+      "size": [
+        589,
+        588
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "86185:99c15e68"
+    },
+    {
+      "core_id": "sft-f32e28e746ff9109",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_6.jpg",
+      "sha256": "435b920b694a0dc4288eb1d6fe4d6193520160fcccb4f943aa7ab78cbf48fd27",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "74963:7f2e04e8"
+    },
+    {
+      "core_id": "sft-3ec1584d67db8166",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_3.jpg",
+      "sha256": "a83119b1b9e06182b43e863d4dad705d041c5a2c84361c3f9d572e2e7f3d020e",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "123282:173dfc8d"
+    },
+    {
+      "core_id": "sft-f65c77ef5fc3c288",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_4.jpg",
+      "sha256": "69455a8d70f8ecd6eab653daad68cca58d515186c69ebff6680c125b0e69e271",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "122364:fbd82f2c"
+    },
+    {
+      "core_id": "sft-837a7e026ac50ce7",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_5.jpg",
+      "sha256": "a1a0de17edaff7c5fa1ffed39613a877ea862c4e8b54678044a24dc2a78a6e0f",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "125343:063a4ff9"
+    },
+    {
+      "core_id": "sft-e7a95f8a3b686287",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584_1.jpg",
+      "sha256": "2fc74808542613d7bf8bcdd5f02e765e27ec0047176079a1a1035d5e25587f2f",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "121510:7228942a"
+    },
+    {
+      "core_id": "sft-fb89f5489e4da3af",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_134_1.jpg",
+      "sha256": "136a72171a3f9c46744db2a402456fc79d406bb9b0b8899a7580cc80f72871a1",
+      "size": [
+        589,
+        588
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "62770:dc53a0d0"
+    },
+    {
+      "core_id": "sft-a3ab082b74a59fcf",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0536_154_0.jpg",
+      "sha256": "1755ba31dc9e72b4e49f34841e7e730b317ca666459dba6648614cb87a583bc1",
+      "size": [
+        622,
+        621
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "104784:03e07aa9"
+    },
+    {
+      "core_id": "sft-779cfedfce1af23f",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_1.jpg",
+      "sha256": "e7424a0acc465700e88e960df627b8471ddbba21fd8d523925de2aff85462be1",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "73193:f06e4c6f"
+    },
+    {
+      "core_id": "sft-4dc5bea4c0bd53ea",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_0.jpg",
+      "sha256": "28ceec4fcf09b20dd5044ac6239eadd55c959e4d583b384e912656f9019f81c0",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "76811:e8661a74"
+    },
+    {
+      "core_id": "sft-edbded8b66c8b171",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_3.jpg",
+      "sha256": "79d28b6a5b84ece575879ae5d104f0553b2ce6e67f1c13a2894290ffde12ecb2",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "95100:53b19274"
+    },
+    {
+      "core_id": "sft-43a2e5b0db63e897",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_2.jpg",
+      "sha256": "b1a9ee5e0e23c17bfb5b5f236cbf9297ae18f909a3efce75243757e0a83c6b83",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "127440:f23d18f3"
+    },
+    {
+      "core_id": "sft-99f723d4f89f5614",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0368_cadeia_isolador_vidro_922_2.jpg",
+      "sha256": "eb222b605d1945c1ec6a6ce9f2cb79eb08dd2c2237f923b5eb85edbbef6fa2b4",
+      "size": [
+        681,
+        680
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "144643:0ad66d18"
+    },
+    {
+      "core_id": "sft-4d3cbc70b8e43144",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 01-12-2020_DJI_0349_cadeia_isolador_vidro_140_0.jpg",
+      "sha256": "edc6abd8253b3f22922d55453d544bb02f553cc53aa82ddc19673fff2330ae95",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "209820:027c47c1"
+    },
+    {
+      "core_id": "sft-ebf09d6ff26bb669",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0362_cadeia_isolador_vidro_913_8.jpg",
+      "sha256": "b86d2edb268586c40ce9af12576f0fc5750ae3f40ea14b8c2fd487d884a8b5b3",
+      "size": [
+        1459,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "622322:03be37fc"
+    },
+    {
+      "core_id": "sft-3f94f64085a1fd6d",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 07-12-2020_DJI_0182_cadeia_isolador_vidro_1321_3.jpg",
+      "sha256": "8c13d422366f5fe767ff32067baa9065ee89d5bdf40e1c99f635029371c2000e",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "514330:449dd925"
+    },
+    {
+      "core_id": "sft-3acee84a5fbefb95",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0362_cadeia_isolador_vidro_913_2.jpg",
+      "sha256": "2ca2cd71aaa5d766ec1adcfc09670449089a78df8ef35553b548cf93adc73849",
+      "size": [
+        1459,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "562377:3fbf8ef6"
+    },
+    {
+      "core_id": "sft-a898656439a9d436",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0068_cadeia_isolador_vidro_20_3.jpg",
+      "sha256": "014ea2ba1cb6b3de98ff46504754dd2818034ac212085207f38cc2374541f904",
+      "size": [
+        1516,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1036262:5709fa2c"
+    },
+    {
+      "core_id": "sft-3aec82357c762be3",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 08-12-2020_DJI_0379_cadeia_isolador_vidro_1423_6.jpg",
+      "sha256": "dc8a652bfe26149eea0d59c03b1566a113d1e28499361f1c53ec00b85ed5fb87",
+      "size": [
+        1426,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "897487:495d0ab0"
+    },
+    {
+      "core_id": "sft-e29f334972cb4921",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 16-11-2020_DJI_0031_cadeia_isolador_vidro_1503_4.jpg",
+      "sha256": "d1b9c73c272ecf825ef1741960669ee143a57910392f23a5693bee59d51bb293",
+      "size": [
+        705,
+        704
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "280464:ec03fcc3"
+    },
+    {
+      "core_id": "sft-13b394ba36605e4c",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0631_cadeia_isolador_vidro_1548_5.jpg",
+      "sha256": "e8af148666b56a0608f5ebefd6899469c8d0a2123274b519ca1f187ffb6224fd",
+      "size": [
+        1382,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "753954:d2ce67bd"
+    },
+    {
+      "core_id": "sft-1f03e9253bc9d336",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0067_cadeia_isolador_vidro_12_7.jpg",
+      "sha256": "aaaa4d74cfd197a48cf5fb8b3447c3359b8bd58f9e7e92212f17cbf50e361c64",
+      "size": [
+        1030,
+        1031
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "494427:e8a9aeb2"
+    },
+    {
+      "core_id": "sft-14eeedb2764cc8b7",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0556_cadeia_isolador_vidro_1627_7.jpg",
+      "sha256": "cc70f651e71c359bfd3098b0a5ebfdbd75d82aa4e077a3a8cdfc4705e9597dac",
+      "size": [
+        1035,
+        1035
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "504424:d814fa1b"
+    },
+    {
+      "core_id": "sft-04e3c71e512a3f89",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0368_cadeia_isolador_vidro_922_4.jpg",
+      "sha256": "d4885ac364e185dc5c600d7af7ad79f1cfba650ca747eee83e1922dd5a5afd83",
+      "size": [
+        681,
+        680
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "97393:30d22e8d"
+    },
+    {
+      "core_id": "sft-d1dea3f776fdd6fd",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/02-06-2021_DJI_0046_194_5.jpg",
+      "sha256": "33aa61d13df903947cb5316f929a7890cbe1925154190a9423be5e05f03fe09b",
+      "size": [
+        525,
+        525
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "106007:c6d3db10"
+    },
+    {
+      "core_id": "sft-53bf4a1073330f71",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_3.jpg",
+      "sha256": "5f8d248b5cb44c37fbe85e53fbf9412d229fcf1c09c4765c4436ae313c8cf0c5",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "249932:2a85c8be"
+    },
+    {
+      "core_id": "sft-b6406131eaf5a307",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0402_539_5.jpg",
+      "sha256": "cac6a05bdf35dcb23fc7e0be81b97a6463bd0853c1da347c78a6e0069b2a361f",
+      "size": [
+        741,
+        741
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "271039:b1e60f24"
+    },
+    {
+      "core_id": "sft-99920203fd343587",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0049_727_1.jpg",
+      "sha256": "7712ec1f05788b110ba6a5b27f52d6d4a5c28a14e440d979c7f0886f858c9722",
+      "size": [
+        568,
+        567
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "129688:e41fdab7"
+    },
+    {
+      "core_id": "sft-4c3cf4cfb1b90e5f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0370_409_8.jpg",
+      "sha256": "5666a12018f93d5eeb2f634bc6ef5b7367fefd10c8454df952846b2680f86487",
+      "size": [
+        899,
+        899
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "203502:8256dd38"
+    },
+    {
+      "core_id": "sft-00422d18713a1cd1",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_6.jpg",
+      "sha256": "a8f8118068b91ebf7a96a71d855d31321ffbbe049a9957caf6fc28ca61beb0a8",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "195178:a72386c5"
+    },
+    {
+      "core_id": "sft-c1cb93b6db3eda06",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_8.jpg",
+      "sha256": "2e038eccd0d5a2eb38db85c77ad08d8da1df965efce03cf966b0e3d0879f8085",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "320717:2b4748d2"
+    },
+    {
+      "core_id": "sft-68072df333fc43de",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_2.jpg",
+      "sha256": "a471b936e8efd2e82f148430903352e5b745de4edb47459fbf2f85a6b85b82d7",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "434828:cee9f2d9"
+    },
+    {
+      "core_id": "sft-c835473e6629dfc6",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0050_728_6.jpg",
+      "sha256": "c558d7ac8902087bd7ebc4e1356e8ba058eaf175bda8804cab7b1c58ec308416",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "137928:80f3b2da"
+    },
+    {
+      "core_id": "sft-c7afe1b9e74fa0d6",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_5.jpg",
+      "sha256": "0e432e3130fca0111acd945eea9dde831aba9dd80debe4a6586c2aae524dcba2",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "263026:21f33c15"
+    },
+    {
+      "core_id": "sft-b40f13a911b671a4",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0092_20_1.jpg",
+      "sha256": "a28f9566633aef77c7181b80a61e45c532b3d565c499e06f80e2ceeff4c08e0e",
+      "size": [
+        516,
+        516
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "66141:9045e204"
+    },
+    {
+      "core_id": "sft-135a7414e66850e3",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_3.jpg",
+      "sha256": "f04c642cd0cfee58254d9038862e772ae5b034a92d07b7245569386f233f8e8d",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "192791:06e6253d"
+    },
+    {
+      "core_id": "sft-41ada8492352bd8c",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_719_0.jpg",
+      "sha256": "43ee8f612a56b76cc6c5d77cb7fb87cf9e3c771daca382a063b0f0d0df350d5f",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "47797:99872c0e"
+    },
+    {
+      "core_id": "sft-5e60e964efd0b315",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0285_392_5.jpg",
+      "sha256": "3a4b4c2bdd16576a9f32a2742e7fcc5d1509b504eab4cf48faedf3947924c14c",
+      "size": [
+        639,
+        638
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "230419:d376f3c4"
+    },
+    {
+      "core_id": "sft-3820ec4e0df43ff3",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0588_vari_grip_847_1.jpg",
+      "sha256": "3b97fcc065862dc71154bca182a5c96945ea8b822fc9ae0e36b744ee599b5b0d",
+      "size": [
+        504,
+        460
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "64841:90934d46"
+    },
+    {
+      "core_id": "sft-9c993fd253ca268b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_844_1.jpg",
+      "sha256": "e2e1e08062706206694eb90888c3534a4e9f027923c26e4cd65cf3ea0471cf45",
+      "size": [
+        567,
+        568
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "70391:b01bdc4d"
+    },
+    {
+      "core_id": "sft-332728151c030d15",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485.jpg",
+      "sha256": "68d81aa9f9c43b101c4dcad99d1514afe69c85384812624acfd3cd6461d160a4",
+      "size": [
+        713,
+        712
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "68276:f4e2380d"
+    },
+    {
+      "core_id": "sft-2d4d66155206b96d",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_571_7.jpg",
+      "sha256": "4114a7f561431225ef747dc5ca75481cd2191a6632540d0397334bcc3a94d06d",
+      "size": [
+        388,
+        388
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "47810:aa6205bd"
+    },
+    {
+      "core_id": "sft-98d44da483efaa8c",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_718_4.jpg",
+      "sha256": "4a6d4ad1bf986bdea21317bfddc5d9eecd924c8542dfc3fece7b0ab8c4badba1",
+      "size": [
+        540,
+        540
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "148050:2141456a"
+    },
+    {
+      "core_id": "sft-62804c2f0d485a3b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573_1.jpg",
+      "sha256": "83b0d98b7a494ada4ef49bee7e33aebc92e739e22da645d64e3a7ce4199d0cba",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "113517:a7aebb4d"
+    },
+    {
+      "core_id": "sft-3cb07b82d92a9ab9",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0588_vari_grip_847_0.jpg",
+      "sha256": "2c3d2e1a00b95ba662fb7a0a1b1ac79abfe855c380cfe19c8c9fc6f2a8391965",
+      "size": [
+        504,
+        460
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "35829:431ebf10"
+    },
+    {
+      "core_id": "sft-f8be1598fd2b2fba",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0285_392_8.jpg",
+      "sha256": "c0252b04d80600e293bc63b13ea25bd3268da1e08c3a74924c3273b36557832a",
+      "size": [
+        639,
+        638
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "180519:86b0de56"
+    },
+    {
+      "core_id": "sft-0a1b2e9b32cd892d",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0285_392_0.jpg",
+      "sha256": "3942d1baf1ea6fff92c64262b2ae2d201c41df4b5c8852d3cd925d97e49f7014",
+      "size": [
+        639,
+        638
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "129870:2d6fdd22"
+    },
+    {
+      "core_id": "sft-60dfbd23a117cabe",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573_0.jpg",
+      "sha256": "58772ec6d43fd4799147ba7d1536f0447fa8e203414681b825f966286b85f0d0",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "55336:f02114bf"
+    },
+    {
+      "core_id": "sft-32ba8001b927b7c0",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613_8.jpg",
+      "sha256": "2e5a1abea1ccb6d32a0288ce3431651894dddfd3add231143d31823daadc6b94",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "179180:1a36cc5f"
+    },
+    {
+      "core_id": "sft-1d91b7de941da892",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_421_6.jpg",
+      "sha256": "dd6660f229f0e5bdb23fbcf8b638a177c621aedbfed642dae29f3d100e8773ba",
+      "size": [
+        718,
+        718
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "156182:15d933a2"
+    },
+    {
+      "core_id": "sft-9c501903d030f329",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0073_vari_grip_738_6.jpg",
+      "sha256": "de23c64b050fb25c9afed9f780e695b51bf9fdf9af968be4fdc21dc97ac84db8",
+      "size": [
+        631,
+        631
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "93165:d3f25364"
+    },
+    {
+      "core_id": "sft-a1609b19bb942c9b",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_6.jpg",
+      "sha256": "fb1b9121c8b0d6e05621fb047d022ccdfb927f27a1256f76a52dbe2bd84e8f68",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "136605:39ac5947"
+    },
+    {
+      "core_id": "sft-0073173e07b435ba",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_3.jpg",
+      "sha256": "0ff65507b35f33f9de952024e01790b8bff2929ab626e47e6e6f6068054e7dbd",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "65056:4e553f50"
+    },
+    {
+      "core_id": "sft-c79f8b92a2dbdf61",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_7.jpg",
+      "sha256": "675ab0a26d26a033d04dc815a4859757e1c6fb17b2d9aeb7849b5c268b88aeb2",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75925:50abed70"
+    },
+    {
+      "core_id": "sft-8824faab67605210",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0032_vari_grip_750_1.jpg",
+      "sha256": "919704a5186bc3387df9081fda7793191e9f5b948bf2c53e1cf78e974f15e0e5",
+      "size": [
+        274,
+        273
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "18739:c06bda6b"
+    },
+    {
+      "core_id": "sft-c1248c0ad0fb0599",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0032_vari_grip_750_4.jpg",
+      "sha256": "de1a88fcdd449aa121e31793d77bd8dd35699add1ea081ea3c43be8a9539fedf",
+      "size": [
+        274,
+        273
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "30528:76d29f88"
+    },
+    {
+      "core_id": "sft-9f861e7c2334fa1c",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613_4.jpg",
+      "sha256": "6d351a61cb076d699be085c18ec4e9c2c324b82d7cc2f194a45215f8de9e809f",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "135758:eb8b2d8b"
+    },
+    {
+      "core_id": "sft-da31cc986c85fa66",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753.jpg",
+      "sha256": "76625e2b659ac87aaf92f440277610bdd3c9cae53a931e8e1af6074cf5b1f74d",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "46716:26527847"
+    },
+    {
+      "core_id": "sft-810b6c8abc04f990",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_748_7.jpg",
+      "sha256": "d5613076bae0d079be9b60bfae14675d485de12c61a57e4139a09a8ae15432b1",
+      "size": [
+        405,
+        405
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "113223:be109f4d"
+    },
+    {
+      "core_id": "sft-fc14e6dad888519b",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0074_vari_grip_739_7.jpg",
+      "sha256": "06744f7eb1e94b0ae9715c1cdab8031f95251439db8aab5659236651e833ba30",
+      "size": [
+        748,
+        749
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "168568:c94ccafa"
+    },
+    {
+      "core_id": "sft-b07d5886b27cf96b",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_7.jpg",
+      "sha256": "cfa375a55a33511ebf79bde702fd5b3bd955dc1cb644003cbc42dd6098cd8b4c",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "127814:61c8f58a"
+    },
+    {
+      "core_id": "sft-20c2a851faa717a5",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738_0.jpg",
+      "sha256": "a1dd5216143c536001ea167951ba9b636276b5a2223111005744e556c1f4b7e1",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "56250:4522b0e8"
+    },
+    {
+      "core_id": "sft-e296a11c14c7cefb",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_1.jpg",
+      "sha256": "23a40d326e508211486df3fc8a046d44fa7f39e6b0d04c826caab11481c25ec9",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "59909:3a04e162"
+    },
+    {
+      "core_id": "sft-4ce606ccd2dbeba9",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_8.jpg",
+      "sha256": "f2ec19c95770bc2ba5c31834e2bbb5e91c169d567020097f5fdebc4cd0a56c9f",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "129192:6179101c"
+    },
+    {
+      "core_id": "sft-b0b869d3a2c3a8e5",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_5.jpg",
+      "sha256": "b08b49e134bf4dbdeb9fde320914695d41545d14fcf92e87ed140d23ad1307b7",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75080:fbd25b23"
+    },
+    {
+      "core_id": "sft-8554d8e1be466ee4",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_8.jpg",
+      "sha256": "4508a8339578efc10bfb22598536d58e7d6c70a052020b87f83d6e2ca46b9928",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "184764:c6b87336"
+    },
+    {
+      "core_id": "sft-f7ac9c5d83c33fd6",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_2.jpg",
+      "sha256": "c10f1ec32724895d22a843a3a06145d3ec0c4734b0bbb17b8b60273db0ff5e98",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "143634:f9d4fd3d"
+    },
+    {
+      "core_id": "sft-2ec87dc50ecd5fb8",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584_2.jpg",
+      "sha256": "5563b20ec7ae270b380723d0da250f49b28b60eb2656de4377edeb3e357d2705",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "109207:ecd073c4"
+    },
+    {
+      "core_id": "sft-1d874509017f4c0a",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_6.jpg",
+      "sha256": "d1ef2ed7166d775ac097530786d006935d27d8464733821086c50659ae224517",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "58816:3239adb2"
+    },
+    {
+      "core_id": "sft-5fbbf1ec5552837f",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0122_641_0.jpg",
+      "sha256": "d5437982e29329d459427cca0376a4fc23bc6f41a59423b7b3e85a41a0fb570c",
+      "size": [
+        616,
+        616
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75764:31092794"
+    },
+    {
+      "core_id": "sft-c4815ecbdc818c45",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0536_154_8.jpg",
+      "sha256": "3147faaed0ccea6b3a192e6d33978e53cb04629a83b311688172a55ef9aee16a",
+      "size": [
+        622,
+        621
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "145541:c7984ec5"
+    },
+    {
+      "core_id": "sft-96693079a2cf40c7",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764.jpg",
+      "sha256": "60686e39a8c19aba8fd4ebac89610b6510a7334d90c184220c8a1f0a3b100d96",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "54889:ec7e1a09"
+    },
+    {
+      "core_id": "sft-6e3445788fef0a86",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 16-11-2020_DJI_0031_cadeia_isolador_vidro_1503_6.jpg",
+      "sha256": "eebfd00c79a31242c68451e07fcffffd39750359b0fbd24e42b1f4f032c033ec",
+      "size": [
+        705,
+        704
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "165641:3da4b623"
+    },
+    {
+      "core_id": "sft-48df2dd301bc8a64",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0566_cadeia_isolador_vidro_1638_2.jpg",
+      "sha256": "84fcd356d230dda0cc96d20048d384481e7ea06c5403e895cd723d92760714e2",
+      "size": [
+        875,
+        875
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "655818:93070253"
+    },
+    {
+      "core_id": "sft-dc70d1e8323d5ee1",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 08-12-2020_DJI_0376_cadeia_isolador_vidro_1420_1.jpg",
+      "sha256": "1e68a3fd83fe799d3ad4b4e0969668f8629d352e225b8ee70243f6a42207b5c0",
+      "size": [
+        1789,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1117119:22569f5e"
+    },
+    {
+      "core_id": "sft-8c50fea7725ada48",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0366_cadeia_isolador_vidro_918_6.jpg",
+      "sha256": "1097b71db98013a2678b3b72746cbecccc8e1a71e478fd2cf69edd1d77a472d1",
+      "size": [
+        822,
+        723
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "147328:a2d6193e"
+    },
+    {
+      "core_id": "sft-c8696c14608e1d63",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 25-11-2020_DJI_0449_cadeia_isolador_vidro_1775_2.jpg",
+      "sha256": "cefc840e753aed5c468f4c44cb455dd44a6a8e7a249bc4baff5a168a523cf8eb",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "410856:ad0a618e"
+    },
+    {
+      "core_id": "sft-910a6409d6b88d6a",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 07-12-2020_DJI_0135_cadeia_isolador_vidro_1339_4.jpg",
+      "sha256": "33573d12d3bea5f79e62b846f33779159e55f0707f8ba20fbd3c05bcaf88ce88",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "286892:ff29a641"
+    },
+    {
+      "core_id": "sft-b08f963e5a336573",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 08-12-2020_DJI_0376_cadeia_isolador_vidro_1420_3.jpg",
+      "sha256": "577f70600bbd9f0733ab778a37da96e2c90d1bd1a30ec1df97d23f42996e9b54",
+      "size": [
+        1789,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1391270:dc96f9f2"
+    },
+    {
+      "core_id": "sft-222f870a9f4953d8",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0558_cadeia_isolador_vidro_699_2.jpg",
+      "sha256": "390029c6dd71633905ebc812ad157db75fd6a763843fb6cc8c503eb7af3c4df7",
+      "size": [
+        494,
+        494
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "61663:97fbf28f"
+    },
+    {
+      "core_id": "sft-a20905e82d86abc9",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0333_cadeia_isolador_vidro_884_1.jpg",
+      "sha256": "65ef8901ff50e7e0e571ee7a5fc060b03af77688fd53a3aefac2df34c20ae908",
+      "size": [
+        1106,
+        896
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "451613:efb3adb2"
+    },
+    {
+      "core_id": "sft-6797dedeaf2f8e77",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0067_cadeia_isolador_vidro_12_6.jpg",
+      "sha256": "c806a7119e8ee3bb25258d8de78dcd0fc49387c5332e48849154b8c590d99c6a",
+      "size": [
+        1030,
+        1031
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "663324:5e1b6a65"
+    },
+    {
+      "core_id": "sft-ce58aee12f00ab4f",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0333_cadeia_isolador_vidro_884_7.jpg",
+      "sha256": "8882be5953563ffda10dce6e91e3bd8400c44eff9c4f3260b977aebc4b242232",
+      "size": [
+        1106,
+        896
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "985897:a6244f3e"
+    },
+    {
+      "core_id": "sft-895dc1de17aa5ebe",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0061_cadeia_isolador_vidro_0_6.jpg",
+      "sha256": "135dd6b695d73230e6869e51d113c0d2788d4987190479b9acc70c7b3ddf5f58",
+      "size": [
+        681,
+        681
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "146321:aa3a3045"
+    },
+    {
+      "core_id": "sft-9f613e151cf44844",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/10-06-2021_DJI_0006_604_7.jpg",
+      "sha256": "5fa3ce7bc351e62424690c5efe6cc4cf69563941d2c3b2c4cb9f495305c1f9c7",
+      "size": [
+        977,
+        978
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "465328:94af7de6"
+    },
+    {
+      "core_id": "sft-9d8fc80eb258963f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_7.jpg",
+      "sha256": "e64485b78c90358f0bb4e495a1e8776658aeeb2007a1405d482cf93dc936d6c5",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "147613:c021c4cb"
+    },
+    {
+      "core_id": "sft-c50de6b1651ca9fd",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/Fotos 09-12-2020_DJI_0298_suspensao_para_raio_131.jpg",
+      "sha256": "bbb0a2c2cd205c7a74db7e8e297bb76ab951133027ce4bdd64ee0836a85afc01",
+      "size": [
+        1027,
+        1026
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "160702:a80ebcd4"
+    },
+    {
+      "core_id": "sft-43842d95cbce0da3",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_0.jpg",
+      "sha256": "38f5805c5136cd98488c8a5d6610af3958e8e2074af2689d4fd4137008792785",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "253296:6c883af7"
+    },
+    {
+      "core_id": "sft-97be3905a705dfac",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/10-06-2021_DJI_0006_604_1.jpg",
+      "sha256": "24e8a2b74e5cdcc5e7ea6007f155c3f08fa52dc4d7e316be5cc8752ee502672e",
+      "size": [
+        977,
+        978
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "212305:2d04fd2d"
+    },
+    {
+      "core_id": "sft-265e66b5f2df4ec4",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0050_728_8.jpg",
+      "sha256": "5dd3450f5f26856fd3cf09e238af6d67d0f1bb89e37a6e9d7a05395b6ebcbda0",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "173303:26b32704"
+    },
+    {
+      "core_id": "sft-e36e9bf6b8a5e0ba",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_2.jpg",
+      "sha256": "08ea1fcffa3e030942f2bc54af2aadec5bb1f82db2a4852f3705b585912e97b0",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "147347:d93c6b35"
+    },
+    {
+      "core_id": "sft-8e440d745d852128",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802_4.jpg",
+      "sha256": "763544099a108174c15482ace2450106bcc47d20334a31c6a7231cc79313e266",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "211326:a603d9a9"
+    },
+    {
+      "core_id": "sft-8e8499567046bbbb",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_3.jpg",
+      "sha256": "1c5c3f41ab5d56893d25eaa7100465c6dcca43a8d9bdaff747bb5e7956d36a84",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "199516:665b00eb"
+    },
+    {
+      "core_id": "sft-3851e5c8505a5e3f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802_8.jpg",
+      "sha256": "63ebda58bac62aadf74cb47ad20b78a9e00f1f6ee59c9d4bc86d8eb60a4a798d",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "209546:24f0ad0d"
+    },
+    {
+      "core_id": "sft-c7a1eca82ea52c5f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0451_139_2.jpg",
+      "sha256": "80bd4cc2d7e14ee036392c946415809a0f8f1993397f838ffc7a5cc0af3c2906",
+      "size": [
+        458,
+        457
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "67900:625cb6e9"
+    },
+    {
+      "core_id": "sft-84b48f19495a8083",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0420_430_4.jpg",
+      "sha256": "81664779f32feea121185f04a7eb5629f4b80beb6b3f59b612c68361ea00ef39",
+      "size": [
+        902,
+        901
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "151161:9ffc04e4"
+    },
+    {
+      "core_id": "sft-e018bc2b00eb316c",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_1.jpg",
+      "sha256": "f5e82ebc3ac7e96be6a0e69986bec19ab585aaee60b6ec138c3782bbf5bbe97c",
+      "size": [
+        713,
+        712
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "128536:4e0fb886"
+    },
+    {
+      "core_id": "sft-2050d275c4f73955",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657_7.jpg",
+      "sha256": "4ccf5fc4667823c6dd1a37a7be937c27b1e45f9030569f806e9c62156e4da51e",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "84377:0e561b50"
+    },
+    {
+      "core_id": "sft-a650bc052c7fc60b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_571_8.jpg",
+      "sha256": "bd9e4a5e76b428b7ea0faaa19966693c5e9571279a31e7d0fae8fd1fca377074",
+      "size": [
+        388,
+        388
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "51760:e68d500a"
+    },
+    {
+      "core_id": "sft-2729149c4b71b224",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0271_658_4.jpg",
+      "sha256": "fb5126069e664525c5614f2e76302efe1446d3f8a1aac4db23ddadb5f8759381",
+      "size": [
+        705,
+        705
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "207162:5d3bc9c7"
+    },
+    {
+      "core_id": "sft-6f9e35f983935f0b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573_2.jpg",
+      "sha256": "e5eff83cc1f2486d8325c66bb26c3c4bf599d5d87b01a609d24746d6aa0f5405",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "80168:2d82d8bb"
+    },
+    {
+      "core_id": "sft-9a90376c650b0685",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0285_392.jpg",
+      "sha256": "10aca021f9fbc47684a22c60d20b7c34bd3c9cf9fea813f651be2f8068a9d4bc",
+      "size": [
+        639,
+        638
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "127629:249664ff"
+    },
+    {
+      "core_id": "sft-a586997590afb2e8",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657.jpg",
+      "sha256": "afca9f2a0bf619c1d25404b9fceeebe523192b24034a646f7a5417a7991bdb28",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "54770:31005d42"
+    },
+    {
+      "core_id": "sft-7923313c173859dc",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0089_322_7.jpg",
+      "sha256": "9a59884364a001694d9e2fb3f54f331a607f4a799646fa01b892607c83f028ea",
+      "size": [
+        770,
+        771
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "215995:3fcf8e7e"
+    },
+    {
+      "core_id": "sft-781261b353631735",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_718_2.jpg",
+      "sha256": "e48d68f65adba7c48f9da6f250863283a981375923fc7b7a28f5f9131eb6a758",
+      "size": [
+        540,
+        540
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "86646:66d8ae47"
+    },
+    {
+      "core_id": "sft-b42cca34eaa6b49f",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0285_392_3.jpg",
+      "sha256": "4197feb8236146ab6fe4bbffa71246ee773e6ebf0c3cb1aafa4c521c07a2cd18",
+      "size": [
+        639,
+        638
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "145507:c692ba09"
+    },
+    {
+      "core_id": "sft-207bd1c0595b5832",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0271_658.jpg",
+      "sha256": "b1066b2b11100cc125b060df8c6cc42b78606b544c68973dd53b4b88c92f41a4",
+      "size": [
+        705,
+        705
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "77476:53a3195f"
+    },
+    {
+      "core_id": "sft-fd9f056e4af699b4",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_843_1.jpg",
+      "sha256": "31024a60904c34940abb3b08b9eabfb0a326188f506dd596223388ebbb76ea88",
+      "size": [
+        585,
+        586
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "50890:10c49125"
+    },
+    {
+      "core_id": "sft-ce30f96fa05ce5e0",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747.jpg",
+      "sha256": "86d2c682b7320274c5d231834a4929e9fdba5f0cde37f0efb05d2cb929c9486a",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "43477:3a310016"
+    },
+    {
+      "core_id": "sft-6f04edb9243cec9e",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0073_vari_grip_738_1.jpg",
+      "sha256": "11ca4b29536f38a47f7a94040740d4d3e85eb7fc572a7d88e4569c43e4f51889",
+      "size": [
+        631,
+        631
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "128861:0e16c093"
+    },
+    {
+      "core_id": "sft-b40d90d6629b2391",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_8.jpg",
+      "sha256": "a9a8e7b175e249c62b5f8a5ee65ad2c81d1ec61c65c05cff39ffe8fcc6770923",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "56016:75973a52"
+    },
+    {
+      "core_id": "sft-b4c2b0f4c00729b2",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0032_vari_grip_750_7.jpg",
+      "sha256": "5a0b69d4425116c21624f239c6cffdb8a03b39fd3874ea8bf89fd41293d5d192",
+      "size": [
+        274,
+        273
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "18913:8cc60bb3"
+    },
+    {
+      "core_id": "sft-faccd74b295b8fca",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0074_vari_grip_739_8.jpg",
+      "sha256": "ddc5b009b68cc84e4b711d0b0ca46b127484fbfd66f0a05bb5bb88f2d32ba12e",
+      "size": [
+        748,
+        749
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "175122:94802239"
+    },
+    {
+      "core_id": "sft-5806a123bb319cf1",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_748_4.jpg",
+      "sha256": "1ea80558ee1a0fca5f908762e0400220b2f174303f445d75d8739acb352a6e0f",
+      "size": [
+        405,
+        405
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "88362:d801d761"
+    },
+    {
+      "core_id": "sft-0911319fc2e45a03",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_7.jpg",
+      "sha256": "1b5823f85b1975301d322547bcd1644659f9cd3b284337d33d35bf5ad5dc822c",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "115816:6fc73d52"
+    },
+    {
+      "core_id": "sft-6b5f024430012e71",
+      "image": "defect_supervised/vari-grip/train/rust/01-06-2021_DJI_0162_46_6.jpg",
+      "sha256": "c7e6580da4dadb641e5e3537b7e43d470c5a16dde6025586fc5313916b4871b0",
+      "size": [
+        769,
+        770
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "69693:efdcf1af"
+    },
+    {
+      "core_id": "sft-d1633207de4408fe",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_421.jpg",
+      "sha256": "9251fee57348e5bb2a7215ae3bf6701709a2f8b41a765ba00c2a2e88095f569d",
+      "size": [
+        718,
+        718
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "67548:3a34d10b"
+    },
+    {
+      "core_id": "sft-cf2c01ff0d1e5dca",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_422.jpg",
+      "sha256": "051a72525c66c2c45cc4049c84996931d6c72b41b566a6bddd6653511da09b5e",
+      "size": [
+        723,
+        723
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "64555:0814cc4d"
+    },
+    {
+      "core_id": "sft-46c854ee0ea7d59d",
+      "image": "defect_supervised/vari-grip/train/rust/01-06-2021_DJI_0162_46_0.jpg",
+      "sha256": "29707d9a1c4d5a46f13fff8c338af87885db19fdcbf18f32de940947e3533ae0",
+      "size": [
+        769,
+        770
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "74339:22fd8531"
+    },
+    {
+      "core_id": "sft-8c392c33dfd5e391",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613_7.jpg",
+      "sha256": "379e40861603dde22785a6ca0c909d9ca1dd673f8e092004233e2b9030bdd011",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "98241:0915af3a"
+    },
+    {
+      "core_id": "sft-4b330a6aefd01ca2",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0122_641_4.jpg",
+      "sha256": "d3338de661281474777ffc70196417b9acaf90147c4f46717d6bb72f6ca1df9e",
+      "size": [
+        616,
+        616
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "136503:3ffce5db"
+    },
+    {
+      "core_id": "sft-2bd70896d326a710",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738_6.jpg",
+      "sha256": "2d0fab1a5b7026dc97cc5fbce0c9bd21e238276de7c6fde9c4f171a8909f9012",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "74440:f33b42ce"
+    },
+    {
+      "core_id": "sft-0eeed6c02813a4e3",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584_3.jpg",
+      "sha256": "dd71e8bd6284c85c928cdb5d1c4f4ecb8e6a2711242f34b75aa2e2c93093caa2",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "153195:45049620"
+    },
+    {
+      "core_id": "sft-d0a045edd8fe15ed",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_3.jpg",
+      "sha256": "5080c458d70074fabc5b479f7f75b50fb297d117738f593ed27ddc69d43c8a8f",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "109892:dff3177d"
+    },
+    {
+      "core_id": "sft-9f7f616191424a5a",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0303_664_4.jpg",
+      "sha256": "9cf0328ede4a796546752cc0261bf3d5ad2b300d10b6963db9e7e32aa46ce1c1",
+      "size": [
+        412,
+        411
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "74135:c15de066"
+    },
+    {
+      "core_id": "sft-3ebacf87df868968",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_6.jpg",
+      "sha256": "21abf543992e25733e8ceef723bafacc57029dc8c3a1e37fa987d85b8b917e81",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "91565:ee344232"
+    },
+    {
+      "core_id": "sft-a32561051f33fa3e",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738_7.jpg",
+      "sha256": "44a4276c1f0b83945f7b16b96633b158b211d2c83ea6f11261a776d71066d454",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "91523:64ca7ff2"
+    },
+    {
+      "core_id": "sft-5c4b5a3fbd506066",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_6.jpg",
+      "sha256": "db89f558cfac010fe204f5cede1e4f59adf0770e735a9d65fc60986ff2163f80",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75521:80690e54"
+    },
+    {
+      "core_id": "sft-b5aa490ad2a8d743",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_134_8.jpg",
+      "sha256": "c493b43bebeceaa2784c180572e3dd57f241ec06d96602fdb321588c5d4374f9",
+      "size": [
+        589,
+        588
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "144857:62f16001"
+    },
+    {
+      "core_id": "sft-31918e609cc5a1dd",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584_7.jpg",
+      "sha256": "13d2a5d1d63c6318ec8b9cb55ed263663e6f8103d233f7b278a2cb023e7f8182",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "119488:6d1c351b"
+    },
+    {
+      "core_id": "sft-d32edec267ae710c",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584.jpg",
+      "sha256": "b2eb1661059984690166ff07ef7b6a1fd08a85ffdd43e65cfd3a271a13a7dffa",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "64772:c79fb694"
+    },
+    {
+      "core_id": "sft-75684dd688bb5353",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0122_641_3.jpg",
+      "sha256": "0f6fe65c91718c5b253497a8b6914ad146d9a04a4dcf567171b0a8b8aa5df6f4",
+      "size": [
+        616,
+        616
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "155038:bd4c8a94"
+    },
+    {
+      "core_id": "sft-9bb76c34988aa979",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 07-12-2020_DJI_0193_cadeia_isolador_vidro_1327_0.jpg",
+      "sha256": "faaf2c709aaf498ff96864fa27c5253ffdf3416101d2095bf31f145af8dba6c5",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "607175:392a3e67"
+    },
+    {
+      "core_id": "sft-685486f34fec0a52",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0631_cadeia_isolador_vidro_1548_1.jpg",
+      "sha256": "2102a1dab4ccf25cc3711845d985934659ed1370d784870058dcc96453b1971e",
+      "size": [
+        1382,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "759453:391ea852"
+    },
+    {
+      "core_id": "sft-a0b3f224f7c4aaa1",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0643_cadeia_isolador_vidro_1559_3.jpg",
+      "sha256": "c5d338b45eb833df5ae38595f9efaada0ae01fbcb10ff8696740cbf2322604eb",
+      "size": [
+        1492,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "914886:1af984f6"
+    },
+    {
+      "core_id": "sft-89ce653873320af9",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0346_cadeia_isolador_vidro_892_7.jpg",
+      "sha256": "47ca7d980c309db79f07be6ec286ceaf4a4fa4d38c94d2c57acf4034707f36fb",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "898546:c789dd51"
+    },
+    {
+      "core_id": "sft-db8cb98b490c06fd",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0556_cadeia_isolador_vidro_1627_5.jpg",
+      "sha256": "cd28586694f299064cf47d5ad6c273ca9b7b8d1da9c1225c314afe64a9b9f0f9",
+      "size": [
+        1035,
+        1035
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "357545:0fe01b84"
+    },
+    {
+      "core_id": "sft-9bf27f05d8485872",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 07-12-2020_DJI_0182_cadeia_isolador_vidro_1321_7.jpg",
+      "sha256": "ef46bd99720bd44d4c34b97f6c99bfe19afb9c81bdafa7951eaf7b5e41581c7b",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "671420:907e4f65"
+    },
+    {
+      "core_id": "sft-413b84dde727aa93",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0536_cadeia_isolador_vidro_1613_1.jpg",
+      "sha256": "f2c8e39bccfb3f7ee23dbfe45eeb3c996afd655234f044c716459dbf83da8876",
+      "size": [
+        437,
+        379
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "99145:061eaeb5"
+    },
+    {
+      "core_id": "sft-baf9f8d7ce1be6a7",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0366_cadeia_isolador_vidro_918_5.jpg",
+      "sha256": "d15ce08973aa9f95e59f771591dcd103ed000e3e2da987cbeb0afdcdc2150993",
+      "size": [
+        822,
+        723
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "283233:ca2599c1"
+    },
+    {
+      "core_id": "sft-dca428889b19ba5a",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0346_cadeia_isolador_vidro_892_4.jpg",
+      "sha256": "6b603c22a272e4d559596e6e236348432a2b1c68924f665f56cc6153326589ad",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1023535:cfe0e8ee"
+    },
+    {
+      "core_id": "sft-bec35f5fd0d2c4e7",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0643_cadeia_isolador_vidro_1559_2.jpg",
+      "sha256": "3f7fe4d6893fd848590861bd7c0dced2efc014230624068b149fbd17c189389d",
+      "size": [
+        1492,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "744344:2de8a47e"
+    },
+    {
+      "core_id": "sft-26371cc76936f1a6",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0403_cadeia_isolador_vidro_792_7.jpg",
+      "sha256": "db30f69a5e20448e0a8ccb5cf037cc12727a4caecf28307b2ea14bb30cc538f8",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "424633:62b7858e"
+    },
+    {
+      "core_id": "sft-b26d4972b7a94cd2",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0067_cadeia_isolador_vidro_12_4.jpg",
+      "sha256": "c6e603835697e83cfb681a6f8e98ee787f51a8c71efe708ba55e1caf637b5b12",
+      "size": [
+        1030,
+        1031
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "615806:56b7c599"
+    },
+    {
+      "core_id": "sft-457b1b9222749050",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_7.jpg",
+      "sha256": "21ab468299942408109306b3016bc78937d0a895e3efb4b0f7515af83f2ec66f",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "188321:a46f7767"
+    },
+    {
+      "core_id": "sft-6069c5a9e8aa285d",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0245_72_5.jpg",
+      "sha256": "4009f8a435d0a877d2351ffc1b54723c916c908ef8784269f4d56a2543351b25",
+      "size": [
+        406,
+        406
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "67286:e25a4b47"
+    },
+    {
+      "core_id": "sft-9dced5a3660c9b4f",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/10-06-2021_DJI_0006_604_5.jpg",
+      "sha256": "901f8e5974bd355730270e78e45381f4196acb1d56506be0ab363f269ce25f16",
+      "size": [
+        977,
+        978
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "300997:325eaf27"
+    },
+    {
+      "core_id": "sft-0b5f07629dff580a",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0245_72_3.jpg",
+      "sha256": "7625e16a4e6b6a578bfbf5476d6d8610524af5cf4c113fc31bd131b96ea6da89",
+      "size": [
+        406,
+        406
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "99605:e3b0a15a"
+    },
+    {
+      "core_id": "sft-b5c4c307bf71b0ae",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802_1.jpg",
+      "sha256": "e171875a2c9fef1073f0d2f5ae3fabf0d54dfe8cd1f836c8cf0b7e2fdbf00ba3",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "182429:114c8486"
+    },
+    {
+      "core_id": "sft-349f19650c1439f5",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/02-06-2021_DJI_0046_194_7.jpg",
+      "sha256": "b9c9c05deae72518e2efe27ba47b342432b14bde07afa0897f590d892060884b",
+      "size": [
+        525,
+        525
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "77363:975438b3"
+    },
+    {
+      "core_id": "sft-8c828ea10ee21333",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802.jpg",
+      "sha256": "f18a2b36fbab08f14466e7b72d5e768965a0d47661a970d07108cb47c882b120",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "118562:51f38f4e"
+    },
+    {
+      "core_id": "sft-f0efbfc87def3790",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802_3.jpg",
+      "sha256": "2f21e4f05f8571800eb0b85f18f4d4c4d7abb7026ddd5576dc0441df238885e2",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "150151:f463d542"
+    },
+    {
+      "core_id": "sft-f1e27f72a5edeaf2",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0092_20_6.jpg",
+      "sha256": "641614fd1b55c00385179d9eedbc5a304f9dbd3ef84a8684a1d00a967c6583eb",
+      "size": [
+        516,
+        516
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "92457:21b44f73"
+    },
+    {
+      "core_id": "sft-120a44c1785e0733",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_8.jpg",
+      "sha256": "e0302cb975f231e4499817e44450827edbb07f0a2579dbe2d0e2b20e78a87256",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "99425:28711ebb"
+    },
+    {
+      "core_id": "sft-05624f7fcb33d35a",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0370_409_1.jpg",
+      "sha256": "42a8ffb27c556de49f15c49071a2a8ada2b6941e2edea9d8b7dd0805b718a8bd",
+      "size": [
+        899,
+        899
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "185721:907419e4"
+    },
+    {
+      "core_id": "sft-6c2ed232e719621d",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0092_20_5.jpg",
+      "sha256": "db2ae72cabaab2fcd36d8903e14aee64f10c5e0a009b60208224ea8fab0bfe3d",
+      "size": [
+        516,
+        516
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "50686:24790f81"
+    },
+    {
+      "core_id": "sft-83b9dd027813c158",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657_8.jpg",
+      "sha256": "40bb3f29af5acc8557bf4bbb381dc0fa1c8ad624a95ebabfe24de5ee5dabdf5a",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "97309:ed7e0bdc"
+    },
+    {
+      "core_id": "sft-45c1fa69eeb82028",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0588_vari_grip_847_8.jpg",
+      "sha256": "35f1a65f04b05a72de7bd0ef6c38aea157e83f5f079f035692cf56fa2b7a1102",
+      "size": [
+        504,
+        460
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "63437:8f40eabd"
+    },
+    {
+      "core_id": "sft-b9487f2d95691a35",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_719_8.jpg",
+      "sha256": "d0409203a457a10461d12d51ba95462f8c87cda9d37cb1e114d74dae0da57c05",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "79694:1df89b03"
+    },
+    {
+      "core_id": "sft-5933f74ec2541734",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_571_3.jpg",
+      "sha256": "c3f96409bda8d9f061009b1df076a1bf3c7974dda2a32d1fc4ff87692ae1a3fd",
+      "size": [
+        388,
+        388
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "49439:c03ea68e"
+    },
+    {
+      "core_id": "sft-31413a3a11f9966b",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573_4.jpg",
+      "sha256": "a97e6456b818a2127baed227fb0f028eebfe0076d35f9b769420c3d73221206e",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "61482:3fe740f7"
+    },
+    {
+      "core_id": "sft-7d3ad81aa05bea35",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_571_5.jpg",
+      "sha256": "9b62119c5b6e8efeccb5b3244cd1ae7ece99fcf54ce43962b2ea1180957d9f89",
+      "size": [
+        388,
+        388
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "37571:b9f08d9c"
+    },
+    {
+      "core_id": "sft-7f8012f5f8607347",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_718_7.jpg",
+      "sha256": "2c698e13b5c02f337f73e91d18d3ac015044bfabb4ae138ef95e87cc16e503a3",
+      "size": [
+        540,
+        540
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75355:b160dc1c"
+    },
+    {
+      "core_id": "sft-7c3ff027e9b0e752",
+      "image": "defect_supervised/vari-grip/train/bird-nest/11-06-2021_DJI_0132_6_0.jpg",
+      "sha256": "0ceae685bd2ed4ef924fc517e92cb529ee59b38ef63adae7d28fe2fbab594bdd",
+      "size": [
+        625,
+        625
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "103656:d671932c"
+    },
+    {
+      "core_id": "sft-569563ee5174467f",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657_4.jpg",
+      "sha256": "bb536512abe023ed999be5c2a3081d5b9175b47266bb02afbb0cdcceaf619e28",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "131055:d49e1bc3"
+    },
+    {
+      "core_id": "sft-7b54849b95d97548",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_3.jpg",
+      "sha256": "ec0808952d3986559c189472d6847b921dd16d4536f393abb89901119947c55d",
+      "size": [
+        713,
+        712
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "114456:42bda509"
+    },
+    {
+      "core_id": "sft-5d5b29062f8a51a9",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0089_322.jpg",
+      "sha256": "ce04bb6a859259394aae341ee4615686aad1fe3866742217caa7640e956b303c",
+      "size": [
+        770,
+        771
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "132736:77433dc3"
+    },
+    {
+      "core_id": "sft-43bd81c3705aad50",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573_6.jpg",
+      "sha256": "db8f8302f5408d15e42a99ed46ad59ec8198cfd258703cf5e3d6967ebe43053d",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "153194:112739cf"
+    },
+    {
+      "core_id": "sft-129855b557526973",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_1.jpg",
+      "sha256": "3872c12c35ca15f5c81789f4ea84d9c8bb60e4ec4749f969ab9ab7f67332c533",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "45475:3c918685"
+    },
+    {
+      "core_id": "sft-a9a6665b250bf9f5",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_748_5.jpg",
+      "sha256": "26b30f646e3b26b3ab0f6fae9df49b454cc33dc7e20bff14576ca06d9831ae30",
+      "size": [
+        405,
+        405
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "56174:83058d78"
+    },
+    {
+      "core_id": "sft-34897559d29c3bca",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613_5.jpg",
+      "sha256": "c3d0688f2c7a3a7f677ee8686ff4b1f933e436f779baa2ce243dd3490c3fd2cc",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "180104:46d96e37"
+    },
+    {
+      "core_id": "sft-21e472faeb4687b9",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0032_vari_grip_750.jpg",
+      "sha256": "87e7eaaee4547bb6c6454ebe237722ec6b21cb8b6f3a3f65914a0ebc2fabe4cf",
+      "size": [
+        274,
+        273
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "18703:2c75eec6"
+    },
+    {
+      "core_id": "sft-677941ee7602dce0",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0073_vari_grip_738.jpg",
+      "sha256": "82920cdd9c0dfb6f23825ee1d3fb52e0e50777f647bcff4bc14ed58ad0d81a6d",
+      "size": [
+        631,
+        631
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75429:a77ef1ad"
+    },
+    {
+      "core_id": "sft-502257dd5c0ec80f",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_5.jpg",
+      "sha256": "1664d4b7ba13ca42d02dc9c7ffaf472b3d5cbaf387ca9b865eab08b50881c0eb",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "65315:94f6e6ff"
+    },
+    {
+      "core_id": "sft-c80eb570bee3d388",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_421_7.jpg",
+      "sha256": "c8d1bc2aad5e8eab48f118f3b450e0f5816c5bba07230256fca86e3bde188fc4",
+      "size": [
+        718,
+        718
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "96777:4acc7e32"
+    },
+    {
+      "core_id": "sft-7bfdb85a86a7daa6",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0018_611_8.jpg",
+      "sha256": "dc55a41daaba4185da5291cbf95a2cdc24550a36949652852433daf871a5a306",
+      "size": [
+        748,
+        748
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "104351:9c68dcd2"
+    },
+    {
+      "core_id": "sft-964d56d2ee488fbf",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_6.jpg",
+      "sha256": "b6760721249b362ef65be6e00ae9690b19d917bcc633bdd5ade19f83210c8efc",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "53926:01ed75e0"
+    },
+    {
+      "core_id": "sft-0d5db05ddd673f02",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_421_8.jpg",
+      "sha256": "bb5ea8ebf57e3b0370a4a9fa3e0f896830a7a311283d3cebce66e28b0153dc8c",
+      "size": [
+        718,
+        718
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "105669:aed63cf4"
+    },
+    {
+      "core_id": "sft-7465eec1e4609dc2",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_422_8.jpg",
+      "sha256": "9080a09f28721d7be877788741343f2d723bfaf825800ce84292d984d45917e9",
+      "size": [
+        723,
+        723
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "67022:995c814d"
+    },
+    {
+      "core_id": "sft-add5fc1c38924f30",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_421_2.jpg",
+      "sha256": "f86390ecfe03c21a96f7fb903e4a5d48a11555c08887287755224175a5414eb7",
+      "size": [
+        718,
+        718
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "86052:e7e0523c"
+    },
+    {
+      "core_id": "sft-20db303a872ec2bc",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0122_641.jpg",
+      "sha256": "5c007a3b7b3cf634b2e9fb70f20f2c2b45f6c9cbaadbd79d754eb14bbfb08457",
+      "size": [
+        616,
+        616
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75056:961a091c"
+    },
+    {
+      "core_id": "sft-505bbb670e09db67",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_5.jpg",
+      "sha256": "dedc36ca6bd8873be8b135df87afdbd73b13e5269e37d6a15effca032009cb3e",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "73628:300c50b9"
+    },
+    {
+      "core_id": "sft-7bd9c360621fb3a0",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_8.jpg",
+      "sha256": "19defcf52c7804207553970e8245d021d70f19c6adb9ae4090ca31e40b97d593",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "83216:17209f38"
+    },
+    {
+      "core_id": "sft-2b72267189e48c9a",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738.jpg",
+      "sha256": "223ce850859e26fa75f25caa5b3cb46de7d9353f1ffceadbc4eda080493d553a",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "55954:f68286b5"
+    },
+    {
+      "core_id": "sft-47257fad873558ad",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0536_154_4.jpg",
+      "sha256": "fa259b1888d10c5ca5c4f73f23e667812a7f485258c638630a284ba9a371954b",
+      "size": [
+        622,
+        621
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "79987:f9cabf74"
+    },
+    {
+      "core_id": "sft-f818f6b2bce3cc07",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_7.jpg",
+      "sha256": "6c17f2684c0c9ca8c2657997e9289d4e323196dc68abbe561f2991023f9a00b1",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "41515:3c06dd8f"
+    },
+    {
+      "core_id": "sft-46c9d74e83f2898a",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_4.jpg",
+      "sha256": "d03244c06c6b09c37e5535c2a47241e57f6a4109f488aaad94df7f982a2107d9",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "99147:1a58104a"
+    },
+    {
+      "core_id": "sft-6290cd3bf8b41f30",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738_5.jpg",
+      "sha256": "beddde7019d719891e6d8417c3d0e57ea0529df2476d49ec1d89fd6c766141b4",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "64370:d7e44644"
+    },
+    {
+      "core_id": "sft-e34ca5a6d4ad9e3d",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0303_664_3.jpg",
+      "sha256": "323e94695257f4c14d13d7132d2ab0ff16d6ce807628d723918727e1a9faf356",
+      "size": [
+        412,
+        411
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "55783:bf54bcbe"
+    },
+    {
+      "core_id": "sft-5629898838012357",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0536_154_5.jpg",
+      "sha256": "4a8e60a0471c63d0ac84faf187fb125c6ed1d498c8f9f08afbf491244e50e5e5",
+      "size": [
+        622,
+        621
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "130808:30eb80d4"
+    },
+    {
+      "core_id": "sft-aab1f2272e7655e2",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_134_4.jpg",
+      "sha256": "da26ddc78cb9584199b3d3eb211a0aaff414798d356c6f91f0eaadbe49f9cc63",
+      "size": [
+        589,
+        588
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "80733:4316cdc7"
+    },
+    {
+      "core_id": "sft-eb44f1f351a27a75",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_1.jpg",
+      "sha256": "3b0e658abf2771319a503ade49d94069bfd6decad8a0e1e8365c7514c67340b2",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "110454:14510315"
+    },
+    {
+      "core_id": "sft-c3efe8336002a242",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0539_cadeia_isolador_vidro_1617_5.jpg",
+      "sha256": "76026978cf47b96fa5fd3bb346464dff6e7ffba1c5a1aceb62abd5dea584fefc",
+      "size": [
+        955,
+        956
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "327372:bd324a82"
+    },
+    {
+      "core_id": "sft-3841c3fc6936bcf0",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0067_cadeia_isolador_vidro_19_0.jpg",
+      "sha256": "6c2d758d701496efbcdbf6479d268ac06d50a5eba49ab7c992e668e503317823",
+      "size": [
+        1513,
+        639
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "668549:5aa80494"
+    },
+    {
+      "core_id": "sft-3a55dfd143e394a3",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 19-10-2020_DJI_0064_cadeia_isolador_vidro_6_0.jpg",
+      "sha256": "9c2c108556525de22dba4f1bef9fc97c0b02be901f041db33fc7e332e112ffa8",
+      "size": [
+        641,
+        641
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "254145:630f67e3"
+    },
+    {
+      "core_id": "sft-147778990dc2202f",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0558_cadeia_isolador_vidro_699_1.jpg",
+      "sha256": "17f642e0e69a772d04fa65656387112b96e34d8a645cdb460364130f77cc00c3",
+      "size": [
+        494,
+        494
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "84744:b02724ea"
+    },
+    {
+      "core_id": "sft-59fcff9583398fd4",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0631_cadeia_isolador_vidro_1548_8.jpg",
+      "sha256": "0203c00f352f2c3d3d077ee300ff3ff241ee37e494b2080c677add160c0611c0",
+      "size": [
+        1382,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "707676:417042a9"
+    },
+    {
+      "core_id": "sft-773f25510b465e06",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0539_cadeia_isolador_vidro_1617_1.jpg",
+      "sha256": "7c6bc38880cf7d892b0ed373f0105885bccd910e81f7012ffb068f4e064b7357",
+      "size": [
+        955,
+        956
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "455465:ef548371"
+    },
+    {
+      "core_id": "sft-23047e14f59313e5",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 16-11-2020_DJI_0024_cadeia_isolador_vidro_1502_5.jpg",
+      "sha256": "b8e8f9d4a59361a4587fe3461544b8d75c100d14a487b33668252844ee7e25b2",
+      "size": [
+        942,
+        943
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "556337:2eb492c8"
+    },
+    {
+      "core_id": "sft-b78490ee641a0c15",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 01-12-2020_DJI_0015_cadeia_isolador_vidro_339_7.jpg",
+      "sha256": "31a6041ea4d76a6914bcb3d7452ba4f92fde1ab9b3c4005cb8298b91eca3466c",
+      "size": [
+        1081,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "480799:59db3ccc"
+    },
+    {
+      "core_id": "sft-5c385425d657afe6",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0556_cadeia_isolador_vidro_1627_6.jpg",
+      "sha256": "392065ad2881778d3e61a645af4640157c3271fa19f53af32b25aee6bcef55a6",
+      "size": [
+        1035,
+        1035
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "656448:f3c4a0fd"
+    },
+    {
+      "core_id": "sft-c854b20ca7b5d983",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 03-12-2020_DJI_0336_cadeia_isolador_vidro_887_1.jpg",
+      "sha256": "88c16e44f1109da5a15902a1ac1aabe29a3bea23b06b6c35299fb2eb5268fd6d",
+      "size": [
+        1561,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1180113:24f04afb"
+    },
+    {
+      "core_id": "sft-7dea2c1eb68cc67c",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 21-10-2020_DJI_0555_cadeia_isolador_vidro_1626_0.jpg",
+      "sha256": "32099d4f2edfe463af6661f302222d13108ce241803cafa199ffe1feaa499a30",
+      "size": [
+        763,
+        763
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "331687:85ca7585"
+    },
+    {
+      "core_id": "sft-8b5f857acec2641d",
+      "image": "defect_supervised/glass-insulator/train/missing-cap/Fotos 08-12-2020_DJI_0376_cadeia_isolador_vidro_1420_2.jpg",
+      "sha256": "f1f4baeac51f7344e6440f3b0b9d1c1a0e3a867b4c91dad02270461acc11aa82",
+      "size": [
+        1789,
+        1080
+      ],
+      "asset_category": "glass-insulator",
+      "defect_gt": "missing-cap",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "1157271:1a59ec54"
+    },
+    {
+      "core_id": "sft-10b328239a4e0f80",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/02-06-2021_DJI_0046_194_6.jpg",
+      "sha256": "4cabf54bcf8e7d05afcc664b00660ea280d767732a414984a577b5b56dff7731",
+      "size": [
+        525,
+        525
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "62269:b1eb4a62"
+    },
+    {
+      "core_id": "sft-5274f9d84ab2ca33",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0402_539_3.jpg",
+      "sha256": "ca8c41b4b605e44c9c440c6bcfea794bf430724fb3f1d5e7f1bb71435d2915f7",
+      "size": [
+        741,
+        741
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "181996:3fe0dae4"
+    },
+    {
+      "core_id": "sft-a0a1b3e798042e76",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0245_72.jpg",
+      "sha256": "d74d77004ab6a3d4a191a1dc086dfd9ef66290a67ee6bdc73aaf140e66253cf3",
+      "size": [
+        406,
+        406
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "43826:bd0b5032"
+    },
+    {
+      "core_id": "sft-626e18850fcaf4e5",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/08-06-2021_DJI_0370_409_0.jpg",
+      "sha256": "e0ffa47555baf8af2bd0a39511378855d8cbec3a49824f6494c5e6f17add315a",
+      "size": [
+        899,
+        899
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "181711:2653eee6"
+    },
+    {
+      "core_id": "sft-55b13b2ab86317b2",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0397_802_5.jpg",
+      "sha256": "743ce37eaa851606d55bb0f25e81903dab8ccea4817d8f2e22b75f33c030fadb",
+      "size": [
+        819,
+        819
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "165680:0e063032"
+    },
+    {
+      "core_id": "sft-506ac3e049a577ae",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/15-06-2021_DJI_0196_758_1.jpg",
+      "sha256": "83ced56236019c70df1ee089bbe66d0429ed590acfbf59567d0f9b683ec57326",
+      "size": [
+        888,
+        888
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "164194:55e87bbb"
+    },
+    {
+      "core_id": "sft-28ab86d5531e7abe",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0402_539_7.jpg",
+      "sha256": "1d3b9ac1f522bae582d525dfd9788f0f399f9518694380a8f36bf4d3f520917e",
+      "size": [
+        741,
+        741
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "160016:b87f839b"
+    },
+    {
+      "core_id": "sft-a7a909a8c6c11989",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/02-06-2021_DJI_0046_194_3.jpg",
+      "sha256": "851eacbb396130b00363210fc5393a34e46fafa2ccf76b3605a842feaaf67a65",
+      "size": [
+        525,
+        525
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "103885:864ee26e"
+    },
+    {
+      "core_id": "sft-615a1d3260b700ae",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_1.jpg",
+      "sha256": "1927c033d5af9b7d46db01cd621961cb6ed193cbb918f48ef0825ffe852a0316",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "183284:54cffbbb"
+    },
+    {
+      "core_id": "sft-78c362c9310287ef",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0451_139.jpg",
+      "sha256": "d445b8b7e347621ab3ca5eb464547bb4f39cb8bfd94ea593d8a8cd2cf6a2787b",
+      "size": [
+        458,
+        457
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "71398:be204fd1"
+    },
+    {
+      "core_id": "sft-8ec98bf2056f5335",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/01-06-2021_DJI_0451_139_4.jpg",
+      "sha256": "03e2451abfa44106aedbc0e11274b89a6e5472f8f1f79f88a67cad2e61a58176",
+      "size": [
+        458,
+        457
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "155368:dcb5c9c2"
+    },
+    {
+      "core_id": "sft-bd190b0fc37a694b",
+      "image": "defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_4.jpg",
+      "sha256": "f855077092341214e0d9754b8b3e71eb698ae79bea50518a32daad20b2dbb397",
+      "size": [
+        882,
+        883
+      ],
+      "asset_category": "lightning-rod-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "119615:1c1c2afa"
+    },
+    {
+      "core_id": "sft-4a8ee01e0c600fcb",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_908_8.jpg",
+      "sha256": "03e18a587a36cb0e37294042e9713094137dcfad1c4744e6fb5b0004adf9c40a",
+      "size": [
+        488,
+        487
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "149132:1cf5269d"
+    },
+    {
+      "core_id": "sft-0b5bae742b43936a",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0270_657_6.jpg",
+      "sha256": "c99ae341238814496994495434c299450cec110cf2e18fd1762208d78b83444d",
+      "size": [
+        507,
+        506
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "89396:6fb15f71"
+    },
+    {
+      "core_id": "sft-ddbce2a15d3bd95e",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_719_5.jpg",
+      "sha256": "c68adb4c811ac23fead4f6a18e7830a6fe6dbd62ea8ddeb58f875c820a5df19d",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "94928:339824c3"
+    },
+    {
+      "core_id": "sft-6e7e7ea7faf54921",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_719_4.jpg",
+      "sha256": "b3006701a639c6becb72385300d65e729b2d4d8ccd551e1420d941780c3de77b",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "67744:7d4bd43e"
+    },
+    {
+      "core_id": "sft-339487005d5699dd",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_908_1.jpg",
+      "sha256": "abe9f71b743a04523a0014669d10b78972f29d754f39e28e799b5974d8c4b61c",
+      "size": [
+        488,
+        487
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "94971:c9c78858"
+    },
+    {
+      "core_id": "sft-2c8a2ba79f48beb7",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_573.jpg",
+      "sha256": "930434e9825957771abdbf364cc24d4d2e4f73109e3df045d9d72a794df55343",
+      "size": [
+        578,
+        578
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "42071:bfe5c91a"
+    },
+    {
+      "core_id": "sft-f3e0efac3f20b7c4",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_7.jpg",
+      "sha256": "f0f3b366de9aa0b6771bfd1bc0dc67078ecc6cfee750fe579f1260888a68fb83",
+      "size": [
+        713,
+        712
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "281265:836e7ce6"
+    },
+    {
+      "core_id": "sft-08d8823941da25ea",
+      "image": "defect_supervised/vari-grip/train/bird-nest/10-06-2021_DJI_0271_658_0.jpg",
+      "sha256": "a1c917970db8353cc50bfdac0901d55bd81656b4ca896004c96608d9ac3e7be5",
+      "size": [
+        705,
+        705
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "117451:a22bf140"
+    },
+    {
+      "core_id": "sft-d2cd5b57998cea66",
+      "image": "defect_supervised/vari-grip/train/bird-nest/15-06-2021_DJI_0016_718_8.jpg",
+      "sha256": "465edcaae758de493b2d90309899d942b4aef2625fe95a3f9d02842007fb1cc1",
+      "size": [
+        540,
+        540
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "114960:a4c1be72"
+    },
+    {
+      "core_id": "sft-078686d201a74c92",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_908_5.jpg",
+      "sha256": "53f2c234ac7e4f480def6c7d08b83f3b3160b8993b8d5850eee3d2483907ff39",
+      "size": [
+        488,
+        487
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "59668:262f44cc"
+    },
+    {
+      "core_id": "sft-45bcdd5c8a75f1f7",
+      "image": "defect_supervised/vari-grip/train/bird-nest/08-06-2021_DJI_0089_322_0.jpg",
+      "sha256": "b32f3b4ad3561f41ea7258a70e1f971216efabaffba7abb981b56aa2fa1348cf",
+      "size": [
+        770,
+        771
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "131692:17117780"
+    },
+    {
+      "core_id": "sft-224619b713baafde",
+      "image": "defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0564_vari_grip_844_6.jpg",
+      "sha256": "adbb70f4146fc696a8ecc17d2ef727f4c38ebf41a2df4f88d590a3fc25b85438",
+      "size": [
+        567,
+        568
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "bird-nest",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "85397:686d5166"
+    },
+    {
+      "core_id": "sft-0ff1bf023e5e50b3",
+      "image": "defect_supervised/vari-grip/train/rust/01-06-2021_DJI_0162_46_3.jpg",
+      "sha256": "a5a62719a873afe1dac428909f24571b5c4a48311a4364eca781daca02c8b132",
+      "size": [
+        769,
+        770
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "150876:30520f4e"
+    },
+    {
+      "core_id": "sft-18f1ebc5d3664074",
+      "image": "defect_supervised/vari-grip/train/rust/01-06-2021_DJI_0162_46.jpg",
+      "sha256": "f49dbb5ec28e16d0eaebbd34aec96b51360e4d6d74e30ece84b77a5f87c27c4c",
+      "size": [
+        769,
+        770
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "val",
+      "content_fingerprint": "45337:4d1f23ca"
+    },
+    {
+      "core_id": "sft-5b851ed39caa73a8",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_422_0.jpg",
+      "sha256": "5f5c7d446ab0c0da0377b9818a9064121fed8cdb5b89d6330cb650cc83b1f41b",
+      "size": [
+        723,
+        723
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "87391:f482cbc9"
+    },
+    {
+      "core_id": "sft-590fc387b5eb4480",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0032_vari_grip_750_2.jpg",
+      "sha256": "e5f1b2c6f495a9574ffbdf90d653f834689e318dd6c8c6f7761d84307ec68b26",
+      "size": [
+        274,
+        273
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "28019:b84d4ea2"
+    },
+    {
+      "core_id": "sft-3a11bea8f272a3fa",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_747_8.jpg",
+      "sha256": "59a58bcb02858eab926f512f9377fec025d1658b5ae76c257d95364eac049af6",
+      "size": [
+        434,
+        434
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "57276:3a747870"
+    },
+    {
+      "core_id": "sft-bab59e4a19a49732",
+      "image": "defect_supervised/vari-grip/train/rust/08-06-2021_DJI_0385_422_7.jpg",
+      "sha256": "7a0825607c358ae5145216a33d2f6b6d41ee3db4ef86f332325f81b0df076759",
+      "size": [
+        723,
+        723
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "101825:e3a4bfa7"
+    },
+    {
+      "core_id": "sft-763fa1935fcdb6ca",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0114_vari_grip_744_4.jpg",
+      "sha256": "1dd6819cfd5751e900176172b1f6b04858833b72f775de04aabe3276bec9fe24",
+      "size": [
+        432,
+        432
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "60557:5f5b07a4"
+    },
+    {
+      "core_id": "sft-a4366e078bd66e99",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0031_vari_grip_748_0.jpg",
+      "sha256": "92a52b66889dfb3344b2e5edf28d5f6ac72cdda21d94f2727133704f537f0456",
+      "size": [
+        405,
+        405
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "124533:8f8a5a75"
+    },
+    {
+      "core_id": "sft-c688ad1c677f6e3c",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_4.jpg",
+      "sha256": "104ba7418800bd21a42c42b58ca4d5773ddbd4b5756e66579f53d48d6bd85233",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "75218:64de100e"
+    },
+    {
+      "core_id": "sft-008fb595bd41e369",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0035_vari_grip_753_2.jpg",
+      "sha256": "9c0197b6eb7db8384d5a87e5bc6eac33af7da65ed23914041418749dc9a14fbe",
+      "size": [
+        469,
+        469
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "68930:6e34aedc"
+    },
+    {
+      "core_id": "sft-3d54671a163ebc4e",
+      "image": "defect_supervised/vari-grip/train/rust/Fotos 23-10-2020_DJI_0073_vari_grip_738_5.jpg",
+      "sha256": "c5ea566a75c14d0ccd942bf965fc38216dc3bd900f8fe7d25e25d440942b0bd3",
+      "size": [
+        631,
+        631
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "221408:7d631303"
+    },
+    {
+      "core_id": "sft-ff57212e613ec0de",
+      "image": "defect_supervised/vari-grip/train/rust/10-06-2021_DJI_0019_613_6.jpg",
+      "sha256": "10ea6c45dbd184621799249f83b8269e421787708acc2b63bfa1b785f4081281",
+      "size": [
+        729,
+        728
+      ],
+      "asset_category": "vari-grip",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "234515:f0332b9f"
+    },
+    {
+      "core_id": "sft-8aef388a9e39d92f",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77.jpg",
+      "sha256": "41d29425a208629380f21917af1dfe40922e423c27ad38af5a054bc696c22e2f",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "53307:23846d3d"
+    },
+    {
+      "core_id": "sft-957a70c9990792d3",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_135_4.jpg",
+      "sha256": "55450aac88e321a0c369448cbc4f178f5d81c76137d813031c33fa02a507ef53",
+      "size": [
+        609,
+        610
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "91870:af0b7313"
+    },
+    {
+      "core_id": "sft-b209a80bf81f9ecf",
+      "image": "defect_supervised/yoke-suspension/train/rust/09-06-2021_DJI_0475_584_5.jpg",
+      "sha256": "ac14a893e15fc03bae2c5c8b09915eca7f696af70912e383f9efdc74092414fb",
+      "size": [
+        577,
+        576
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "123168:ed2e30a4"
+    },
+    {
+      "core_id": "sft-6dfe9ca5fea6aa59",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775_0.jpg",
+      "sha256": "067a6bc6c02b04e0a3d94c4258ab63c83ae820c6e236260bee1696dde1dd52a3",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "96381:74d6b7fb"
+    },
+    {
+      "core_id": "sft-f2db1def1e8ecf22",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0536_154_3.jpg",
+      "sha256": "b7846aae88079fdd753ab2d3d33982f3ce7a8b243514b99ce363a23f1d9600a2",
+      "size": [
+        622,
+        621
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "140186:778407dd"
+    },
+    {
+      "core_id": "sft-798cb7fe32c804c7",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0446_134.jpg",
+      "sha256": "15b78a3839181db5767eea4147939e43c67d9843f45d5cc04fdac26680612309",
+      "size": [
+        589,
+        588
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "63058:f3025194"
+    },
+    {
+      "core_id": "sft-9ed1fcf0fcd2a715",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0208_764_0.jpg",
+      "sha256": "ef380a6436036ea1dbf23f0116e192d41784c5666c067b80932d294c82677f28",
+      "size": [
+        374,
+        374
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "46457:2ff97db0"
+    },
+    {
+      "core_id": "sft-72b49c7b9c539b01",
+      "image": "defect_supervised/yoke-suspension/train/rust/01-06-2021_DJI_0263_77_1.jpg",
+      "sha256": "5cdee1d39ee2cfcb842e2f07551293a0e8d1bc47e7de1cfd6fbda13f4495764c",
+      "size": [
+        432,
+        431
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "80825:13bb7668"
+    },
+    {
+      "core_id": "sft-d1a68be9ef2f5530",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0303_664_1.jpg",
+      "sha256": "8cda92a166a932b0e9cc3c551394c235331ab9bf2c12f232d658bde60a7cdcba",
+      "size": [
+        412,
+        411
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "83528:ee15e995"
+    },
+    {
+      "core_id": "sft-309d5e8a10ac87a7",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0115_738_4.jpg",
+      "sha256": "ed9f9210a59f73c580ab2a904acb7f7b71e37481103cb5d40d0feaca5463a9d9",
+      "size": [
+        405,
+        404
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "107142:47777fce"
+    },
+    {
+      "core_id": "sft-821ab3f320f42a5d",
+      "image": "defect_supervised/yoke-suspension/train/rust/15-06-2021_DJI_0218_775.jpg",
+      "sha256": "3f589dea4c45cc47f43c1c9fe8fbbd8e78137702833975d7a4c32e05f4d82933",
+      "size": [
+        591,
+        591
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "66659:c60b6551"
+    },
+    {
+      "core_id": "sft-a918176027e64ab6",
+      "image": "defect_supervised/yoke-suspension/train/rust/10-06-2021_DJI_0122_641_6.jpg",
+      "sha256": "86310b92c3bacb5baee7dd4ad872822356062e162e3bb22c4787be7ff72d4add",
+      "size": [
+        616,
+        616
+      ],
+      "asset_category": "yoke-suspension",
+      "defect_gt": "rust",
+      "anomaly_gt": "anomalous",
+      "sft_split": "train",
+      "content_fingerprint": "136651:fbabe47d"
+    }
+  ]
+}

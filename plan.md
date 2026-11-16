@@ -60,3 +60,12 @@ Upload the paper folder to Overleaf and compile both versions.
 - User decisions: Qwen3.5-4B BF16 LoRA on L4; automatic DINOv2 patch-difference crop boxes; template rationale. Implemented as JSON-only actions because the strict eval parser rejects text. No GRPO, gold or new holdout in this step.
 - Data: supervised train minus dev240 images, fingerprints and same drone photos (date + DJI frame), minus unsup test fingerprints, polymer corrosão and fixed refs. 60 per class. A date-disjoint split is impossible because dev240 covers all 35 train dates. Training defect photos share frames with unsup test, so gold scoring needs a frame-overlap filter first.
 - Done when: CPU tests show trajectories replay through the eval runner with identical prompts, the label mask covers only action + `<|im_end|>`, the adapter is bound into the eval signature, and notebook cells compile from a committed source pin. GPU training/evaluation is run by the user.
+
+## Requirement delta — manual location boxes for the SFT training photos (2026-11-16)
+
+- SFT result (L4, `sft_v1`): LoRA Joint .971 (direct) / .967 (adaptive) vs base .292. Tools add nothing and the crop box collapsed to one corner (341/365). Details in `docs/agent_sft_lora.md`.
+- User decision: keep the agent direction and label location by hand. Location GT already exists only on the evaluation side (gold 133, dev missing-cap 24); the 300 anomalous training photos had none.
+- Done here: `scripts/sft_train_location_annotation.py`, its screen, `notebooks/lvlm_sft_train_location_annotation_colab.ipynb` (CPU), tests, `docs/sft_train_location_annotation.md`. Target list fixed in `reports/sft_train_location_annotation_preparation_2026-11-16/manifest.json`.
+- Next action (user): run the Colab and box the 300 photos; send `sft_train_location_annotation_results.zip`.
+- Then: check the 9-cell distribution (gold "always center" = 72/133). If it is not collapsed, rebuild the SFT data with these boxes and retrain. Evaluate the automatic-box and manual-box adapters on gold together, once. Not built yet.
+- Not done: retraining, gold evaluation, GRPO.
