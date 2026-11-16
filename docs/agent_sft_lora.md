@@ -92,3 +92,35 @@ Training finished 587/587 steps; validation loss went from .826 to .134. Both ev
 - **Supported claim:** fine-tuning on 600 labelled photos nearly solves Q1/Q2 on dev240. **Not supported:** that tool use helps, or that location is learned.
 - **Known logging bug:** `sec_per_sample` in `train_log.jsonl` is cumulative time over the last 80 samples. Real speed was about 4.5 s per sample. Results are unaffected.
 - **Next:** manual boxes for the 300 anomalous training photos, [sft_train_location_annotation.md](sft_train_location_annotation.md).
+
+## Second run: human boxes (`sft_v2_human`, prepared 2026-11-16, not run yet)
+
+`sft_v1` learned no location: its crop box was a by-product of an automatic difference map, and 341 of 365 dev240
+crops were the same corner. The second run changes the training data only. Model, LoRA settings, prompts, parser and
+the dev240 evaluation are the same.
+
+| | `sft_v1` | `sft_v2_human` |
+|---|---|---|
+| Photos | 600 | the same 600 + 60 polymer `corrosão` |
+| Crop box, anomalous | automatic DINOv2 patch difference | the largest human box, each side grown to at least 0.22 |
+| Q3 answer, anomalous | cell of the automatic box centre | cell of that human box's centre |
+| Normal photos | crop on about half (score above the asset median) | never crop: reference, then finish |
+| Protocol | `agent_sft_train_v1` | `agent_sft_train_v2_human_boxes` |
+
+- Build: `build_agent_sft_data.py --add-polymer-corrosion --human-boxes <label run folder> ...`. A label run is a
+  Drive folder of the box-label Colab (`manifest.json` + `annotations.json`). The builder refuses a run with an
+  undecided photo, a label whose photo SHA differs, and label sets that do not equal the selected anomalous photos.
+  A photo marked unlocatable or disputed leaves training. The label file SHAs are part of the build settings.
+- Polymer `corrosão` photos are asked and answered as "Rust / corrosion." in training only (user decision
+  2026-11-16). Evaluation labels and the slug contract do not change.
+- Checked locally on the real ZIPs with the 300 real boxes (no model call; the reference search used fake
+  embeddings, and 20 unlabelled polymer photos had placeholder boxes in a scratch copy): 660 photos, 5,040 step
+  samples, 360 crops, every crop contains its human box, 97 small boxes grown, all targets pass the eval parser.
+  With the labels as they are on Drive now (polymer 40/60) the builder stops with "20 of 60 photos are not labelled".
+- Notebook: `notebooks/lvlm_agent_sft_lora_human_boxes_colab.ipynb`. It checks both label folders before any GPU
+  work, trains, evaluates the new adapter on dev240, and shows the `sft_v1` base and LoRA rows from Drive without
+  rerunning them. It also counts distinct crop boxes, the first sign of whether location was learned.
+- Limits. Three things change at once (box source, polymer class, normal-photo policy), so a difference from
+  `sft_v1` cannot be assigned to one of them. dev240 has location GT for 24 photos only, so location accuracy is not
+  measured here. A crop is requested exactly when the photo is anomalous in the training data, so this run cannot
+  show that the crop tool adds accuracy; what it can show is whether the agent points at the defect.

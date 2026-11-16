@@ -6,7 +6,7 @@ InsPLAD-QA is an MMAD-style question-answering benchmark built on the public Ins
 
 **Separate follow-up (2026-11-04):** a [training-free tool-choice comparison](docs/agent_tool_pilot.md) is prepared as one Colab Run all on dev240, with embedded source and no GitHub publication requirement. CPU contract checks are separate from unrun GPU effectiveness. The frozen paper results are preserved; this experiment does not train SFT/GRPO or evaluate Q3 spatial accuracy.
 
-Next step (2026-11-09): [LoRA SFT of the tool policy](docs/agent_sft_lora.md), one Run all in [this notebook](notebooks/lvlm_agent_sft_lora_colab.ipynb); run 2026-11-16 (results in the doc). Now: [manual location boxes for the training photos](docs/sft_train_location_annotation.md).
+Next step (2026-11-09): [LoRA SFT of the tool policy](docs/agent_sft_lora.md), one Run all in [this notebook](notebooks/lvlm_agent_sft_lora_colab.ipynb); run 2026-11-16 (results in the doc). Now: [manual location boxes for the training photos](docs/sft_train_location_annotation.md), then the second SFT run on those boxes in [this notebook](notebooks/lvlm_agent_sft_lora_human_boxes_colab.ipynb) (prepared, not run).
 
 Open the [pilot notebook](notebooks/lvlm_agent_tool_pilot_colab.ipynb); [preparation verification](reports/agent_tool_pilot_preparation_2026-11-04.md) records executed CPU checks and remaining GPU evaluation.
 

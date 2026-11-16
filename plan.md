@@ -78,3 +78,12 @@ Upload the paper folder to Overleaf and compile both versions.
 - Done here: `select_train_images(..., extra_classes=[POLYMER_CORROSION])` (the sft_v1 600 do not move), the annotation tool accepts `corrosao`, one result ZIP per run folder, `notebooks/lvlm_sft_train_location_annotation_polymer_colab.ipynb`.
 - Next action (user): box the 60 polymer photos; send `sft_train_location_annotation_sft_v2_polymer_results.zip`.
 - Then (not built): SFT set v2 = 660 photos with manual boxes for the 360 anomalous ones, retrain, and evaluate the automatic-box and manual-box adapters on gold together, once.
+
+## Requirement delta — SFT set v2 with human boxes (2026-11-16)
+
+- Polymer labels: 40 of 60 photos are boxed in the ZIP of 2026-11-16 21:02; 20 remain. The user finishes them in the same Colab (it resumes at photo 41).
+- Done here: `build_agent_sft_data.py --human-boxes ... --add-polymer-corrosion` (protocol `agent_sft_train_v2_human_boxes`), `build_agent_sft_notebook.py --variant sft_v2_human`, `notebooks/lvlm_agent_sft_lora_human_boxes_colab.ipynb`, tests. Design and limits in `docs/agent_sft_lora.md`.
+- Decisions taken as defaults (not asked): one crop per photo = the largest human box, sides grown to 0.22; Q3 answer = cell of that box centre; normal photos never crop; unlocatable photos leave training; the labels are read from the two Drive label folders.
+- Verified locally: real ZIPs + the 300 real boxes give 660 photos / 5,040 samples / 360 crops; unfinished labels are refused. Not verified: any GPU step, a real Colab run of the new notebook.
+- Next action (user): finish the 20 polymer photos, then Run all in the new notebook on L4 (about 6-7 h training + 2 h dev240 evaluation, estimated from `sft_v1`).
+- Then: check on dev240 that Q1/Q2 hold and that crop boxes are no longer one constant box. Gold evaluation of the two adapters is still one later step and needs the frame-overlap filter and the 9-cell Q3 format first. Not built.

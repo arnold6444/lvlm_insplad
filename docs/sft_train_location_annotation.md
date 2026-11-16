@@ -65,6 +65,12 @@ LoRA SFT(`sft_v1`)는 확대할 위치를 자동 DINOv2 박스로 배웠다. 결
 - 저장 폴더는 `MyDrive/lvlm_insplad_results/sft_train_location_annotation_sft_v2_polymer/`로 300장 폴더와 분리된다. 결과는 `sft_train_location_annotation_sft_v2_polymer_results.zip`.
 - 대상 목록: `reports/sft_polymer_location_annotation_preparation_2026-11-16/manifest.json`.
 
+## polymer 60장 표시 상태 (2026-11-16 21:02 내려받은 ZIP)
+
+- 60장 중 **40장 표시, 20장 남음**(1~40번째 사진만 저장됨). 대상 목록과 표시 파일 SHA는 맞다.
+- 40장 분포: 위-가운데 24, 왼쪽 위 8, 가운데 6, 오른쪽 위 4. 박스 2개 이상 사진 2장.
+- 같은 Colab을 다시 모두 실행하면 41번째부터 이어진다. 재학습 Colab은 60장이 다 끝나야 시작한다.
+
 ## 표시가 끝난 뒤
 
 1. `annotation_summary.json`의 9칸 분포를 먼저 본다. gold 위치 정답은 "항상 가운데"가 72/133을 맞힌다. 학습용 정답도 가운데에만 몰려 있으면 위치 학습은 의미가 없다.
