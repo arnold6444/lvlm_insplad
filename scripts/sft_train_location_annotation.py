@@ -14,6 +14,7 @@ import io
 from pathlib import Path, PurePosixPath
 import re
 import time
+import unicodedata
 import uuid
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -22,7 +23,6 @@ from dev_missing_location_annotation import atomic, box_regions, clean_boxes, di
 PROTOCOL = "sft_train_location_annotation_v1"
 GT_PROTOCOL = "sft_train_location_gt_v1"
 PREFIX = "sft_train_location_annotation"
-RESULT_ZIP = "sft_train_location_annotation_results.zip"
 FINAL = ("boxed", "unlocatable", "disputed")
 TARGET_KEYS = {"core_id", "image", "sha256", "size", "asset_category", "defect_gt", "anomaly_gt", "sft_split",
                "content_fingerprint"}
@@ -31,7 +31,10 @@ DEFECTS = {
     "missing-cap": ("누락 (유리 원판이 빠짐)", "원판이 빠진 자리(연결부·드러난 금속 몸통)를 감싸세요. 절연체 줄 전체를 크게 감싸지 마세요."),
     "rust": ("녹 / 부식", "녹슨 부분을 감싸세요. 부품 전체가 녹슬었으면 그 부품을 감싸는 박스 하나를 그리세요."),
     "bird-nest": ("새 둥지", "둥지(나뭇가지·풀 뭉치)를 감싸세요."),
+    "corrosao": ("녹 / 부식", "녹슨 부분을 감싸세요. 부품 전체가 녹슬었으면 그 부품을 감싸는 박스 하나를 그리세요."),
 }
+# Supervised train stores the polymer shackle defect under a Portuguese folder name; its slug is ``corrosao``.
+FOLDERS = {"corrosao": "corrosão"}
 CELL_NAMES = ("Upper-left", "Upper-center", "Upper-right", "Middle-left", "Center", "Middle-right",
               "Lower-left", "Lower-center", "Lower-right")
 
@@ -50,10 +53,11 @@ def validate_manifest(manifest):
         name = t["image"]
         if not isinstance(name, str) or "\\" in name or ":" in name or name.startswith("/") or ".." in PurePosixPath(name).parts:
             raise ValueError("unsafe image member")
-        if PurePosixPath(name).parts[:4] != ("defect_supervised", t["asset_category"], "train", t["defect_gt"]):
-            raise ValueError("image must be a supervised train photo of its own asset and defect")
-        if t["defect_gt"] not in DEFECTS or t["anomaly_gt"] != "anomalous" or t["sft_split"] not in ("train", "val"):
+        if t["defect_gt"] not in DEFECTS or t["anomaly_gt"] != "anomalous" or t["sft_split"] not in ("train", "val", "pending"):
             raise ValueError("only anomalous photos of a known defect type")
+        folder = ("defect_supervised", t["asset_category"], "train", FOLDERS.get(t["defect_gt"], t["defect_gt"]))
+        if tuple(unicodedata.normalize("NFC", x) for x in PurePosixPath(name).parts[:4]) != folder:
+            raise ValueError("image must be a supervised train photo of its own asset and defect")
         if len(t["size"]) != 2 or any(type(x) is not int or x < 3 for x in t["size"]):
             raise ValueError("invalid image dimensions")
         if len(t["sha256"]) != 64 or any(c not in "0123456789abcdef" for c in t["sha256"]):
@@ -222,7 +226,7 @@ class Session:
                    "dev_changed": False, "neural_calls": 0}
         atomic(self.out / "annotation_summary.json", summary)
         self._status()
-        result = self.out.parent / RESULT_ZIP
+        result = self.out.parent / (self.out.name + "_results.zip")       # one ZIP per run folder, never shared
         with ZipFile(result, "w", ZIP_DEFLATED) as z:
             for p in sorted(self.out.rglob("*")):
                 if p.is_file() and "_images" not in p.relative_to(self.out).parts:

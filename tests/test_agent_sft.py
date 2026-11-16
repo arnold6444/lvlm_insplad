@@ -272,3 +272,19 @@ def test_sft_notebook_compiles_and_embeds_the_training_scripts(tmp_path):
     assert '"--adapter-dir", TRAIN_DIR / "adapter"' in code[4] and "load_in_4bit" not in "".join(code)
     assert 'bool(meta.get("training")) == (label == "lora")' in code[5]
     assert '"uninstall", "-y", "-q", "torchao"' in code[1] and code[1].index("torchao") > code[1].index('"peft>=0.18"')
+
+
+def test_polymer_corrosion_is_added_only_on_request_and_moves_no_other_pick(tmp_path):
+    sup, unsup, _, dev_images = fixture(tmp_path)
+    unsup_rows = sft.parse_unsupervised_manifest(sft.devset.zip_manifest(unsup, tmp_path / "m/unsup.csv"))
+    sup_rows, _ = sft.parse_supervised_manifest(sft.devset.zip_manifest(sup, tmp_path / "m/sup.csv"))
+    base, _, _ = sft.select_train_images(sup_rows, unsup_rows, dev_images, 2, 42)
+    both, stats, _ = sft.select_train_images(sup_rows, unsup_rows, dev_images, 2, 42, [sft.POLYMER_CORROSION])
+    base_paths = {r["relative_path"] for r in base}
+    extra = [r for r in both if r["relative_path"] not in base_paths]
+    assert {r["relative_path"] for r in both} - {r["relative_path"] for r in extra} == base_paths
+    assert not any(r["defect_class"] == "corrosao" for r in base)
+    assert len(extra) == 2 and all((r["asset_category"], r["defect_class"]) == sft.POLYMER_CORROSION for r in extra)
+    assert not {r["relative_path"] for r in extra} & dev_images and "class_not_used" not in json.dumps(stats["excluded"])
+    with pytest.raises(ValueError, match="already"):
+        sft.select_train_images(sup_rows, unsup_rows, dev_images, 2, 42, [("vari-grip", "rust")])

@@ -1,0 +1,852 @@
+{
+  "protocol": "sft_train_location_annotation_v1",
+  "source": {
+    "selection": "build_agent_sft_data.select_train_images + POLYMER_CORROSION",
+    "per_class": 60,
+    "seed": 42,
+    "sft_v1_train_qa_sha256": "08485091288e4aedf659230f9e235716a8963925738847b2ed81754dbe7cd06b"
+  },
+  "cohort": "60_polymer_corrosion_photos_added_to_the_sft_set",
+  "targets": [
+    {
+      "core_id": "sft-83b6a79a3044ddf7",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0055_311_3.jpg",
+      "sha256": "a1f4ed316ff68c98d275f012c26fce8934419a3492385e88e95b5b5cd42bc0c3",
+      "size": [
+        895,
+        895
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "269418:b481cfa9"
+    },
+    {
+      "core_id": "sft-c391b45f084fe8fd",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0569_163_5.jpg",
+      "sha256": "ba33962a7e72ef8faa037c805a447558444825b6d6bd2197a75f421091b7537e",
+      "size": [
+        956,
+        957
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "198852:a4bdde23"
+    },
+    {
+      "core_id": "sft-bd7514d438a388a2",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0322_398_4.jpg",
+      "sha256": "b591f2a70f141dbe6cbb807139dfd2fbb2baa9bab50adb2097d76de32f30f408",
+      "size": [
+        1052,
+        1053
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "471508:c4de4274"
+    },
+    {
+      "core_id": "sft-8fca1089ed8d2679",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0321_397_5.jpg",
+      "sha256": "7abb56ca4c67d5d4ca79bddf4746e7f180a1449cd152394e17ea137f6ef358a5",
+      "size": [
+        833,
+        673
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "167751:7355044f"
+    },
+    {
+      "core_id": "sft-8b142679bf5261c5",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0192_58_6.jpg",
+      "sha256": "feda1643b524af90f035c417957ab05f3bd445c06546e45197bce5b2378568e9",
+      "size": [
+        448,
+        448
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "67391:82549633"
+    },
+    {
+      "core_id": "sft-8794909f19c814a2",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0457_561_4.jpg",
+      "sha256": "185470fa5fdac69232c22e2801b7e0cbfb5bbb3c28086e22763aba306f33ff76",
+      "size": [
+        745,
+        745
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "192893:43e7081f"
+    },
+    {
+      "core_id": "sft-8567e90e38b23709",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0201_340_3.jpg",
+      "sha256": "31b037c939d2758ab511b85a0b040b39e457ccf0b7e3a622783d8c3eb2a68989",
+      "size": [
+        763,
+        762
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "176100:1ddf592d"
+    },
+    {
+      "core_id": "sft-1f6a5dc28e83b1a2",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0483_594_1.jpg",
+      "sha256": "5aba15900025e30c3c09aa015dbdcb6e3787c16eacf56571e11904829f43afbc",
+      "size": [
+        926,
+        927
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "285228:213482f9"
+    },
+    {
+      "core_id": "sft-6b4a0ab042cce628",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0596_283_7.jpg",
+      "sha256": "a11b17bdf15e2b59c27a28775d7d1948b2201ed08171e5ce5fa642fa6d50443e",
+      "size": [
+        515,
+        515
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "92561:6a0cedc5"
+    },
+    {
+      "core_id": "sft-9108d13d93f1e858",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0329_98_2.jpg",
+      "sha256": "57cf8971032de48c018f2ad5312e2726abb9d2781e82063693718a2b5b1846e9",
+      "size": [
+        776,
+        776
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "156122:8f6c23b6"
+    },
+    {
+      "core_id": "sft-6da030e721a592f1",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0184_475_4.jpg",
+      "sha256": "faa670a037035721f8e9eb6aa13a04d667d44ebb43ac90e0b9ee20117c33d1e4",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "455997:f09fd190"
+    },
+    {
+      "core_id": "sft-a73d0f7a9c061e0c",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0408_266_4.jpg",
+      "sha256": "5931208e199769f653479e32a4df353f8c51ace3ec2a376969c0cb80fc1e1553",
+      "size": [
+        893,
+        893
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "186471:68dbd19d"
+    },
+    {
+      "core_id": "sft-a9a0136a2a8dc80e",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0597_170_2.jpg",
+      "sha256": "538f7f4f12bb1f5729fcfbe13043db1a1b8a0d94346a56d04909e86417790f09",
+      "size": [
+        510,
+        510
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "73399:9f38676d"
+    },
+    {
+      "core_id": "sft-e0da452ce1f8011e",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0372_410_5.jpg",
+      "sha256": "87f32b15df5ec20ceabf6445af723509675ddfd7c41906b77894cf4ffcb9c7a2",
+      "size": [
+        831,
+        832
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "113504:8de0564f"
+    },
+    {
+      "core_id": "sft-bd6df9ad9c726616",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 11-12-2020_DJI_0046_manilha_isolador_superior_917_2.jpg",
+      "sha256": "effe326930d974b1a81d69d71b98ffedbd9d7a14e08bbd860c165ee7e9f84302",
+      "size": [
+        911,
+        910
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "332304:e16d2a54"
+    },
+    {
+      "core_id": "sft-55e2226c046023be",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0596_283_6.jpg",
+      "sha256": "bc5f7ccb94f6009ceb0f75a84febbfeacd29af0f84a9efabb2321cbecc87373c",
+      "size": [
+        515,
+        515
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "59124:b3bd0dcc"
+    },
+    {
+      "core_id": "sft-c8f2f35a117056eb",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0054_310_5.jpg",
+      "sha256": "ca31db79f5a3425eb5c0ee28b1241166a6fb1cd0f246d78d5c59c05b02bba260",
+      "size": [
+        699,
+        699
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "80458:5ef4c646"
+    },
+    {
+      "core_id": "sft-9250ae7ce404b8e0",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0528_276_6.jpg",
+      "sha256": "d00cdcfe7dc050955f8e20f1d011ab9db1eaa69b01f2a9c1f82468a4d93e74e0",
+      "size": [
+        877,
+        877
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "235980:d6f4ed2d"
+    },
+    {
+      "core_id": "sft-108d30f3d16c4ade",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/11-06-2021_DJI_0082_2_8.jpg",
+      "sha256": "78b11e13dfc96593b28789698b5323900227baaced3874cb39e062bfef985534",
+      "size": [
+        720,
+        719
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "151893:ca7b2867"
+    },
+    {
+      "core_id": "sft-408227d6b772e82e",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0263_244_2.jpg",
+      "sha256": "a12f0675d330c466690eb629b82f46b55eeef8cb8222e47dd8da4c10524fd280",
+      "size": [
+        842,
+        841
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "222825:e9d12c72"
+    },
+    {
+      "core_id": "sft-ab97e2701c2b1a3b",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 19-10-2020_DJI_0085_manilha_isolador_superior_18_0.jpg",
+      "sha256": "4f10bf219105264cdc05d87574eb8ab959d2e7668304ea4f6785a1e557d1fdb9",
+      "size": [
+        586,
+        585
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "47053:6d471d0f"
+    },
+    {
+      "core_id": "sft-9f7cb14a05a2dabe",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 11-12-2020_DJI_0046_manilha_isolador_superior_917_7.jpg",
+      "sha256": "abb8b3b325750e95892622e73b54285a1c91e044acc7ca0578cdba0ece9fa7ba",
+      "size": [
+        911,
+        910
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "236971:d2a64f4b"
+    },
+    {
+      "core_id": "sft-b6ae99e052743a31",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0512_149_2.jpg",
+      "sha256": "2e1a00726a0279021146769449ffef06cde3e403a37fbfc02abc205a41834e3c",
+      "size": [
+        677,
+        677
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "111743:da492528"
+    },
+    {
+      "core_id": "sft-5b862e50f5616abc",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0184_475_8.jpg",
+      "sha256": "1b471a8dc1cce87bce29b05ff0037c64874bc775f9ea656068c799c012b37eac",
+      "size": [
+        1080,
+        1080
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "326890:1a665867"
+    },
+    {
+      "core_id": "sft-f37289834aa1c345",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0500_274_1.jpg",
+      "sha256": "6f21ed1ecea3c823874b201b8be5238234829575d5ac7ea4fc4954f0ad930168",
+      "size": [
+        834,
+        834
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "144951:df90042f"
+    },
+    {
+      "core_id": "sft-0102f031f9870eed",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0038_10_7.jpg",
+      "sha256": "60feeffe90acd96c690923667a27f22c2d73144342d3a0983b8553022ad061bd",
+      "size": [
+        917,
+        916
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "434888:6ac29672"
+    },
+    {
+      "core_id": "sft-7981cd97e8a23f97",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 23-10-2020_DJI_0099_manilha_isolador_superior_1398_0.jpg",
+      "sha256": "e38039d8deb3b4c128190ccc53a7e430fd8692bffb435f3a470465e3842d6e35",
+      "size": [
+        545,
+        545
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "174396:b279473d"
+    },
+    {
+      "core_id": "sft-68066a3e1e87bc8b",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0007_296_2.jpg",
+      "sha256": "bd2fc74e9d607329cc142ffc285e096f17c526fb335a79dd07a91bdb942bc734",
+      "size": [
+        632,
+        632
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "66469:6b7d7c29"
+    },
+    {
+      "core_id": "sft-6fa1ba318f9fcc58",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0185_476_8.jpg",
+      "sha256": "8592d4a80669326856b44513e912e28a8a1c676fcad29d5ffba7ae8ae0d8b488",
+      "size": [
+        878,
+        651
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "180128:bf40948d"
+    },
+    {
+      "core_id": "sft-9fbe99185b18010b",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0644_294_2.jpg",
+      "sha256": "e4618defaef102d9342b5efc9cbff1843ec9a0191e068e1910ff5b8b9977917b",
+      "size": [
+        913,
+        913
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "152736:3e76e8ae"
+    },
+    {
+      "core_id": "sft-01a9394a90c96881",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0009_183_0.jpg",
+      "sha256": "fb654889674920a02e231a621ae2b597413cb4d1e36cc5045a7b9d1571058d98",
+      "size": [
+        569,
+        569
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "62969:17935f8e"
+    },
+    {
+      "core_id": "sft-7ff915a48b7b97cb",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0272_378_2.jpg",
+      "sha256": "4fd0772aa07e9f45d84cc484a0a656f30f477d5cd2e1896acd722577e095cf75",
+      "size": [
+        700,
+        700
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "69018:d3c099a3"
+    },
+    {
+      "core_id": "sft-d57cfcab4a6f1b08",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0084_464_4.jpg",
+      "sha256": "3e0f46864cb8a938bb54dbd63ec1e1a1da1338d74ed2cb0f69dbd02eb2e94f32",
+      "size": [
+        950,
+        950
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "550020:c0c363c5"
+    },
+    {
+      "core_id": "sft-0c13d4aab771a0fa",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0303_529_4.jpg",
+      "sha256": "825fbdc151567a146b2aef8a04881dd950f58d70fff1fbd3a2192f55f9110403",
+      "size": [
+        927,
+        927
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "451534:e2253d61"
+    },
+    {
+      "core_id": "sft-e641913cf74288b5",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0084_464_7.jpg",
+      "sha256": "881115a8e4d7f2e742439a31a713f3352108f44353a789777b5af255b4fd4357",
+      "size": [
+        950,
+        950
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "688340:a68a8a8a"
+    },
+    {
+      "core_id": "sft-5ec63522a6a1fba7",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0500_274_7.jpg",
+      "sha256": "ebd975d19ae9742e7b6f7b156205bca05cb637672aa3d4b53c74725668a7ac2b",
+      "size": [
+        834,
+        834
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "267838:bfa0285a"
+    },
+    {
+      "core_id": "sft-5ef371cf5ae99f8c",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0038_10_2.jpg",
+      "sha256": "fd501593f72657d94c83daf25c2446f78a51b003e3577fbb78ac297a9631a908",
+      "size": [
+        917,
+        916
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "186775:406b2458"
+    },
+    {
+      "core_id": "sft-233033ec8e7d5a3e",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 23-10-2020_DJI_0121_manilha_isolador_superior_1402_2.jpg",
+      "sha256": "67013bb66850443e340cc3c8180b55303bde8236565544ef912448e9febb8bd3",
+      "size": [
+        624,
+        623
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "239816:758b78d9"
+    },
+    {
+      "core_id": "sft-3598c6491b9d802b",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0037_9_3.jpg",
+      "sha256": "a2ad805b3f29c1d2e6be6d891f029d13e0b104f4ad7a65ffb40a526ab65fd647",
+      "size": [
+        713,
+        714
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "242938:a49e2c9d"
+    },
+    {
+      "core_id": "sft-84367429fe884aed",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 23-10-2020_DJI_0062_manilha_isolador_superior_1394_0.jpg",
+      "sha256": "dfcf2a2f5ef2ae1f0fab85758ad6d9705be791f4f78780bb75a64b696d48be90",
+      "size": [
+        719,
+        720
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "165299:9d74a8c1"
+    },
+    {
+      "core_id": "sft-ff1959dc9a4dfedc",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 11-12-2020_DJI_0124_manilha_isolador_superior_897_3.jpg",
+      "sha256": "7197bf36fefd076cb51c7c78d6b1a6da19c64907a8d8d6a74ccf278f2ff1c38f",
+      "size": [
+        877,
+        877
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "193047:599e29af"
+    },
+    {
+      "core_id": "sft-26a624517c2b03a4",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0202_341_1.jpg",
+      "sha256": "662b6e7d8a7bd7d6fea29efda9a6362ff98aee762b6f8fc53c77f063ecd0e4f9",
+      "size": [
+        797,
+        797
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "445085:76d47008"
+    },
+    {
+      "core_id": "sft-ffa6c0a16608f7cf",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0141_224_6.jpg",
+      "sha256": "5f3cc9f8be18381ee59d4b6902ba955b4461bd81c4add0d1ba47e07ef21cfe15",
+      "size": [
+        660,
+        661
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "84758:ac329626"
+    },
+    {
+      "core_id": "sft-d943193d00415efa",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0084_464_3.jpg",
+      "sha256": "cf3c5a96e832ffdc415eefac18610cf02b9522bc2d56b3f2f3c1b060f10c0dcc",
+      "size": [
+        950,
+        950
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "501700:14c9a755"
+    },
+    {
+      "core_id": "sft-c34c0daa8b57ad27",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/09-06-2021_DJI_0457_561_7.jpg",
+      "sha256": "76a7e953a8bf10c293f680695914dd759f5fe702b30cea1cb7ce270c837dfd12",
+      "size": [
+        745,
+        745
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "168654:19ae2b48"
+    },
+    {
+      "core_id": "sft-0fdc8cfd1141d90a",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0048_195_5.jpg",
+      "sha256": "54ce74bd8336c1d87859bd496b4415d287991a879b8f3e8eab83908482bf0b8b",
+      "size": [
+        557,
+        557
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "34188:45d14132"
+    },
+    {
+      "core_id": "sft-c8b183d5060b9e97",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0374_412_0.jpg",
+      "sha256": "42f9eab33d086eb67380e02c68d05e709ace6079e1140fa3a9c86d7e86ecdd3c",
+      "size": [
+        834,
+        835
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "215219:f7b739f6"
+    },
+    {
+      "core_id": "sft-bab23fb64d72c018",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0080_319_6.jpg",
+      "sha256": "b4cd9e2e3a83ef1ec2118fa454639227fbcc23cfb4fda2c39c01936d0def50ad",
+      "size": [
+        680,
+        680
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "155681:4d02fdf0"
+    },
+    {
+      "core_id": "sft-e70fb83db642fbb9",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0527_275_4.jpg",
+      "sha256": "4d47e54abe28ed3d0785431c62155b35f4637d4e160555475370a475bdbe787c",
+      "size": [
+        810,
+        811
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "75384:58ad1bde"
+    },
+    {
+      "core_id": "sft-8c3002f6c50be918",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0569_278_8.jpg",
+      "sha256": "360e1a495fd069b2df52925c4901c89b44154bca91c779f647680020d0faedcf",
+      "size": [
+        922,
+        922
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "194131:0a3da69e"
+    },
+    {
+      "core_id": "sft-01a85cd449b6afb1",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 19-10-2020_DJI_0091_manilha_isolador_superior_22_3.jpg",
+      "sha256": "fa2809912f16539fc5185773326a3b36588210d1b2b6f84f73089435aa6b9906",
+      "size": [
+        345,
+        344
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "56667:25410df9"
+    },
+    {
+      "core_id": "sft-8f9a93fa1cd4798c",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0273_379_2.jpg",
+      "sha256": "c980b5a5e7b8f8aa7c964b51363cb0731eb02deb9303dcd51c309daccd3f22ff",
+      "size": [
+        772,
+        771
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "150344:06feb92e"
+    },
+    {
+      "core_id": "sft-dfaf08c97107ce5d",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0512_149_8.jpg",
+      "sha256": "bd3a1bb7ce5cdd3d242f25806fb0dd0ef38a93ca6f925feb2237503bea984b35",
+      "size": [
+        677,
+        677
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "79531:be40374b"
+    },
+    {
+      "core_id": "sft-8bb3293a440dcf5a",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0346_404_6.jpg",
+      "sha256": "e7625e6eba041834a539035b71e336d3965382e7f374651feb3eeeb53bde9243",
+      "size": [
+        750,
+        750
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "120278:391c31da"
+    },
+    {
+      "core_id": "sft-26591c6d0cc18852",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/Fotos 19-10-2020_DJI_0083_manilha_isolador_superior_16_5.jpg",
+      "sha256": "56d38efe08c96645fd48492b4e5d405ae976cb85e63cd391fc19da9105c6518f",
+      "size": [
+        599,
+        599
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "49665:d878036e"
+    },
+    {
+      "core_id": "sft-9044334e9986dc9c",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/10-06-2021_DJI_0054_622_3.jpg",
+      "sha256": "a95aa0b8a927b9e5bff7e929db52b191b6006bb107858e2732216e543541ce51",
+      "size": [
+        854,
+        855
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "142751:0ac0a20f"
+    },
+    {
+      "core_id": "sft-55ca60508d0ceb97",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0408_266_5.jpg",
+      "sha256": "b68c175d718ff0f8af016c2377937c5b6126d6f852fc9750c535c988abe90672",
+      "size": [
+        893,
+        893
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "221612:7ce4c25c"
+    },
+    {
+      "core_id": "sft-06770d8e2b305cb3",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0334_255_2.jpg",
+      "sha256": "5c80837c7ad4c1dd73e3660ad358c702a90c310a0c3f994a5156b89d2f6342fb",
+      "size": [
+        758,
+        758
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "141505:cbab5a95"
+    },
+    {
+      "core_id": "sft-382d749902a3e394",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/10-06-2021_DJI_0054_622_7.jpg",
+      "sha256": "6073ef03cae800485a366d014f8454b75219ed2eec4111628289c24120158a44",
+      "size": [
+        854,
+        855
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "151561:efa6e6f0"
+    },
+    {
+      "core_id": "sft-84495117a0f996c7",
+      "image": "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/08-06-2021_DJI_0272_378_0.jpg",
+      "sha256": "5b42cd7f44a5839b91c9f758f68332baf8165b8d8ac6bf2ebff088e8aea5a255",
+      "size": [
+        700,
+        700
+      ],
+      "asset_category": "polymer-insulator-upper-shackle",
+      "defect_gt": "corrosao",
+      "anomaly_gt": "anomalous",
+      "sft_split": "pending",
+      "content_fingerprint": "121776:ad17efe3"
+    }
+  ]
+}

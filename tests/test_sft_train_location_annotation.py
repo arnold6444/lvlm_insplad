@@ -60,7 +60,7 @@ def test_draft_resume_confirm_and_screen_shows_only_photo_and_defect_type(tmp_pa
     assert gt[0]["label_basis"] == "human_train_box_centers" and gt[0]["sft_split"] == "train"
     assert len(list((s.out / "history/sft-0").glob("*.json"))) == 1
     with ZipFile(path) as archive:
-        assert path.name == a.RESULT_ZIP and all("_images" not in n for n in archive.namelist())
+        assert path.name == s.out.name + "_results.zip" and all("_images" not in n for n in archive.namelist())
         assert json.loads(archive.read("annotation/sft_train_location_gt.json")) == gt
 
 
@@ -212,9 +212,13 @@ def test_notebook_build_embeds_the_tool_and_runs_without_gpu(tmp_path, monkeypat
     monkeypatch.setattr(builder, "BLOCK", 1)
     fixture = builder.targets
     monkeypatch.setattr(builder, "targets", lambda *x: fixture(*x, expected_sha=samples_sha, per_class=2))
-    args = types.SimpleNamespace(train_qa=tmp_path / "qa.jsonl", samples=tmp_path / "samples.jsonl", boxes_csv=tmp_path / "boxes.csv",
-                                 sup_zip=z, output=tmp_path / "nb.ipynb", evidence_dir=tmp_path / "evidence")
-    notebook = builder.build(args)
+    manifest = builder.targets(tmp_path / "qa.jsonl", tmp_path / "samples.jsonl", tmp_path / "boxes.csv", z)
+    notebook = builder.build(manifest, "sft_v1", tmp_path / "nb.ipynb", tmp_path / "evidence")
+    polymer = builder.build(manifest, "polymer", tmp_path / "polymer.ipynb")
+    folders = [re.search(r'RUN_FOLDER = "lvlm_insplad_results/([^"]+)"', "".join(n["cells"][1]["source"])).group(1) for n in (notebook, polymer)]
+    assert folders == [a.PREFIX + "_sft_v1", a.PREFIX + "_sft_v2_polymer"]             # separate Drive folders and result ZIPs
+    assert not "".join(notebook["cells"][0]["source"]).startswith(" ") and "@@" not in json.dumps(notebook)
+    assert all(not line.startswith("    ") for line in notebook["cells"][0]["source"])     # markdown, not a code block
     code = ["".join(c["source"]) for c in notebook["cells"] if c["cell_type"] == "code"]
     assert len(code) == 4 and all(ast.parse(c) for c in code)
     assert "cuda" not in "".join(code).lower() and "register_colab(session)" in code[2] and "session.export()" in code[3]
@@ -238,3 +242,60 @@ def test_committed_notebook_matches_the_current_tool_and_lists_300_balanced_phot
     for start in range(0, 300, 60):
         assert sorted(set(classes[start:start + 60])) == sorted(set(classes)) and len(set(classes)) == 5
         assert all(classes[start:start + 60].count(c) == 12 for c in set(classes))
+
+
+def test_polymer_corrosion_photos_live_in_the_portuguese_train_folder(tmp_path):
+    import unicodedata
+    payload, archive = photo(9), tmp_path / "sup.zip"
+    name = "defect_supervised/polymer-insulator-upper-shackle/train/corrosão/p.png"
+    with ZipFile(archive, "w") as z:
+        z.writestr(name, payload)
+    target = dict(core_id="sft-p", image=name, sha256=a.sha(payload), size=[300, 180], asset_category="polymer-insulator-upper-shackle",
+                  defect_gt="corrosao", anomaly_gt="anomalous", sft_split="pending",
+                  content_fingerprint=f"{len(payload)}:{zlib.crc32(payload):08x}")
+    manifest = dict(protocol=a.PROTOCOL, source=dict(fixture=True), cohort="fixture", targets=[target])
+    s = a.prepare(manifest, archive, tmp_path / (a.PREFIX + "_polymer"))
+    assert s.item(0)["defect_label"] == "녹 / 부식"
+    s.save(0, [[.4, .05, .2, .2]], "boxed", "", 0)
+    path, summary = s.export()
+    assert path.name == a.PREFIX + "_polymer_results.zip" and summary["region_counts"]["Upper-center"] == 1
+    assert summary["boxed_by_defect"] == {"polymer-insulator-upper-shackle:corrosao": 1}
+    decomposed = dict(manifest, targets=[dict(target, image=unicodedata.normalize("NFD", name))])
+    a.validate_manifest(decomposed)                                    # same folder, other Unicode form
+    for bad in (name.replace("corrosão", "rust"), name.replace("/train/", "/val/"), name.replace("polymer-insulator-upper-shackle", "vari-grip")):
+        with pytest.raises(ValueError):
+            a.validate_manifest(dict(manifest, targets=[dict(target, image=bad)]))
+
+
+def test_polymer_target_list_comes_from_the_sft_selection_and_keeps_the_trained_photos(tmp_path):
+    import test_agent_sft as sft_tests
+    sup, unsup, dev_qa, dev_images = sft_tests.fixture(tmp_path)
+    sft = sft_tests.sft
+    unsup_rows = sft.parse_unsupervised_manifest(sft.devset.zip_manifest(unsup, tmp_path / "m/unsup.csv"))
+    sup_rows, _ = sft.parse_supervised_manifest(sft.devset.zip_manifest(sup, tmp_path / "m/sup.csv"))
+    base, _, _ = sft.select_train_images(sup_rows, unsup_rows, dev_images, 2, 42)
+    trained = tmp_path / "trained.jsonl"
+    trained.write_text("".join(json.dumps(dict(image=r["relative_path"])) + "\n" for r in base), encoding="utf-8")
+    m = builder.polymer_targets(dev_qa, trained, sup, unsup, tmp_path / "work", per_class=2)
+    assert len(m["targets"]) == 2 and all(t["defect_gt"] == "corrosao" and t["sft_split"] == "pending" for t in m["targets"])
+    assert not {t["image"] for t in m["targets"]} & (dev_images | {r["relative_path"] for r in base})
+    assert builder.polymer_targets(dev_qa, trained, sup, unsup, tmp_path / "work", per_class=2) == m
+    trained.write_text(json.dumps(dict(image=base[0]["relative_path"])) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="moved the sft_v1 selection"):
+        builder.polymer_targets(dev_qa, trained, sup, unsup, tmp_path / "work", per_class=2)
+
+
+def test_committed_polymer_notebook_adds_60_new_photos_outside_dev_and_the_first_300():
+    path = ROOT / builder.NOTEBOOKS["polymer"]
+    if not path.exists():
+        pytest.skip("polymer notebook not built yet")
+    files = embedded_bundle(json.loads(path.read_text(encoding="utf-8")))
+    assert all(files[n] == builder.source_bytes(n) for n in builder.BUNDLE), "rebuild the notebook after changing the tool"
+    manifest = json.loads(files["inputs/manifest.json"])
+    a.validate_manifest(manifest)
+    first = json.loads(embedded_bundle(json.loads((ROOT / builder.NOTEBOOKS["sft_v1"]).read_text(encoding="utf-8")))["inputs/manifest.json"])
+    dev = {json.loads(x)["image"] for x in (ROOT / "results/latest/gold_v2_dev/dev_master_qa_480.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()}
+    images = {t["image"] for t in manifest["targets"]}
+    assert len(images) == 60 and not images & dev and not images & {t["image"] for t in first["targets"]}
+    assert {(t["asset_category"], t["defect_gt"], t["sft_split"]) for t in manifest["targets"]} == {("polymer-insulator-upper-shackle", "corrosao", "pending")}
+    assert not {t["core_id"] for t in manifest["targets"]} & {t["core_id"] for t in first["targets"]}

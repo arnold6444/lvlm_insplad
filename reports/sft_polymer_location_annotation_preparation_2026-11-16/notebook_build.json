@@ -1,0 +1,20 @@
+{
+  "cohort": "polymer",
+  "run_folder": "sft_train_location_annotation_sft_v2_polymer",
+  "source_bundle_sha256": "52442addd4cb112e2d52da1bbad8733de429cdef7e1cb443fb95e00c648f5661",
+  "source_files": {
+    "scripts/sft_train_location_annotation.py": "95e9ed380b473b202c75e2a7257d834f26078e843d30491682adc48121c0d70a",
+    "scripts/dev_missing_location_annotation.py": "3ff033e86b871f7052ea10b05cd06158bce4774801799f44449861f6440ead20",
+    "scripts/sft_train_location_ui.html": "6c4417e1b88534e65742a50d25bf92315494faf9da4f9a974cc1fee71284ee1d",
+    "inputs/manifest.json": "52ae6a216eb4d20370a374d8bad1f039b0ae573cdac2484be2f0b840a3147527"
+  },
+  "notebook_sha256": "3186aadb4b666153c4b3359c5cf5deadba18e5f9924b7c56106787a20c1abb02",
+  "images": 60,
+  "images_by_class": {
+    "polymer-insulator-upper-shackle:corrosao": 60
+  },
+  "manifest_identity": "f10f29110fca4d5db3574a7822c222bfb965817fa9266372f31f04ce3cae315e",
+  "code_cells_compiled": 4,
+  "neural_calls": 0,
+  "annotation_completed": false
+}

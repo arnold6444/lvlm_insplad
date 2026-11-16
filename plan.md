@@ -69,3 +69,12 @@ Upload the paper folder to Overleaf and compile both versions.
 - Next action (user): run the Colab and box the 300 photos; send `sft_train_location_annotation_results.zip`.
 - Then: check the 9-cell distribution (gold "always center" = 72/133). If it is not collapsed, rebuild the SFT data with these boxes and retrain. Evaluate the automatic-box and manual-box adapters on gold together, once. Not built yet.
 - Not done: retraining, gold evaluation, GRPO.
+
+## Requirement delta — add polymer corrosion to the SFT set (2026-11-16)
+
+- The 300 manual boxes are done and verified (all boxed, 348 boxes). Baselines: center in 159/300, class mode 203/300; on gold "always center" 72/133. Details in `docs/sft_train_location_annotation.md`.
+- Found: gold v2 has 24 polymer-shackle defect photos (`val/rust`), but `sft_v1` trained on no polymer defect because supervised train names it `corrosão`.
+- User decision: add 60 train `corrosão` photos to the next SFT set with the Q2 answer "Rust / corrosion.". Evaluation labels and gold are unchanged. The user boxes these 60 as well.
+- Done here: `select_train_images(..., extra_classes=[POLYMER_CORROSION])` (the sft_v1 600 do not move), the annotation tool accepts `corrosao`, one result ZIP per run folder, `notebooks/lvlm_sft_train_location_annotation_polymer_colab.ipynb`.
+- Next action (user): box the 60 polymer photos; send `sft_train_location_annotation_sft_v2_polymer_results.zip`.
+- Then (not built): SFT set v2 = 660 photos with manual boxes for the 360 anomalous ones, retrain, and evaluate the automatic-box and manual-box adapters on gold together, once.
