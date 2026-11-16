@@ -279,7 +279,7 @@ def main(argv: Sequence[str] | None = None, *, patch_encoder=None, embed_factory
     p.add_argument("--human-boxes", type=Path, nargs="*", default=[],
                    help="finished box-label run folders; their boxes replace the automatic DINOv2 box")
     p.add_argument("--add-polymer-corrosion", action="store_true",
-                   help="add the polymer shackle corrosão photos, answered as rust (training only)")
+                   help="add the polymer shackle corrosion (corrosao) photos, answered as rust (training only)")
     args = p.parse_args(argv)
     if not 1 <= args.per_class <= 400 or not 0 <= args.val_fraction < 0.5:
         raise ValueError("per-class must be 1..400 and val-fraction 0..0.5")
