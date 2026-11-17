@@ -5,6 +5,7 @@ Each file describes one Colab experiment: its inputs, fixed settings, pass/failu
 ## Separate follow-up, not a completed paper experiment
 - [agent_tool_pilot.md](agent_tool_pilot.md): training-free model-selected crops/references, one self-contained dev240 run; run 2026-11-09 on L4 (no gain over direct reference), no Q3 spatial GT.
 - [agent_sft_lora.md](agent_sft_lora.md): Qwen3.5-4B LoRA SFT on automatic-box tool trajectories (dev240 photos held out), base vs LoRA on dev240 in one Colab run; run 2026-11-16 on L4 (LoRA Joint .97, tools add nothing, crop box collapsed to one corner).
+- [agent_sft_gold_eval.md](agent_sft_gold_eval.md): gold v2 scoring of the fine-tuned agent, fixed before the run (frame-disjoint 226 photos as the primary scope, nine-cell position on 133 located defects, constant-center baseline); one Colab execution trains the human-box run and scores gold. Prepared 2026-11-17, not run.
 - [sft_train_location_annotation.md](sft_train_location_annotation.md): manual defect boxes for the 300 anomalous SFT training photos (done 2026-11-16) and for 60 added polymer corrosion photos (CPU Colab, 40 of 60 done on 2026-11-16).
 
 ## Vision-expert cues (paper §4)

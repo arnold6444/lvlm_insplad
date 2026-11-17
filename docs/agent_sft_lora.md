@@ -68,7 +68,7 @@ AgentIAD reports the same pattern: tools help only after SFT/RL. This step teach
 - **Caveats:**
   - dev240 has been explored repeatedly. It has no spatial GT, so Q3 is scored on presence only.
   - A gain here is a dev result, not a generalisation claim.
-- **Not done:** GRPO, gold evaluation, and a new holdout.
+- **Not done:** GRPO and a new holdout. Gold scoring is prepared but not run: [agent_sft_gold_eval.md](agent_sft_gold_eval.md).
 
 ## Result (2026-11-16, L4, dev240, run `sft_v1`)
 
@@ -124,3 +124,6 @@ the dev240 evaluation are the same.
   `sft_v1` cannot be assigned to one of them. dev240 has location GT for 24 photos only, so location accuracy is not
   measured here. A crop is requested exactly when the photo is anomalous in the training data, so this run cannot
   show that the crop tool adds accuracy; what it can show is whether the agent points at the defect.
+- One execution for everything (2026-11-17): `notebooks/lvlm_agent_sft_lora_human_boxes_gold_colab.ipynb` trains
+  this run and then scores gold v2 and dev240 under [agent_sft_gold_eval.md](agent_sft_gold_eval.md). Its dev240
+  step runs `direct_reference` and `adaptive_tools` only (`--policies`), not the four conditions of `sft_v1`.

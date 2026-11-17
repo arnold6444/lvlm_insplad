@@ -13,14 +13,19 @@ import subprocess
 import sys
 import textwrap
 import zipfile
+import zlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_agent_tool_pilot_notebook as pilot_nb  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 cell = pilot_nb.cell
+GOLD = "sft_v2_human_gold"         # the human-box run plus gold scoring in the same single execution
 NOTEBOOKS = {"sft_v1": "notebooks/lvlm_agent_sft_lora_colab.ipynb",
-             "sft_v2_human": "notebooks/lvlm_agent_sft_lora_human_boxes_colab.ipynb"}
+             "sft_v2_human": "notebooks/lvlm_agent_sft_lora_human_boxes_colab.ipynb",
+             GOLD: "notebooks/lvlm_agent_sft_lora_human_boxes_gold_colab.ipynb"}
+# The frozen 133-photo location set is embedded in the notebook, so gold scoring needs no extra Drive file.
+LOC_QA = "results/latest/gold_v2_loc_mmad/localization_mmad_qa_133.jsonl"
 # Drive folders written by the two box-label Colabs, and the photos each must hold.
 LABEL_RUNS = {"sft_train_location_annotation_sft_v1": 300, "sft_train_location_annotation_sft_v2_polymer": 60}
 # annotations.json of the 300 boxes checked on 2026-11-16; a different file only warns, the builder re-checks every box.
@@ -146,13 +151,210 @@ HUMAN_REPORT = '''
     print("평가 완료" if VERIFIED else "미완료(진단용)", "ZIP:", archive)
     '''
 
+GPU_GATE = '''
+    # GPU를 Drive·pip보다 먼저 확인합니다. 런타임이 잘못 잡혔으면 몇 초 만에 멈추고, 지금 연결된 GPU를 알려 줍니다.
+    try:
+        probe = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+                               capture_output=True, text=True)
+        GPU_NOW = probe.stdout.strip().splitlines()[0] if probe.returncode == 0 and probe.stdout.strip() else ""
+    except OSError:
+        GPU_NOW = ""
+    GPU_NOW = GPU_NOW or "GPU 없음(CPU 런타임)"
+    found = re.search(r"(\\d+) MiB", GPU_NOW)
+    if not found or int(found.group(1)) < 20 * 1024:
+        raise RuntimeError(f"지금 연결된 GPU: {GPU_NOW}. VRAM 20 GiB 이상인 L4 또는 A100이 필요합니다(양자화로 우회하지 않음). "
+                           "런타임 > 런타임 유형 변경에서 L4를 고르고 저장한 다음, 런타임 > 런타임 연결 해제 및 삭제를 누르고 "
+                           "다시 모두 실행하세요. L4를 골랐는데도 T4나 GPU 없음으로 나오면 컴퓨팅 단위가 남아 있는지 확인하세요.")
+    print("GPU:", GPU_NOW)
+    '''
+
+GOLD_INTRO = """
+    # 도구 선택 에이전트 LoRA SFT 2차 + 시험(gold) 채점 — 한 번에 실행
+    **L4 또는 A100(20 GiB 이상) GPU**에서 **모두 실행**을 한 번 누르면 학습부터 시험 채점까지 끝납니다. 4bit 양자화는 쓰지 않습니다(BF16).
+
+    순서: ① GPU·박스 표시·시험 입력 확인 → ② 학습 데이터 만들기 → ③ Qwen3.5-4B LoRA 학습 → ④ 시험(gold) 채점: 2차 모델 → ⑤ 시험 채점: 학습 전 모델 → ⑥ dev240 평가: 2차 모델 → ⑦ 시험 채점: 1차 모델 → ⑧ 표와 결과 ZIP.
+
+    - 중요한 것부터 돌립니다. 중간에 끊겨도 끝난 단계의 결과는 Drive에 남고, 같은 노트북을 다시 **모두 실행**하면 이어서 합니다.
+    - 첫 셀이 몇 초 안에 GPU를 확인합니다. L4가 아니면 지금 잡힌 GPU 이름을 알려 주고 멈춥니다.
+    - 학습을 시작하기 전에 시험 채점에 쓸 파일을 끝까지 점검합니다. 문제가 있으면 학습 시간을 쓰기 전에 멈춥니다.
+    - 시험 채점 규칙은 실행 전에 고정했습니다(`docs/agent_sft_gold_eval.md`). gold로 설정을 고르지 않고, 돌린 조건은 전부 보고합니다.
+      - 주 결과: 2차 모델, 한 번에 답 조건, 학습 사진과 같은 드론 사진을 뺀 gold 사진.
+      - 위치: 사람 박스가 있는 결함 133장에서 답한 칸이 맞는지 채점하고, "늘 가운데"라고 답한 경우와 비교합니다.
+    - 2차 학습이 1차와 다른 점: 확대 박스와 위치 답을 **사람이 그린 박스**에서 가져오고, polymer 절연체 녹 사진 60장을 학습에 넣습니다.
+    - 설정 셀의 `RUN_GOLD_BASE`, `RUN_DEV240`, `RUN_GOLD_SFT_V1`을 `False`로 바꾸면 그 단계를 건너뜁니다. 건너뛴 단계는 표에 없습니다.
+
+    예상 시간(L4, 1차 실측에서 어림한 값이고 아직 재지 않았습니다): 학습 6~7시간, 시험 채점 2차 모델 1.5시간, 학습 전 모델 1시간 이내, dev240 1.5시간, 시험 채점 1차 모델 1.5시간. 합계 12시간 안팎입니다. 결과 ZIP은 Drive의 `lvlm_insplad_results`에도 저장됩니다.
+    """
+
+GOLD_PREP = '''
+    # 시험(gold) 채점 입력을 학습 전에 준비합니다: FROZEN gold QA, 위치 정답 133장(이 노트북에 들어 있음), 정상 참조.
+    import base64, zlib
+    GOLD_QA_DIR = DRIVE / GOLD_QA_FOLDER
+    gold_summary = json.loads((GOLD_QA_DIR / "build_summary.json").read_text(encoding="utf-8"))
+    if gold_summary.get("quality_status") != "FROZEN" or gold_summary.get("final_master_images") != 246:
+        raise RuntimeError(f"FROZEN gold 246장 QA가 필요합니다: {GOLD_QA_DIR}")
+    GOLD_MASTER = sorted(GOLD_QA_DIR.glob("master_qa_*.jsonl"))[-1]
+    GOLD_ROOT = RESULTS / f"agent_sft_gold_{RUN_TAG}"
+    (GOLD_ROOT / "inputs").mkdir(parents=True, exist_ok=True)
+    LOC_QA = GOLD_ROOT / "inputs/localization_mmad_qa_133.jsonl"
+    loc_bytes = zlib.decompress(base64.b64decode(LOC_QA_B64))
+    if hashlib.sha256(loc_bytes).hexdigest() != LOC_QA_SHA256:
+        raise RuntimeError("노트북에 들어 있는 위치 정답 파일이 손상됐습니다. 노트북을 다시 받으세요.")
+    if not LOC_QA.is_file() or LOC_QA.read_bytes() != loc_bytes:
+        LOC_QA.write_bytes(loc_bytes)
+    gold_images = {json.loads(line)["image"] for line in GOLD_MASTER.read_text(encoding="utf-8").splitlines() if line.strip()}
+    def covers_gold(path):
+        if not path.is_file():
+            return False
+        with path.open(encoding="utf-8-sig", newline="") as stream:
+            found = {r["image"]: r.get("retrieved_diffdate") for r in csv.DictReader(stream)}
+        return all(found.get(image) for image in gold_images)
+    GOLD_REFS = next((p for p in (RESULTS / "gold_v2_matched_call_v1/refs_gold/retrieved_refs.csv",
+                                  RESULTS / "gold_v2_main_rerun/refs_gold/retrieved_refs.csv",
+                                  GOLD_ROOT / "inputs/refs_gold/retrieved_refs.csv") if covers_gold(p)), None)
+    if GOLD_REFS is None:
+        run([sys.executable, REPO_DIR / "scripts/build_retrieved_refs.py", "--qa", GOLD_MASTER, "--sup-zip", SUP_ZIP,
+             "--unsup-zip", UNSUP_ZIP, "--out-dir", GOLD_ROOT / "inputs/refs_gold", "--device", "cuda"])
+        GOLD_REFS = GOLD_ROOT / "inputs/refs_gold/retrieved_refs.csv"
+    V1_ADAPTER = RESULTS / "agent_sft_lora_qwen3_5_4b_sft_v1/adapter"
+    V1_TRAIN_QA = RESULTS / f"agent_sft_data_pc{PER_CLASS}_sft_v1/sft_train_qa.jsonl"
+    HAS_V1 = (V1_ADAPTER / "adapter_model.safetensors").is_file() and (V1_ADAPTER / "adapter_config.json").is_file()
+    GOLD_RUNS = {"gold_lora": GOLD_ROOT / f"agent_sft_gold_eval_lora_{RUN_TAG}",
+                 "gold_base": GOLD_ROOT / "agent_sft_gold_eval_base",
+                 "gold_v1": GOLD_ROOT / "agent_sft_gold_eval_lora_sft_v1"}
+    print("gold 참조:", GOLD_REFS)
+    print("1차 모델:", "있음" if HAS_V1 else "Drive에 없음. 1차 모델 시험 채점은 건너뜁니다.")
+    '''
+
+GOLD_CHECK = '''
+    # 학습을 시작하기 전에 시험 채점 입력을 끝까지 점검합니다(모델 호출 없음). 여기서 멈추면 학습 시간을 쓰지 않습니다.
+    TRAIN_QAS = [DATA_DIR / "sft_train_qa.jsonl"] + ([V1_TRAIN_QA] if V1_TRAIN_QA.is_file() else [])
+    GOLD_COMMON = ["--qa-dir", GOLD_QA_DIR, "--loc-qa", LOC_QA, "--refs-csv", GOLD_REFS, "--sup-zip", SUP_ZIP,
+                   "--unsup-zip", UNSUP_ZIP, "--train-qa", *TRAIN_QAS, "--max-calls", 3]
+    GOLD_RUNNER = [sys.executable, REPO_DIR / "scripts/run_agent_sft_gold_eval.py", *GOLD_COMMON]
+    run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_lora"], "--inputs-only"])
+    '''
+
+GOLD_MAIN = '''
+    #@title 4. 시험(gold) 채점 — 2차 모델 (주 결과)
+    verify_code()
+    EXIT_CODES = globals().get("EXIT_CODES", {})
+    EXIT_CODES["gold_lora"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_lora"],
+                                   "--adapter-dir", TRAIN_DIR / "adapter"], check=False)
+    print(EXIT_CODES)
+    '''
+
+GOLD_BASE = '''
+    #@title 5. 시험(gold) 채점 — 학습 전 모델
+    verify_code()
+    if RUN_GOLD_BASE:
+        EXIT_CODES["gold_base"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_base"]], check=False)
+    else:
+        print("학습 전 모델 시험 채점은 건너뜁니다.")
+    print(EXIT_CODES)
+    '''
+
+GOLD_DEV = '''
+    #@title 6. dev240 평가 — 2차 모델 (한 번에 답, 도구 선택)
+    verify_code()
+    if RUN_DEV240:
+        EXIT_CODES["dev_lora"] = run([sys.executable, REPO_DIR / "scripts/run_agent_tool_pilot.py", "--dev-qa", DEV_QA,
+                                      "--refs-csv", REFS_CSV, "--sup-zip", SUP_ZIP, "--unsup-zip", UNSUP_ZIP,
+                                      "--model", "qwen3_5_4b", "--n-images", N_IMAGES, "--max-calls", 3,
+                                      "--policies", "direct_reference", "adaptive_tools",
+                                      "--out-dir", SFT_RUN, "--adapter-dir", TRAIN_DIR / "adapter"], check=False)
+    else:
+        print("dev240 평가는 건너뜁니다.")
+    print(EXIT_CODES)
+    '''
+
+GOLD_V1 = '''
+    #@title 7. 시험(gold) 채점 — 1차 모델 (Drive에 있을 때만)
+    verify_code()
+    if RUN_GOLD_SFT_V1 and HAS_V1:
+        EXIT_CODES["gold_v1"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_v1"], "--adapter-dir", V1_ADAPTER],
+                                    check=False)
+    else:
+        print("1차 모델 시험 채점은 건너뜁니다.")
+    print(EXIT_CODES)
+    '''
+
+GOLD_REPORT = '''
+    #@title 8. 표와 결과 ZIP
+    import pandas as pd
+    from google.colab import files
+    def receipt(root, name):
+        p = root / name
+        return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+    RUN_DIRS = {**GOLD_RUNS, "dev_lora": SFT_RUN}
+    TRAINED = {"gold_lora": True, "gold_base": False, "gold_v1": True, "dev_lora": True}
+    VERIFIED = {}
+    for key, root in RUN_DIRS.items():
+        if key not in EXIT_CODES:
+            print(key, "건너뜀")
+            continue
+        status, meta = receipt(root, "run_status.json"), receipt(root, "run_metadata.json")
+        VERIFIED[key] = bool(EXIT_CODES[key] == 0 and status.get("complete") and meta.get("execution") == "real_hf"
+                             and status.get("run_id") == meta.get("run_id")
+                             and meta.get("benchmark_commit") == EXECUTION_COMMIT and meta.get("training") is TRAINED[key])
+        print(key, "완료 확인" if VERIFIED[key] else "실행 오류 또는 완료 미확인", json.dumps(status, ensure_ascii=False))
+    def boards(pairs):
+        found = []
+        for label, root in pairs:
+            board = root / "leaderboard.csv"
+            if board.is_file() and board.stat().st_size:
+                found.append(pd.read_csv(board).assign(model=label))
+        return pd.concat(found) if found else None
+    NAMES = {"gold_lora": f"lora {RUN_TAG} (사람 박스)", "gold_base": "학습 전", "gold_v1": "lora sft_v1 (자동 박스)"}
+    table = boards((NAMES[key], root) for key, root in GOLD_RUNS.items())
+    if table is not None:
+        cols = ["model", "subset", "policy", "images", "q1_anomaly_f1", "q1_balanced_accuracy", "q2_defect_macro_f1",
+                "joint_accuracy", "q3_presence_balanced_accuracy", "q3_position_hit", "q3_anomalous_location_labels",
+                "q3_always_center_hit", "q1_q2_q3_location_joint", "q3_crop_covers_defect", "q3_crops_on_located",
+                "center60_covers_defect", "crop_distinct_boxes", "invalid_episodes", "calls"]
+        print("시험(gold) 결과. 주 결과는 subset=frame_disjoint(학습 사진과 같은 드론 사진을 뺀 사진), 2차 모델, direct_reference 행입니다.")
+        display(table[[c for c in cols if c in table]])
+    table = boards(((NAMES["gold_lora"], SFT_RUN), *PREVIOUS.items()))
+    if table is not None:
+        cols = ["model", "policy", "q1_balanced_accuracy", "q2_defect_macro_f1", "q2_invalid_rate", "joint_accuracy",
+                "false_defect_rate", "q3_presence_balanced_accuracy", "q3_normal_false_region_rate", "invalid_episodes", "calls"]
+        print("dev240 결과. 지난 실행의 행은 Drive에 남은 결과를 읽은 것입니다(이번에 다시 돌리지 않음).")
+        display(table[[c for c in cols if c in table]])
+    train_meta = receipt(TRAIN_DIR, "train_metadata.json")
+    print("학습:", {k: train_meta.get(k) for k in ("optimizer_steps", "val_loss_before", "val_loss_after")})
+    summary = RESULTS / f"agent_sft_{RUN_TAG}_gold_execution.json"
+    summary.write_text(json.dumps(dict(
+        exit_codes=EXIT_CODES, verified=VERIFIED, execution_commit=EXECUTION_COMMIT, gold_refs=str(GOLD_REFS),
+        train_qa=[str(p) for p in TRAIN_QAS], sft_v1_adapter_found=HAS_V1), indent=2, ensure_ascii=False), encoding="utf-8")
+    archive = RESULTS / f"agent_sft_{RUN_TAG}_gold_results.zip"
+    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
+        z.write(summary, "notebook_execution.json")
+        z.write(GOLD_REFS, "gold_inputs/retrieved_refs.csv")
+        for folder in LABEL_DIRS:                      # the exact label files this run trained on
+            for name in ("manifest.json", "annotations.json"):
+                z.write(folder / name, f"labels/{folder.name}/{name}")
+        for label, root in (("data", DATA_DIR), ("train", TRAIN_DIR), *RUN_DIRS.items()):
+            if not root.is_dir():
+                continue
+            for p in sorted(root.rglob("*")):
+                rel = p.relative_to(root)
+                private = any(part.startswith("_") for part in rel.parts) or rel.parts[0] == "checkpoint"
+                if p.is_file() and not private and p.suffix != ".safetensors":
+                    z.write(p, f"{label}/{rel.as_posix()}")
+    print("결과 ZIP은 Drive에 저장됐습니다:", archive)
+    print("모두 완료" if VERIFIED and all(VERIFIED.values()) else "일부 미완료 또는 건너뜀(위 목록 확인)")
+    files.download(str(archive))
+    '''
+
 
 def build(execution_commit, variant="sft_v1"):
     if not re.fullmatch(r"[0-9a-f]{40}", execution_commit):
         raise ValueError("execution commit must be a full immutable SHA")
     if variant not in NOTEBOOKS:
         raise ValueError(f"unknown variant {variant}")
-    human = variant == "sft_v2_human"
+    gold = variant == GOLD
+    human = gold or variant == "sft_v2_human"
+    run_tag = "sft_v2_human" if gold else variant       # the gold notebook is the same training run, scored further
     bundle = pilot_nb.source_bundle(execution_commit)
     with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
         names = set(json.loads(archive.read(".agent_pilot_source.json"))["files"])
@@ -163,6 +365,19 @@ def build(execution_commit, variant="sft_v1"):
             ["git", "show", f"{execution_commit}:scripts/build_agent_sft_data.py"], cwd=ROOT):
         raise ValueError("source commit lacks the human-box data builder")
     labels = f"LABEL_RUNS = {json.dumps(LABEL_RUNS)}\n        FIRST_LABELS_SHA256 = \"{FIRST_LABELS_SHA256}\"" if human else ""
+    if gold:
+        if "scripts/run_agent_sft_gold_eval.py" not in names or b'"--policies"' not in subprocess.check_output(
+                ["git", "show", f"{execution_commit}:scripts/run_agent_tool_pilot.py"], cwd=ROOT):
+            raise ValueError("source commit lacks the gold runner or the pilot runner's --policies option")
+        loc = subprocess.check_output(["git", "show", f"{execution_commit}:{LOC_QA}"], cwd=ROOT)
+        gap = "\n        "                              # the settings cell is indented eight spaces before dedent
+        labels += gap + gap.join((
+            'GOLD_QA_FOLDER = "lvlm_insplad_qa/gold_v2_final"',
+            f'LOC_QA_SHA256 = "{hashlib.sha256(loc).hexdigest()}"',
+            f'LOC_QA_B64 = "{base64.b64encode(zlib.compress(loc, 9)).decode("ascii")}"',
+            "RUN_GOLD_BASE = True      # 학습 전 모델의 시험 채점",
+            "RUN_DEV240 = True         # 2차 모델의 dev240 평가",
+            "RUN_GOLD_SFT_V1 = True    # Drive에 1차 어댑터가 있으면 1차 모델의 시험 채점"))
     encoded = base64.b64encode(bundle).decode("ascii")
     cells = [cell("markdown", """
         # 도구 선택 에이전트 LoRA SFT — 한 번에 실행
@@ -185,7 +400,7 @@ def build(execution_commit, variant="sft_v1"):
         PER_CLASS = 60
         EPOCHS = 1
         LEARNING_RATE = 1e-4
-        RUN_TAG = "{variant}"
+        RUN_TAG = "{run_tag}"
         DEV_FOLDER = "lvlm_insplad_qa/gold_v2_dev"
         SUP_ZIP_PATH = ""  # 자동 탐색이 모호할 때만 Drive의 절대 경로 입력
         UNSUP_ZIP_PATH = ""
@@ -209,6 +424,7 @@ def build(execution_commit, variant="sft_v1"):
 
         if N_IMAGES != 240 or not re.fullmatch(r"[A-Za-z0-9_-]+", RUN_TAG):
             raise ValueError("240장 평가 설정을 유지하세요.")
+        ''') + textwrap.dedent(GPU_GATE) + textwrap.dedent('''
         drive.mount("/content/drive", force_remount=False)
         DRIVE = Path("/content/drive/MyDrive")
         REPO_DIR = Path("/content/insplad_agent_sft_once")
@@ -224,7 +440,9 @@ def build(execution_commit, variant="sft_v1"):
             raise RuntimeError("torchao를 제거하지 못했습니다. 런타임을 다시 시작한 뒤 모두 실행하세요.")
         import torch
         if not torch.cuda.is_available() or torch.cuda.get_device_properties(0).total_memory < 20 * 1024**3:
-            raise RuntimeError("VRAM 20 GiB 이상 L4/A100 GPU를 선택하세요. 양자화로 우회하지 않습니다.")
+            raise RuntimeError(f"torch가 GPU를 쓰지 못합니다(nvidia-smi: {GPU_NOW}, torch {torch.__version__}, "
+                               f"CUDA 사용 가능: {torch.cuda.is_available()}). VRAM 20 GiB 이상 L4/A100이 필요하고 "
+                               "양자화로 우회하지 않습니다. 런타임을 다시 시작한 뒤 모두 실행하세요.")
         print("GPU:", torch.cuda.get_device_name(0), "source:", EXECUTION_COMMIT)
         DEV_DIR = DRIVE / DEV_FOLDER
         summary = json.loads((DEV_DIR / "build_summary.json").read_text(encoding="utf-8"))
@@ -265,7 +483,8 @@ def build(execution_commit, variant="sft_v1"):
         BASE_RUN = RESULTS / f"agent_tool_pilot_dev{N_IMAGES}_qwen3_5_4b_base_{RUN_TAG}"
         SFT_RUN = RESULTS / f"agent_tool_pilot_dev{N_IMAGES}_qwen3_5_4b_lora_{RUN_TAG}"
         print("학습 데이터:", DATA_DIR, "\\n어댑터:", TRAIN_DIR, "\\n평가:", BASE_RUN, SFT_RUN)
-        ''') + (textwrap.dedent(HUMAN_CHECK) if human else "")), cell("code", '''
+        ''') + (textwrap.dedent(HUMAN_CHECK) if human else "")
+            + (textwrap.dedent(GOLD_PREP) if gold else "")), cell("code", '''
         #@title 2. 학습 데이터 만들기 (자동 박스·궤적)
         verify_code()
         run([sys.executable, REPO_DIR / "scripts/build_agent_sft_data.py", "--dev-qa", DEV_QA,
@@ -334,11 +553,14 @@ def build(execution_commit, variant="sft_v1"):
         print("비교 완료" if all(verdicts.values()) else "일부 미완료(진단용)", "ZIP:", archive)
         ''')]
     if human:
-        cells = [cell("markdown", HUMAN_INTRO), cells[1], cells[2], cell("code", HUMAN_DATA), cells[4],
-                 cell("code", HUMAN_EVAL), cell("code", HUMAN_REPORT)]
+        tail = (GOLD_MAIN, GOLD_BASE, GOLD_DEV, GOLD_V1, GOLD_REPORT) if gold else (HUMAN_EVAL, HUMAN_REPORT)
+        cells = [cell("markdown", GOLD_INTRO if gold else HUMAN_INTRO), cells[1], cells[2],
+                 cell("code", textwrap.dedent(HUMAN_DATA) + (textwrap.dedent(GOLD_CHECK) if gold else "")), cells[4],
+                 *(cell("code", source) for source in tail)]
     cells[1]["metadata"]["cellView"] = "form"
     return dict(cells=cells, metadata=dict(kernelspec=dict(display_name="Python 3", name="python3"),
-                                          language_info=dict(name="python"), accelerator="GPU", colab=dict(provenance=[])),
+                                          language_info=dict(name="python"), accelerator="GPU",
+                                          colab=dict(provenance=[], gpuType="L4")),
                 nbformat=4, nbformat_minor=5)
 
 
