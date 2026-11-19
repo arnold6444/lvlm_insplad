@@ -54,14 +54,37 @@ Runner: `scripts/run_agent_sft_gold_eval.py` (protocol `agent_sft_gold_eval_v1`)
 | Order | Model | Why |
 |---|---|---|
 | 1 | LoRA `sft_v2_human` (human boxes, polymer added) | **primary** |
-| 2 | Qwen3.5-4B before training | same prompts, no training |
-| 3 | dev240, LoRA `sft_v2_human`, the same two conditions, in a new folder | the dev row the paper's dev table lacks |
-| 4 | LoRA `sft_v1` (automatic boxes), only if its adapter is on Drive | what the human boxes and polymer photos add |
-| 5 | LoRA `sft_v2_human`, the two controls | needed only if tool use looks better than the single call |
+| 2 | Small classifier on the same labels (next section) | what the labels give without an LVLM; short |
+| 3 | Qwen3.5-4B before training | same prompts, no training |
+| 4 | dev240, LoRA `sft_v2_human`, the same two conditions, in a new folder | the dev row the paper's dev table lacks |
+| 5 | LoRA `sft_v1` (automatic boxes), only if its adapter is on Drive | what the human boxes and polymer photos add |
+| 6 | LoRA `sft_v2_human`, the two controls | needed only if tool use looks better than the single call |
 
 The interrupted four-condition dev240 run cannot be resumed by this runner (a run is bound to its source), so it
 is left untouched and its saved answers go into the result ZIP as `dev_lora_earlier_four_condition_run/`.
 Dev240 gets no controls for the second model: it has no location labels, so the tool question is decided on gold.
+
+## Small supervised baseline on the same labels (added 2026-11-19, user decision, before any gold call)
+
+Runner: `scripts/run_sft_label_classifier_baseline.py` (protocol `sft_label_classifier_baseline_v1`). It answers the
+question the fine-tuning section otherwise leaves open: what do the same few hundred labels give a small dedicated
+classifier?
+
+- **Training.** The 660 photos and labels of the second run's `sft_train_qa.jsonl`, nothing else. The class is the
+  photo's Q2 answer (normal, rust, bird nest, missing cap); polymer `corrosão` photos carry the rust answer, as
+  they do for the LoRA run.
+- **Model.** Frozen DINOv2 CLS features (the encoder the reference search already uses) and
+  `StandardScaler` + `LogisticRegression(max_iter=5000)`, scikit-learn defaults otherwise. One fit. No setting is
+  tried against gold or dev240.
+- **Scoring.** Gold v2 on both scopes and dev240, Q1 and Q2 only, with the agent runs' functions and invalid-output
+  policy. Q1 is "anomalous" when the predicted class is not normal, so Q1 and Q2 cannot contradict each other.
+  The runner is given the gold runner's training lists, so the frame-disjoint photos are the same 226.
+- **What it is not.** It sees the target photo only (no reference photo, no asset name), and it gives no location.
+  A higher Q1/Q2 score than the LoRA row would say that these labels are better spent on a classifier for
+  detection and typing; it would say nothing about location or about answering in text.
+- **Kept for later.** `features.npz` holds every feature (660 training, 246 gold, 240 dev), so another small
+  classifier needs no GPU. Any such later variant is exploratory and is reported as such.
+- It runs right after the primary model (about 15 minutes), because it is short and Colab cannot be run again.
 
 ## Scopes
 
@@ -114,6 +137,7 @@ Written before the run. No threshold is set for "keeps its score"; the gold numb
 | Choosing the crop helps | `adaptive_tools` minus `fixed_evidence` has a 95% CI above zero on that metric |
 | The crop points at the defect | the Q3 crop covers a box centre more often than the fixed center-60% box (90 of 119) |
 | Human boxes and polymer photos help | stated as a difference between two runs that changed three things at once, never as one cause |
+| Fine-tuning an LVLM beats a small classifier on these labels (Q1/Q2) | the LoRA row is above the `dinov2_linear` row on the primary scope; otherwise the paper says the classifier matches or beats it on detection and typing |
 
 If position does not beat "center", the paper says location is unsolved. If the gold scores are far below dev240,
 the paper says the dev240 scores reflected photos close to the training set.
@@ -125,10 +149,10 @@ the paper says the dev240 scores reflected photos close to the training set.
   photos. Frame-disjoint removes shared drone frames, not shared dates or towers.
 - The prompts and the retrieved reference differ from the paper's gold tables, so these rows are comparable with
   each other and with dev240, not with the baseline tables.
-- No small supervised classifier is trained on the same labels, so nothing here shows that an LVLM is the better
-  use of the labels.
+- The small classifier is one feature model and one linear classifier. It bounds the question from one side only:
+  a tuned or fine-tuned vision model could do better than it.
 - Estimated time on an L4 (from the first run's speed, not measured): gold about 4 h in total, dev240 1.5 h,
-  the controls 1 h, and 6-7 h more only if training has to run.
+  the controls 1 h, the small classifier 15 min, and 6-7 h more only if training has to run.
 
 ## Safeguards for a single execution
 
@@ -168,6 +192,7 @@ Everything is also in `agent_sft_sft_v2_human_gold_results.zip` on Drive.
 | Training description | everything in the training folder except checkpoints and weights (`train/train_metadata.json`, the step log if Drive has it), `data/build_summary.json`, `labels/*/annotations.json` |
 | Reproducibility | `*/run_metadata.json` (model revision, adapter hashes, source commit, GPU), `logs/pip_freeze.txt`, `logs/nvidia_smi.txt`, `gold_inputs/refs_gold/` |
 | Figures | `gold_inputs/preview/`: the 246 gold photos at 640 px with `index.csv` (name, original size) |
+| Any other small classifier | `classifier/features.npz` and `feature_index.csv`: DINOv2 features of the training, gold and dev240 photos |
 | Diagnosing a failed step | `logs/run_*.log` |
 
 Not in the ZIP and not recoverable without a GPU: conditions or models that were not run, token probabilities

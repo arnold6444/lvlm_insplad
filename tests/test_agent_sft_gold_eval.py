@@ -347,7 +347,7 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
             out.mkdir(parents=True)
             shutil.copy(work / "refs.csv", out / "retrieved_refs.csv")
             return 0
-        if script == "run_agent_tool_pilot.py":
+        if script in ("run_agent_tool_pilot.py", "run_sft_label_classifier_baseline.py"):
             return 0
         assert script == "run_agent_sft_gold_eval.py"
         return gold.main(command[2:], loader=lambda spec: {}, infer=backend([]))
@@ -364,7 +364,7 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
                  REPO_DIR=ROOT, SUP_ZIP=work / "sup.zip", UNSUP_ZIP=work / "unsup.zip", DATA_DIR=data_dir,
                  TRAIN_DIR=train_dir, SFT_RUN=results / "agent_tool_pilot_dev240_qwen3_5_4b_lora_sft_v2_human",
                  DEV_QA=work / "dev.jsonl", REFS_CSV=work / "dev_refs.csv", RUN_GOLD_BASE=True, RUN_DEV240=True,
-                 RUN_GOLD_SFT_V1=True, RUN_GOLD_CONTROLS=True, run=run_command, verify_code=lambda: None,
+                 RUN_GOLD_SFT_V1=True, RUN_GOLD_CONTROLS=True, RUN_CLASSIFIER_BASELINE=True, run=run_command, verify_code=lambda: None,
                  EXECUTION_COMMIT="c" * 40, GPU_NOW="NVIDIA L4, 23034 MiB", LABEL_DIRS=label_dirs, subprocess=snapshot,
                  sys=sys, json=json, csv=csv, hashlib=hashlib, zipfile=zipfile)
     exec(textwrap.dedent(builder.GOLD_PREP), scope)
@@ -384,16 +384,26 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
     assert not (gold_root / "agent_sft_gold_eval_input_check").exists()
     report = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert (report["images"], report["frame_disjoint"], report["located"]) == (8, 6, dict(frame_disjoint=2, all=3))
-    for source in (builder.GOLD_MAIN, builder.GOLD_BASE, builder.GOLD_DEV, builder.GOLD_V1, builder.GOLD_CONTROLS):
+    for source in (builder.GOLD_MAIN, builder.GOLD_CLASSIFIER, builder.GOLD_BASE, builder.GOLD_DEV, builder.GOLD_V1,
+                   builder.GOLD_CONTROLS):
         exec(textwrap.dedent(source), scope)
     # No first-run adapter on this Drive, so that step is absent; the controls run last, in the main model's folder.
-    assert scope["EXIT_CODES"] == dict(gold_lora=0, gold_base=0, dev_lora=0, gold_controls=0)
+    assert scope["EXIT_CODES"] == dict(gold_lora=0, classifier=0, gold_base=0, dev_lora=0, gold_controls=0)
     ran = [(Path(c[1]).name, "--adapter-dir" in c, "--controls" in c) for c in commands[2:] if "--inputs-only" not in c]
-    assert ran == [("run_agent_sft_gold_eval.py", True, False), ("run_agent_sft_gold_eval.py", False, False),
-                   ("run_agent_tool_pilot.py", True, False), ("run_agent_sft_gold_eval.py", True, True)]
+    assert ran == [("run_agent_sft_gold_eval.py", True, False), ("run_sft_label_classifier_baseline.py", False, False),
+                   ("run_agent_sft_gold_eval.py", False, False), ("run_agent_tool_pilot.py", True, False),
+                   ("run_agent_sft_gold_eval.py", True, True)]
     checks = [c for c in commands[2:] if "--inputs-only" in c]
     real = [c for c in commands[2:] if "--inputs-only" not in c and Path(c[1]).name == "run_agent_sft_gold_eval.py"]
     assert len(checks) == 3 and [c[:-1] for c in checks] == real              # each gold step first asks: resumable?
+    small = next(c for c in commands if Path(c[1]).name == "run_sft_label_classifier_baseline.py")
+    option = {c: small[small.index(c) + 1] for c in ("--train-qa", "--overlap-train-qa", "--qa-dir", "--dev-qa", "--out-dir")}
+    # It trains on the second run's photos, and is told the same training lists as the gold runner: same 226 photos.
+    assert option["--train-qa"] == option["--overlap-train-qa"] == str(data_dir / "sft_train_qa.jsonl")
+    assert option["--out-dir"] == str(gold_root / "sft_label_classifier_baseline") == str(scope["CLASSIFIER_RUN"])
+    assert option["--qa-dir"] == real[0][real[0].index("--qa-dir") + 1] and option["--dev-qa"] == str(work / "dev.jsonl")
+    lists = real[0][real[0].index("--train-qa") + 1:real[0].index("--max-calls")]
+    assert small[small.index("--overlap-train-qa") + 1:small.index("--qa-dir")] == lists
     dev = next(c for c in commands if Path(c[1]).name == "run_agent_tool_pilot.py")
     assert dev[dev.index("--policies") + 1:dev.index("--policies") + 3] == ["direct_reference", "adaptive_tools"]
     assert dev[dev.index("--out-dir") + 1] == str(scope["DEV_RUN"])
@@ -457,18 +467,19 @@ def test_gold_notebook_builds_with_the_runner_the_location_set_and_an_l4_runtime
 
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     committed = subprocess.run(["git", "show", f"{commit}:scripts/run_agent_sft_gold_eval.py"], cwd=ROOT, capture_output=True)
-    if committed.returncode or b'"--controls"' not in committed.stdout:
+    small = subprocess.run(["git", "cat-file", "-e", f"{commit}:scripts/run_sft_label_classifier_baseline.py"], cwd=ROOT)
+    if committed.returncode or b'"--controls"' not in committed.stdout or small.returncode:
         with pytest.raises(ValueError, match="lacks the gold runner"):
             builder.build(commit, builder.GOLD)
-        pytest.skip("HEAD predates the gold runner or its controls step; commit before building the notebook")
+        pytest.skip("HEAD predates the gold runner, its controls step or the classifier baseline; commit first")
     notebook = builder.build(commit, builder.GOLD)
     code = [c["source"] for c in notebook["cells"] if c["cell_type"] == "code"]
-    assert len(code) == 10 and "시험(gold) 채점" in notebook["cells"][0]["source"]
+    assert len(code) == 11 and "시험(gold) 채점" in notebook["cells"][0]["source"]
     assert notebook["metadata"]["colab"]["gpuType"] == "L4" and notebook["metadata"]["accelerator"] == "GPU"
     config = {}
     exec(code[0], config)
     assert config["RUN_TAG"] == "sft_v2_human" and config["RUN_GOLD_BASE"] and config["RUN_DEV240"] and config["RUN_GOLD_SFT_V1"]
-    assert config["RUN_GOLD_CONTROLS"] is True
+    assert config["RUN_GOLD_CONTROLS"] is True and config["RUN_CLASSIFIER_BASELINE"] is True
     for source in code:
         compile(source, "cell", "exec")                        # every cell is valid Python as written into the notebook
     loc = subprocess.check_output(["git", "show", f"{commit}:{builder.LOC_QA}"], cwd=ROOT)
@@ -477,21 +488,24 @@ def test_gold_notebook_builds_with_the_runner_the_location_set_and_an_l4_runtime
     assert code[1].index("지금 연결된 GPU") < code[1].index("drive.mount") < code[1].index('"pip", "install"')
     assert code[1].index("LABEL_DIRS = ") < code[1].index("GOLD_QA_DIR = ")
     assert '"--inputs-only"' in code[2] and "train_agent_sft_lora.py" in code[3]      # inputs are checked before training
-    order = [("gold_lora", 4), ("gold_base", 5), ("dev_lora", 6), ("gold_v1", 7), ("gold_controls", 8)]
+    order = [("gold_lora", 4), ("classifier", 5), ("gold_base", 6), ("dev_lora", 7), ("gold_v1", 8), ("gold_controls", 9)]
     assert all(f'EXIT_CODES["{key}"]' in code[index] for key, index in order)
-    assert all("save_zip()" in code[index] for index in range(4, 10))      # the ZIP is rewritten after every step
-    assert '"--policies", "direct_reference", "adaptive_tools"' in code[6] and "load_in_4bit" not in "".join(code)
-    assert '"--controls"' in code[8] and 'EXIT_CODES.get("gold_lora") == 0' in code[8]
-    assert "frame_disjoint" in code[9] and 'f"labels/{folder.name}/{name}"' in code[1]
-    assert code[9].index("save_zip()") < code[9].index("import pandas") < code[9].index("flush_and_unmount")
-    assert '"--out-dir", DEV_RUN' in code[6] and "SFT_RUN" not in code[6]           # a fresh dev240 folder
+    assert all("save_zip()" in code[index] for index in range(4, 11))      # the ZIP is rewritten after every step
+    assert '"--policies", "direct_reference", "adaptive_tools"' in code[7] and "load_in_4bit" not in "".join(code)
+    assert '"--controls"' in code[9] and 'EXIT_CODES.get("gold_lora") == 0' in code[9]
+    assert "run_sft_label_classifier_baseline.py" in code[5] and '"--overlap-train-qa", *TRAIN_QAS' in code[5]
+    assert "frame_disjoint" in code[10] and 'f"labels/{folder.name}/{name}"' in code[1]
+    assert code[10].index("save_zip()") < code[10].index("import pandas") < code[10].index("flush_and_unmount")
+    assert '("classifier", CLASSIFIER_RUN)' in code[1] and "CLASSIFIER_RUN" in code[10]
+    assert '"--out-dir", DEV_RUN' in code[7] and "SFT_RUN" not in code[7]           # a fresh dev240 folder
     assert '("dev_lora_earlier_four_condition_run", SFT_RUN)' in code[1] and '("dev_lora", DEV_RUN)' in code[1]
     # The log hook must exist before the first command runs, and the Drive log replaces it once Drive is mounted.
     assert code[1].index("def run(command") < code[1].index("def keep_log(text):\n    pass") < code[1].index("drive.mount")
     assert code[1].count("def keep_log(text):") == 2 and code[1].index("drive.mount") < code[1].index("RUN_LOG = ")
     receipt = builder.pilot_nb.extract_source_bundle(config["SOURCE_ZIP_B64"], config["SOURCE_ZIP_SHA256"], tmp_path / "src", commit)
     assert {"scripts/run_agent_sft_gold_eval.py", "scripts/score_gold_v2_q3_position.py", "scripts/q3_multiregion.py"} <= set(receipt["files"])
-    for script, flag in (("run_agent_sft_gold_eval.py", "--controls"), ("run_agent_tool_pilot.py", "--policies")):
+    for script, flag in (("run_agent_sft_gold_eval.py", "--controls"), ("run_agent_tool_pilot.py", "--policies"),
+                         ("run_sft_label_classifier_baseline.py", "--overlap-train-qa")):
         result = subprocess.run([sys.executable, tmp_path / "src/scripts" / script, "--help"], capture_output=True, text=True)
         assert result.returncode == 0 and flag in result.stdout, result.stderr
     human = builder.build(commit, "sft_v2_human")              # the earlier notebooks keep their own cells

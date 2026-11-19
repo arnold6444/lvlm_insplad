@@ -172,24 +172,25 @@ GOLD_INTRO = """
     # 도구 선택 에이전트 LoRA SFT 2차 + 시험(gold) 채점 — 한 번에 실행
     **L4 또는 A100(20 GiB 이상) GPU**에서 **모두 실행**을 한 번 누르면 학습부터 시험 채점까지 끝납니다. 4bit 양자화는 쓰지 않습니다(BF16).
 
-    순서: ① GPU·박스 표시·시험 입력 확인 → ② 학습 데이터 만들기 → ③ Qwen3.5-4B LoRA 학습 → ④ 시험(gold) 채점: 2차 모델 → ⑤ 시험 채점: 학습 전 모델 → ⑥ dev240 평가: 2차 모델 → ⑦ 시험 채점: 1차 모델 → ⑧ 시험 채점: 2차 모델의 대조 조건 → ⑨ 표와 결과 ZIP.
+    순서: ① GPU·박스 표시·시험 입력 확인 → ② 학습 데이터 만들기 → ③ Qwen3.5-4B LoRA 학습 → ④ 시험(gold) 채점: 2차 모델 → ⑤ 작은 분류기 비교 → ⑥ 시험 채점: 학습 전 모델 → ⑦ dev240 평가: 2차 모델 → ⑧ 시험 채점: 1차 모델 → ⑨ 시험 채점: 2차 모델의 대조 조건 → ⑩ 표와 결과 ZIP.
 
     - **Drive에 이미 끝난 단계는 다시 하지 않습니다.** 2차 학습 데이터와 학습된 어댑터가 Drive에 있으면(2026-11-17 실행) ②와 ③은 몇 초 만에 지나가고 바로 채점으로 갑니다.
     - 중요한 것부터 돌립니다. 중간에 끊겨도 끝난 단계의 결과는 Drive에 남고, 같은 노트북을 다시 **모두 실행**하면 이어서 합니다.
     - **결과 ZIP은 단계가 하나 끝날 때마다 Drive에 다시 씁니다.** 끝까지 못 가도 그때까지의 ZIP이 `lvlm_insplad_results`에 있습니다. ZIP에는 모델이 낸 답 원문이 전부 들어 있어, 표에 없는 숫자도 나중에 GPU 없이 다시 계산할 수 있습니다.
     - 모든 단계의 출력은 Drive의 `agent_sft_gold_sft_v2_human/logs`에도 남습니다. 화면이 닫혀 오류 글이 사라져도 ZIP 안의 로그로 원인을 볼 수 있습니다.
-    - ⑧ 대조 조건은 "도구가 도움이 됐다"는 결과가 나올 때 필요합니다. 가운데를 늘 같은 크기로 확대해 준 경우, 도구 없이 같은 횟수만큼 다시 물은 경우와 비교합니다.
+    - ⑤ 작은 분류기 비교는 같은 학습 사진 660장과 같은 라벨로 작은 전용 분류기(DINOv2 특징 + 선형 분류기)를 학습해, 같은 시험 문제의 Q1·Q2를 풀게 합니다. "LVLM 대신 작은 분류기를 쓰면?"에 답하기 위한 것이고, 위치(Q3)는 답하지 못합니다. 설정은 고르지 않고 기본값 하나로 한 번만 학습합니다.
+    - ⑨ 대조 조건은 "도구가 도움이 됐다"는 결과가 나올 때 필요합니다. 가운데를 늘 같은 크기로 확대해 준 경우, 도구 없이 같은 횟수만큼 다시 물은 경우와 비교합니다.
     - 첫 셀이 몇 초 안에 GPU를 확인합니다. L4가 아니면 지금 잡힌 GPU 이름을 알려 주고 멈춥니다.
     - 학습을 시작하기 전에 시험 채점에 쓸 파일을 끝까지 점검합니다. 문제가 있으면 학습 시간을 쓰기 전에 멈춥니다.
     - 시험 채점 규칙은 실행 전에 고정했습니다(`docs/agent_sft_gold_eval.md`). gold로 설정을 고르지 않고, 돌린 조건은 전부 보고합니다.
       - 주 결과: 2차 모델, 한 번에 답 조건, 학습 사진과 같은 드론 사진을 뺀 gold 사진.
       - 위치: 사람 박스가 있는 결함 133장에서 답한 칸이 맞는지 채점하고, "늘 가운데"라고 답한 경우와 비교합니다.
     - 2차 학습이 1차와 다른 점: 확대 박스와 위치 답을 **사람이 그린 박스**에서 가져오고, polymer 절연체 녹 사진 60장을 학습에 넣습니다.
-    - 설정 셀의 `RUN_GOLD_BASE`, `RUN_DEV240`, `RUN_GOLD_SFT_V1`, `RUN_GOLD_CONTROLS`를 `False`로 바꾸면 그 단계를 건너뜁니다. 건너뛴 단계는 표에 없습니다.
+    - 설정 셀의 `RUN_CLASSIFIER_BASELINE`, `RUN_GOLD_BASE`, `RUN_DEV240`, `RUN_GOLD_SFT_V1`, `RUN_GOLD_CONTROLS`를 `False`로 바꾸면 그 단계를 건너뜁니다. 건너뛴 단계는 표에 없습니다.
     - dev240 평가는 새 폴더에 두 조건으로 돌립니다. 11/17에 네 조건으로 돌리다 끊긴 실행은 건드리지 않고, 그때 저장된 답을 결과 ZIP에 같이 넣습니다.
     - 다른 버전의 노트북으로 시작한 시험 채점이 Drive에 있으면 그 폴더는 그대로 두고 새 폴더에서 다시 합니다(그 폴더도 ZIP에 들어갑니다).
 
-    예상 시간(L4, 1차 실측에서 어림한 값이고 아직 재지 않았습니다): 시험 채점 2차 모델 1.5시간, 학습 전 모델 1시간 이내, dev240 1.5시간, 시험 채점 1차 모델 1.5시간, 대조 조건 1시간. 학습이 Drive에 끝나 있으면 합계 6~7시간, 학습부터 하면 6~7시간이 더 듭니다.
+    예상 시간(L4, 1차 실측에서 어림한 값이고 아직 재지 않았습니다): 시험 채점 2차 모델 1.5시간, 작은 분류기 15분, 학습 전 모델 1시간 이내, dev240 1.5시간, 시험 채점 1차 모델 1.5시간, 대조 조건 1시간. 학습이 Drive에 끝나 있으면 합계 6~7시간, 학습부터 하면 6~7시간이 더 듭니다.
     """
 
 GOLD_PREP = '''
@@ -231,6 +232,7 @@ GOLD_PREP = '''
     # dev240 goes to its own folder: SFT_RUN may hold the four-condition run of 2026-11-17 that stopped midway, and a
     # run made by other source cannot be resumed by this runner. That folder is left as it is and zipped with the rest.
     DEV_RUN = RESULTS / f"agent_tool_pilot_dev{N_IMAGES}_qwen3_5_4b_lora_{RUN_TAG}_two_conditions"
+    CLASSIFIER_RUN = GOLD_ROOT / "sft_label_classifier_baseline"
     print("gold 참조:", GOLD_REFS)
     print("1차 모델:", "있음" if HAS_V1 else "Drive에 없음. 1차 모델 시험 채점은 건너뜁니다.")
     print("이미 끝난 학습:", "있음. 학습은 건너뜁니다." if (TRAIN_DIR / "adapter/adapter_model.safetensors").is_file()
@@ -289,6 +291,10 @@ GOLD_TOOLS = '''
             found[key] = bool(EXIT_CODES[key] == 0 and status.get("complete") and meta.get("execution") == "real_hf"
                               and status.get("run_id") == meta.get("run_id")
                               and meta.get("benchmark_commit") == EXECUTION_COMMIT and meta.get("training") is TRAINED[key])
+        if "classifier" in EXIT_CODES:
+            status, meta = (receipt(CLASSIFIER_RUN, name) for name in ("run_status.json", "run_metadata.json"))
+            found["classifier"] = bool(EXIT_CODES["classifier"] == 0 and status.get("complete")
+                                       and status.get("run_id") == meta.get("run_id") and meta.get("execution") == "real_dinov2")
         if "gold_controls" in EXIT_CODES:
             status, meta = (receipt(GOLD_RUNS["gold_lora"], name) for name in ("run_status.json", "run_metadata.json"))
             found["gold_controls"] = bool(EXIT_CODES["gold_controls"] == 0 and status.get("complete")
@@ -337,7 +343,7 @@ GOLD_TOOLS = '''
                 written=time.strftime("%Y-%m-%d %H:%M:%S"), gold_refs=str(GOLD_REFS),
                 train_qa=[str(p) for p in globals().get("TRAIN_QAS", [])], sft_v1_adapter_found=HAS_V1,
                 training_source_commit=receipt(TRAIN_DIR, "train_metadata.json").get("benchmark_commit"),
-                run_folders={k: p.name for k, p in {**GOLD_RUNS, "dev_lora": DEV_RUN}.items()},
+                run_folders={k: p.name for k, p in {**GOLD_RUNS, "dev_lora": DEV_RUN, "classifier": CLASSIFIER_RUN}.items()},
                 earlier_runs={k: p.name for k, p in EARLIER.items()},
                 earlier_dev240_run_found=SFT_RUN.is_dir()), indent=2, ensure_ascii=False), encoding="utf-8")
             partial = ARCHIVE.with_name(ARCHIVE.name + ".partial")
@@ -350,7 +356,8 @@ GOLD_TOOLS = '''
                 # SFT_RUN: the four-condition dev240 run of 2026-11-17 that stopped midway; its saved answers are kept.
                 # EARLIER: gold folders started by another notebook version, kept as they are.
                 for label, root in (("gold_inputs", GOLD_ROOT / "inputs"), ("logs", LOG_DIR), ("data", DATA_DIR),
-                                    ("train", TRAIN_DIR), *GOLD_RUNS.items(), ("dev_lora", DEV_RUN),
+                                    ("train", TRAIN_DIR), *GOLD_RUNS.items(), ("classifier", CLASSIFIER_RUN),
+                                    ("dev_lora", DEV_RUN),
                                     ("dev_lora_earlier_four_condition_run", SFT_RUN), *EARLIER.items()):
                     if not root.is_dir():
                         continue
@@ -383,8 +390,24 @@ GOLD_MAIN = '''
     save_zip()
     '''
 
+GOLD_CLASSIFIER = '''
+    #@title 5. 작은 분류기 비교 — 같은 라벨 660장, DINOv2 특징 + 선형 분류기
+    # LVLM 대신 작은 전용 분류기를 같은 학습 사진으로 학습해 같은 시험 문제의 Q1·Q2를 풉니다(dev240도 같이). 위치는 답하지 못합니다.
+    # 뽑은 특징은 결과 ZIP에 들어가므로, 다른 작은 분류기는 나중에 GPU 없이 시험해 볼 수 있습니다.
+    verify_code()
+    if RUN_CLASSIFIER_BASELINE:
+        EXIT_CODES["classifier"] = run([sys.executable, REPO_DIR / "scripts/run_sft_label_classifier_baseline.py",
+                                        "--train-qa", DATA_DIR / "sft_train_qa.jsonl", "--overlap-train-qa", *TRAIN_QAS,
+                                        "--qa-dir", GOLD_QA_DIR, "--sup-zip", SUP_ZIP, "--dev-qa", DEV_QA,
+                                        "--n-images", N_IMAGES, "--device", "cuda", "--out-dir", CLASSIFIER_RUN], check=False)
+    else:
+        print("작은 분류기 비교는 건너뜁니다.")
+    print(EXIT_CODES)
+    save_zip()
+    '''
+
 GOLD_BASE = '''
-    #@title 5. 시험(gold) 채점 — 학습 전 모델
+    #@title 6. 시험(gold) 채점 — 학습 전 모델
     verify_code()
     if RUN_GOLD_BASE:
         EXIT_CODES["gold_base"] = gold_run("gold_base")
@@ -395,7 +418,7 @@ GOLD_BASE = '''
     '''
 
 GOLD_DEV = '''
-    #@title 6. dev240 평가 — 2차 모델 (한 번에 답, 도구 선택)
+    #@title 7. dev240 평가 — 2차 모델 (한 번에 답, 도구 선택)
     verify_code()
     if RUN_DEV240:
         EXIT_CODES["dev_lora"] = run([sys.executable, REPO_DIR / "scripts/run_agent_tool_pilot.py", "--dev-qa", DEV_QA,
@@ -410,7 +433,7 @@ GOLD_DEV = '''
     '''
 
 GOLD_V1 = '''
-    #@title 7. 시험(gold) 채점 — 1차 모델 (Drive에 있을 때만)
+    #@title 8. 시험(gold) 채점 — 1차 모델 (Drive에 있을 때만)
     verify_code()
     if RUN_GOLD_SFT_V1 and HAS_V1:
         EXIT_CODES["gold_v1"] = gold_run("gold_v1", ["--adapter-dir", V1_ADAPTER])
@@ -421,7 +444,7 @@ GOLD_V1 = '''
     '''
 
 GOLD_CONTROLS = '''
-    #@title 8. 시험(gold) 채점 — 2차 모델의 대조 조건 (가운데 고정 확대, 같은 횟수 다시 묻기)
+    #@title 9. 시험(gold) 채점 — 2차 모델의 대조 조건 (가운데 고정 확대, 같은 횟수 다시 묻기)
     # 4번에서 저장한 답은 그대로 다시 쓰고, 대조 조건 두 개만 새로 묻습니다. 4번의 표는 폴더 안에 따로 보존됩니다.
     verify_code()
     if RUN_GOLD_CONTROLS and EXIT_CODES.get("gold_lora") == 0:
@@ -433,14 +456,14 @@ GOLD_CONTROLS = '''
     '''
 
 GOLD_REPORT = '''
-    #@title 9. 표와 결과 ZIP
+    #@title 10. 표와 결과 ZIP
     save_zip()                                           # the ZIP comes first and never depends on the tables below
     VERIFIED = verified_runs()
-    for key in ("gold_lora", "gold_base", "dev_lora", "gold_v1", "gold_controls"):
+    for key in ("gold_lora", "classifier", "gold_base", "dev_lora", "gold_v1", "gold_controls"):
         if key not in EXIT_CODES:
             print(key, "건너뜀")
             continue
-        root = {**GOLD_RUNS, "dev_lora": DEV_RUN, "gold_controls": GOLD_RUNS["gold_lora"]}[key]
+        root = {**GOLD_RUNS, "dev_lora": DEV_RUN, "classifier": CLASSIFIER_RUN, "gold_controls": GOLD_RUNS["gold_lora"]}[key]
         print(key, "완료 확인" if VERIFIED.get(key) else "실행 오류 또는 완료 미확인",
               json.dumps(receipt(root, "run_status.json"), ensure_ascii=False))
     try:
@@ -461,6 +484,12 @@ GOLD_REPORT = '''
                     "center60_covers_defect", "crop_distinct_boxes", "invalid_episodes", "calls"]
             print("시험(gold) 결과. 주 결과는 subset=frame_disjoint(학습 사진과 같은 드론 사진을 뺀 사진), 2차 모델, direct_reference 행입니다.")
             print("fixed_evidence와 matched_reask는 대조 조건입니다(2차 모델만).")
+            display(table[[c for c in cols if c in table]])
+        table = boards([("DINOv2 특징 + 선형 분류기", CLASSIFIER_RUN)])
+        if table is not None:
+            cols = ["model", "eval_set", "subset", "images", "q1_anomaly_f1", "q1_balanced_accuracy", "q2_defect_macro_f1",
+                    "joint_accuracy", "false_defect_rate", "q1_tp", "q1_fp", "q1_tn", "q1_fn"]
+            print("작은 분류기 결과(같은 학습 사진 660장, Q1·Q2만). gold의 subset=frame_disjoint 행을 위 표의 같은 subset과 비교합니다.")
             display(table[[c for c in cols if c in table]])
         table = boards(((NAMES["gold_lora"], DEV_RUN), *PREVIOUS.items()))
         if table is not None:
@@ -516,12 +545,15 @@ def build(execution_commit, variant="sft_v1"):
         if b'"--controls"' not in subprocess.check_output(
                 ["git", "show", f"{execution_commit}:scripts/run_agent_sft_gold_eval.py"], cwd=ROOT):
             raise ValueError("source commit lacks the gold runner's --controls step")
+        if "scripts/run_sft_label_classifier_baseline.py" not in names:
+            raise ValueError("source commit lacks the gold runner's companion, the small-classifier baseline")
         loc = subprocess.check_output(["git", "show", f"{execution_commit}:{LOC_QA}"], cwd=ROOT)
         gap = "\n        "                              # the settings cell is indented eight spaces before dedent
         labels += gap + gap.join((
             'GOLD_QA_FOLDER = "lvlm_insplad_qa/gold_v2_final"',
             f'LOC_QA_SHA256 = "{hashlib.sha256(loc).hexdigest()}"',
             f'LOC_QA_B64 = "{base64.b64encode(zlib.compress(loc, 9)).decode("ascii")}"',
+            "RUN_CLASSIFIER_BASELINE = True  # 같은 라벨로 학습한 작은 분류기(DINOv2 특징 + 선형 분류기) 비교",
             "RUN_GOLD_BASE = True      # 학습 전 모델의 시험 채점",
             "RUN_DEV240 = True         # 2차 모델의 dev240 평가",
             "RUN_GOLD_SFT_V1 = True    # Drive에 1차 어댑터가 있으면 1차 모델의 시험 채점",
@@ -707,7 +739,7 @@ def build(execution_commit, variant="sft_v1"):
         print("비교 완료" if all(verdicts.values()) else "일부 미완료(진단용)", "ZIP:", archive)
         ''')]
     if human:
-        tail = (GOLD_MAIN, GOLD_BASE, GOLD_DEV, GOLD_V1, GOLD_CONTROLS, GOLD_REPORT) if gold else (HUMAN_EVAL, HUMAN_REPORT)
+        tail = (GOLD_MAIN, GOLD_CLASSIFIER, GOLD_BASE, GOLD_DEV, GOLD_V1, GOLD_CONTROLS, GOLD_REPORT) if gold else (HUMAN_EVAL, HUMAN_REPORT)
         cells = [cell("markdown", GOLD_INTRO if gold else HUMAN_INTRO), cells[1], cells[2],
                  cell("code", textwrap.dedent(HUMAN_DATA) + (textwrap.dedent(GOLD_CHECK) if gold else "")), cells[4],
                  *(cell("code", source) for source in tail)]
