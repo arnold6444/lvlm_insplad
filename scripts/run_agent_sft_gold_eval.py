@@ -12,6 +12,7 @@ import csv
 from importlib.metadata import PackageNotFoundError, version
 import json
 from pathlib import Path
+import shutil
 import sys
 import uuid
 from zipfile import ZipFile
@@ -27,6 +28,13 @@ Q1, Q2, Q3 = pilot.Q1, pilot.Q2, pilot.Q3
 PROTOCOL = "agent_sft_gold_eval_v1"
 MODEL = "qwen3_5_4b"
 POLICIES = ("direct_reference", "adaptive_tools")
+# Run only with --controls, after the two conditions above: a fixed center crop, and as many calls as adaptive_tools
+# made without any tool. They are what separates "the tool helped" from "more calls helped".
+CONTROLS = ("fixed_evidence", "matched_reask")
+STALE = 3                                          # exit code of --inputs-only: the folder holds another run
+KEPT = "main_conditions_before_controls"           # the two-condition tables, copied before the controls rewrite them
+TABLES = ("leaderboard.csv", "metrics_by_asset.csv", "q2_by_defect.csv", "position_by_defect.csv", "significance.csv",
+          "per_image.csv", "answers.jsonl", "run_metadata.json", "run_status.json")
 PRIMARY, SUBSETS = "frame_disjoint", ("frame_disjoint", "all")
 GOLD_IMAGES, LOCATED_IMAGES = 246, 133
 BOOT_METRICS = ("q1_anomaly_f1", "q2_defect_macro_f1", "joint_accuracy", "false_defect_rate", "consistency_error")
@@ -156,8 +164,12 @@ def main(argv=None, *, loader=None, infer=None):
     parser.add_argument("--adapter-dir", type=Path, default=None, help="LoRA adapter; omit for the base model")
     parser.add_argument("--max-calls", type=int, choices=(2, 3), default=3)
     parser.add_argument("--n-boot", type=int, default=2000)
+    parser.add_argument("--controls", action="store_true",
+                        help="also run fixed_evidence and matched_reask; the two main conditions are read back from "
+                             "this folder's saved calls, so this can be a later step of the same run")
     parser.add_argument("--inputs-only", action="store_true",
-                        help="check every input and print the cohort sizes; no model is loaded and nothing is written")
+                        help="check every input and print the cohort sizes; no model is loaded and nothing is written. "
+                             f"Exits {STALE} when the output folder holds a run of other code, inputs or settings")
     args = parser.parse_args(argv)
     if not args.out_dir.name.startswith("agent_sft_gold_eval"):
         raise ValueError("use a new agent_sft_gold_eval* output directory")
@@ -187,17 +199,6 @@ def main(argv=None, *, loader=None, infer=None):
     cores = {"all": {r["core_id"] for r in rows},
              "frame_disjoint": {r["core_id"] for r in rows if r["image"] not in shared}}
     located = {s: sum(i in cores[s] for i in gt) for s in SUBSETS}
-    if args.inputs_only:
-        with ZipFile(args.unsup_zip) as archive:
-            names = {n.replace("\\", "/").lstrip("/") for n in archive.namelist()}
-        missing = sorted({refs[r["image"]] for r in rows} - names)
-        if missing:
-            raise FileNotFoundError(f"{len(missing)} references are not in the unsupervised ZIP, e.g. {missing[0]}")
-        print(json.dumps(dict(protocol=PROTOCOL, images=len(cores["all"]), frame_disjoint=len(cores[PRIMARY]),
-                              located=located, same_frame=sum(f["same_frame"] for f in overlap.values()),
-                              same_bytes=sum(f["same_bytes"] for f in overlap.values()),
-                              training_photos=len(train_images), lora_adapter=adapter_files is not None)))
-        return 0
     spec = base.MODEL_REGISTRY[MODEL]
     source_files = [Path(__file__), Path(pilot.__file__), Path(support.__file__), Path(agent.__file__),
                     Path(base.__file__), Path(position.__file__), Path(sft.__file__),
@@ -210,6 +211,19 @@ def main(argv=None, *, loader=None, infer=None):
         sources={p.name: pilot.file_sha(p) for p in source_files}))
     meta_path = args.out_dir / "run_metadata.json"
     old_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
+    if args.inputs_only:
+        with ZipFile(args.unsup_zip) as archive:
+            names = {n.replace("\\", "/").lstrip("/") for n in archive.namelist()}
+        missing = sorted({refs[r["image"]] for r in rows} - names)
+        if missing:
+            raise FileNotFoundError(f"{len(missing)} references are not in the unsupervised ZIP, e.g. {missing[0]}")
+        stale = bool(old_meta) and old_meta["signature"] != signature
+        print(json.dumps(dict(protocol=PROTOCOL, images=len(cores["all"]), frame_disjoint=len(cores[PRIMARY]),
+                              located=located, same_frame=sum(f["same_frame"] for f in overlap.values()),
+                              same_bytes=sum(f["same_bytes"] for f in overlap.values()),
+                              training_photos=len(train_images), lora_adapter=adapter_files is not None,
+                              saved_run="none" if not old_meta else "other code, inputs or settings" if stale else "same")))
+        return STALE if stale else 0
     if old_meta and old_meta["signature"] != signature:
         raise ValueError("code/input/settings changed: use a new output folder")
     targets = support.verified_images(args.sup_zip, [r["image"] for r in rows], args.out_dir / "_images/target")
@@ -229,11 +243,26 @@ def main(argv=None, *, loader=None, infer=None):
         except PackageNotFoundError:
             software[package] = None
     run_id = str(uuid.uuid4())
+    # Once a folder has started the controls it keeps them, so a later run without --controls still scores them.
+    controls = args.controls or bool((old_meta or {}).get("controls"))
+    plan = POLICIES + (CONTROLS if controls else ())
+    kept = args.out_dir / KEPT
+    if controls and old_meta and not old_meta.get("controls") and not kept.exists():
+        # The controls rewrite the tables and the status of this folder. The two-condition result, as it stood,
+        # is copied first, so an interrupted control step cannot blur what the main run produced.
+        staging = args.out_dir / "_main_conditions_staging"
+        shutil.rmtree(staging, ignore_errors=True)
+        staging.mkdir()
+        for name in TABLES:
+            if (args.out_dir / name).is_file():
+                shutil.copyfile(args.out_dir / name, staging / name)
+        staging.rename(kept)
     meta = dict(
         protocol=PROTOCOL, signature=signature, identity=identity, model=spec, run_id=run_id, software=software,
         resolved_model_revision=(old_meta or {}).get("resolved_model_revision"),
         benchmark_commit=pilot.source_commit(), images=len(cores["all"]), max_calls=args.max_calls,
-        policies=list(POLICIES), training=adapter_files is not None, lora_adapter=adapter_files,
+        policies=list(plan), controls=controls,
+        training=adapter_files is not None, lora_adapter=adapter_files,
         gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
         execution="real_hf" if loader is None and infer is None else "injected_test_backend",
         primary_scope=PRIMARY, post_hoc_rules=None,
@@ -277,12 +306,15 @@ def main(argv=None, *, loader=None, infer=None):
             raise pilot.ModelLoadError(str(exc)) from exc
         return infer(adapter, images, prompt)
 
-    records, done = [], []
+    records, done, tool_calls = [], [], {}
     try:
-        for policy in POLICIES:
+        for policy in plan:
             for index, row in enumerate(rows + q3):
+                # matched_reask asks as many times as adaptive_tools did on this question; saved calls are reused.
                 records.append(pilot.episode(row, policy, targets[row["image"]], normals[refs[row["image"]]],
-                                             args.out_dir, identity, call, args.max_calls))
+                                             args.out_dir, identity, call, args.max_calls, tool_calls.get(row["id"])))
+                if policy == "adaptive_tools":
+                    tool_calls[row["id"]] = records[-1]["calls"]
                 if (index + 1) % 20 == 0 or index == len(rows) + len(q3) - 1:
                     base.write_jsonl(args.out_dir / "answers.jsonl", records)
                     print(f"[{policy}] {index+1}/{len(rows)+len(q3)} questions checkpointed", flush=True)
@@ -332,17 +364,20 @@ def main(argv=None, *, loader=None, infer=None):
                     base=sum(5 in gt[i]["cells"] for i in ids) / len(ids), new=position.count(ids, gt, cells)["position_hit_rate"],
                     delta=gain["delta"], ci_low=gain["ci_low"], ci_high=gain["ci_high"],
                     significant=bool(gain["ci_low"] > 0 or gain["ci_high"] < 0)))
-        if set(POLICIES) <= set(done):
-            stats = cons.paired_bootstrap(cons.image_pairs(sub_rows), [], choices[POLICIES[0]], choices[POLICIES[1]],
+        # adaptive_tools against the single call, and against each control that ran.
+        for control in (POLICIES[0], *CONTROLS):
+            if control not in done or POLICIES[1] not in done:
+                continue
+            stats = cons.paired_bootstrap(cons.image_pairs(sub_rows), [], choices[control], choices[POLICIES[1]],
                                           args.n_boot, 42)
             for metric in BOOT_METRICS:
-                significance.append(dict(subset=subset, baseline=POLICIES[0], condition=POLICIES[1], metric=metric,
+                significance.append(dict(subset=subset, baseline=control, condition=POLICIES[1], metric=metric,
                                          **stats[metric]))
             if ids:
                 gain = position.bootstrap(ids, gt, reported_cells(sub_q3, choices[POLICIES[1]]),
-                                          reported_cells(sub_q3, choices[POLICIES[0]]), n=args.n_boot)
+                                          reported_cells(sub_q3, choices[control]), n=args.n_boot)
                 significance.append(dict(
-                    subset=subset, baseline=POLICIES[0], condition=POLICIES[1], metric="q3_position_hit_rate",
+                    subset=subset, baseline=control, condition=POLICIES[1], metric="q3_position_hit_rate",
                     base=None, new=None, delta=gain["delta"], ci_low=gain["ci_low"], ci_high=gain["ci_high"],
                     significant=bool(gain["ci_low"] > 0 or gain["ci_high"] < 0)))
     per_image, grids = [], {r["core_id"]: r for r in q3}

@@ -172,21 +172,24 @@ GOLD_INTRO = """
     # 도구 선택 에이전트 LoRA SFT 2차 + 시험(gold) 채점 — 한 번에 실행
     **L4 또는 A100(20 GiB 이상) GPU**에서 **모두 실행**을 한 번 누르면 학습부터 시험 채점까지 끝납니다. 4bit 양자화는 쓰지 않습니다(BF16).
 
-    순서: ① GPU·박스 표시·시험 입력 확인 → ② 학습 데이터 만들기 → ③ Qwen3.5-4B LoRA 학습 → ④ 시험(gold) 채점: 2차 모델 → ⑤ 시험 채점: 학습 전 모델 → ⑥ dev240 평가: 2차 모델 → ⑦ 시험 채점: 1차 모델 → ⑧ 표와 결과 ZIP.
+    순서: ① GPU·박스 표시·시험 입력 확인 → ② 학습 데이터 만들기 → ③ Qwen3.5-4B LoRA 학습 → ④ 시험(gold) 채점: 2차 모델 → ⑤ 시험 채점: 학습 전 모델 → ⑥ dev240 평가: 2차 모델 → ⑦ 시험 채점: 1차 모델 → ⑧ 시험 채점: 2차 모델의 대조 조건 → ⑨ 표와 결과 ZIP.
 
     - **Drive에 이미 끝난 단계는 다시 하지 않습니다.** 2차 학습 데이터와 학습된 어댑터가 Drive에 있으면(2026-11-17 실행) ②와 ③은 몇 초 만에 지나가고 바로 채점으로 갑니다.
     - 중요한 것부터 돌립니다. 중간에 끊겨도 끝난 단계의 결과는 Drive에 남고, 같은 노트북을 다시 **모두 실행**하면 이어서 합니다.
+    - **결과 ZIP은 단계가 하나 끝날 때마다 Drive에 다시 씁니다.** 끝까지 못 가도 그때까지의 ZIP이 `lvlm_insplad_results`에 있습니다. ZIP에는 모델이 낸 답 원문이 전부 들어 있어, 표에 없는 숫자도 나중에 GPU 없이 다시 계산할 수 있습니다.
+    - 모든 단계의 출력은 Drive의 `agent_sft_gold_sft_v2_human/logs`에도 남습니다. 화면이 닫혀 오류 글이 사라져도 ZIP 안의 로그로 원인을 볼 수 있습니다.
+    - ⑧ 대조 조건은 "도구가 도움이 됐다"는 결과가 나올 때 필요합니다. 가운데를 늘 같은 크기로 확대해 준 경우, 도구 없이 같은 횟수만큼 다시 물은 경우와 비교합니다.
     - 첫 셀이 몇 초 안에 GPU를 확인합니다. L4가 아니면 지금 잡힌 GPU 이름을 알려 주고 멈춥니다.
     - 학습을 시작하기 전에 시험 채점에 쓸 파일을 끝까지 점검합니다. 문제가 있으면 학습 시간을 쓰기 전에 멈춥니다.
     - 시험 채점 규칙은 실행 전에 고정했습니다(`docs/agent_sft_gold_eval.md`). gold로 설정을 고르지 않고, 돌린 조건은 전부 보고합니다.
       - 주 결과: 2차 모델, 한 번에 답 조건, 학습 사진과 같은 드론 사진을 뺀 gold 사진.
       - 위치: 사람 박스가 있는 결함 133장에서 답한 칸이 맞는지 채점하고, "늘 가운데"라고 답한 경우와 비교합니다.
     - 2차 학습이 1차와 다른 점: 확대 박스와 위치 답을 **사람이 그린 박스**에서 가져오고, polymer 절연체 녹 사진 60장을 학습에 넣습니다.
-    - 설정 셀의 `RUN_GOLD_BASE`, `RUN_DEV240`, `RUN_GOLD_SFT_V1`을 `False`로 바꾸면 그 단계를 건너뜁니다. 건너뛴 단계는 표에 없습니다.
-
+    - 설정 셀의 `RUN_GOLD_BASE`, `RUN_DEV240`, `RUN_GOLD_SFT_V1`, `RUN_GOLD_CONTROLS`를 `False`로 바꾸면 그 단계를 건너뜁니다. 건너뛴 단계는 표에 없습니다.
     - dev240 평가는 새 폴더에 두 조건으로 돌립니다. 11/17에 네 조건으로 돌리다 끊긴 실행은 건드리지 않고, 그때 저장된 답을 결과 ZIP에 같이 넣습니다.
+    - 다른 버전의 노트북으로 시작한 시험 채점이 Drive에 있으면 그 폴더는 그대로 두고 새 폴더에서 다시 합니다(그 폴더도 ZIP에 들어갑니다).
 
-    예상 시간(L4, 1차 실측에서 어림한 값이고 아직 재지 않았습니다): 시험 채점 2차 모델 1.5시간, 학습 전 모델 1시간 이내, dev240 1.5시간, 시험 채점 1차 모델 1.5시간. 학습이 Drive에 끝나 있으면 합계 5~6시간, 학습부터 하면 6~7시간이 더 듭니다. 결과 ZIP은 Drive의 `lvlm_insplad_results`에도 저장됩니다.
+    예상 시간(L4, 1차 실측에서 어림한 값이고 아직 재지 않았습니다): 시험 채점 2차 모델 1.5시간, 학습 전 모델 1시간 이내, dev240 1.5시간, 시험 채점 1차 모델 1.5시간, 대조 조건 1시간. 학습이 Drive에 끝나 있으면 합계 6~7시간, 학습부터 하면 6~7시간이 더 듭니다.
     """
 
 GOLD_PREP = '''
@@ -234,32 +237,161 @@ GOLD_PREP = '''
           else "없음. 학습부터 합니다(6~7시간).")
     '''
 
+# Helpers of the one-run notebook. The result ZIP is rewritten after every step and holds every raw model output,
+# so an interrupted session still leaves a usable ZIP and no number has to be produced by a second GPU run.
+GOLD_TOOLS = '''
+    # 로그, 결과 ZIP, 채점 실행 도우미입니다. 결과 ZIP은 단계가 끝날 때마다 다시 씁니다.
+    import io, shutil, time
+    LOG_DIR = GOLD_ROOT / "logs"
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    RUN_LOG = LOG_DIR / time.strftime("run_%Y%m%d_%H%M%S.log")
+    def keep_log(text):
+        try:
+            with RUN_LOG.open("a", encoding="utf-8") as stream:
+                stream.write(text)
+        except OSError:
+            pass
+    keep_log(f"notebook source {EXECUTION_COMMIT}, GPU {GPU_NOW}\\n")
+    for name, command in (("pip_freeze.txt", [sys.executable, "-m", "pip", "freeze"]), ("nvidia_smi.txt", ["nvidia-smi"])):
+        try:
+            (LOG_DIR / name).write_text(subprocess.run(command, capture_output=True, text=True).stdout, encoding="utf-8")
+        except OSError:
+            pass
+    EXIT_CODES, EARLIER = {}, {}
+    ARCHIVE = RESULTS / f"agent_sft_{RUN_TAG}_gold_results.zip"
+    TRAINED = {"gold_lora": True, "gold_base": False, "gold_v1": True, "dev_lora": True}
+
+    def receipt(root, name):
+        p = root / name
+        return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+
+    def gold_run(key, extra=()):
+        """한 모델을 시험(gold) 문제로 채점합니다. 다른 버전으로 시작한 폴더는 이어 갈 수 없어서, 그대로 두고 새 폴더를 씁니다."""
+        command = [*GOLD_RUNNER, *extra, "--out-dir", GOLD_RUNS[key]]
+        if run([*command, "--inputs-only"], check=False) == 3:
+            EARLIER[f"{key}_earlier_run"] = GOLD_RUNS[key]
+            GOLD_RUNS[key] = GOLD_RUNS[key].with_name(f"{GOLD_RUNS[key].name}_{EXECUTION_COMMIT[:7]}")
+            command[-1] = GOLD_RUNS[key]
+            print("이 폴더에는 다른 버전으로 시작한 채점이 있어 새 폴더에서 다시 합니다:", GOLD_RUNS[key].name)
+        return run(command, check=False)
+
+    def verified_runs():
+        """이번 노트북의 소스로 끝까지 돈 단계."""
+        found = {}
+        for key, root in {**GOLD_RUNS, "dev_lora": DEV_RUN}.items():
+            if key not in EXIT_CODES:
+                continue
+            # If the controls stopped midway, the main step's own receipt is the copy the runner kept before them.
+            kept = root / "main_conditions_before_controls"
+            now = receipt(root, "run_status.json")
+            source = root if now.get("complete") or not (kept / "run_status.json").is_file() else kept
+            status, meta = receipt(source, "run_status.json"), receipt(source, "run_metadata.json")
+            found[key] = bool(EXIT_CODES[key] == 0 and status.get("complete") and meta.get("execution") == "real_hf"
+                              and status.get("run_id") == meta.get("run_id")
+                              and meta.get("benchmark_commit") == EXECUTION_COMMIT and meta.get("training") is TRAINED[key])
+        if "gold_controls" in EXIT_CODES:
+            status, meta = (receipt(GOLD_RUNS["gold_lora"], name) for name in ("run_status.json", "run_metadata.json"))
+            found["gold_controls"] = bool(EXIT_CODES["gold_controls"] == 0 and status.get("complete")
+                                          and status.get("run_id") == meta.get("run_id") and meta.get("controls") is True
+                                          and len(status.get("eligible_policies", [])) == 4)
+        return found
+
+    def preview_images():
+        """시험 사진 246장의 축소본(긴 변 640px)을 한 번 만들어 둡니다. 그림을 그릴 때 원본 ZIP을 다시 받지 않아도 됩니다."""
+        from PIL import Image
+        folder = GOLD_ROOT / "inputs/preview"
+        if (folder / "index.csv").is_file():
+            return
+        folder.mkdir(parents=True, exist_ok=True)
+        cores = {}
+        for line in GOLD_MASTER.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                cores[json.loads(line)["image"]] = json.loads(line)["core_id"]
+        rows = []
+        with zipfile.ZipFile(SUP_ZIP) as archive:
+            names = {n.replace("\\\\", "/").lstrip("/"): n for n in archive.namelist()}
+            for member in sorted(cores):
+                data = archive.read(names[member])
+                name = hashlib.sha256(data).hexdigest()[:16] + ".jpg"
+                with Image.open(io.BytesIO(data)) as picture:
+                    width, height = picture.size
+                    small = picture.convert("RGB")
+                    small.thumbnail((640, 640))
+                    small.save(folder / name, "JPEG", quality=80)
+                rows.append(dict(core_id=cores[member], image=member, file=name, width=width, height=height))
+        with (folder / "index.csv").open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def save_zip():
+        """Drive에 지금 있는 결과로 ZIP을 다시 씁니다. 실패해도 채점은 계속합니다."""
+        try:
+            try:
+                preview_images()
+            except Exception as exc:
+                print("시험 사진 축소본은 만들지 못했습니다(결과에는 영향 없음):", exc)
+            summary = RESULTS / f"agent_sft_{RUN_TAG}_gold_execution.json"
+            summary.write_text(json.dumps(dict(
+                exit_codes=EXIT_CODES, verified=verified_runs(), execution_commit=EXECUTION_COMMIT, gpu=GPU_NOW,
+                written=time.strftime("%Y-%m-%d %H:%M:%S"), gold_refs=str(GOLD_REFS),
+                train_qa=[str(p) for p in globals().get("TRAIN_QAS", [])], sft_v1_adapter_found=HAS_V1,
+                training_source_commit=receipt(TRAIN_DIR, "train_metadata.json").get("benchmark_commit"),
+                run_folders={k: p.name for k, p in {**GOLD_RUNS, "dev_lora": DEV_RUN}.items()},
+                earlier_runs={k: p.name for k, p in EARLIER.items()},
+                earlier_dev240_run_found=SFT_RUN.is_dir()), indent=2, ensure_ascii=False), encoding="utf-8")
+            partial = ARCHIVE.with_name(ARCHIVE.name + ".partial")
+            with zipfile.ZipFile(partial, "w", zipfile.ZIP_DEFLATED) as z:
+                z.write(summary, "notebook_execution.json")
+                z.write(GOLD_REFS, "gold_inputs/retrieved_refs.csv")
+                for folder in LABEL_DIRS:                      # the exact label files this run trained on
+                    for name in ("manifest.json", "annotations.json"):
+                        z.write(folder / name, f"labels/{folder.name}/{name}")
+                # SFT_RUN: the four-condition dev240 run of 2026-11-17 that stopped midway; its saved answers are kept.
+                # EARLIER: gold folders started by another notebook version, kept as they are.
+                for label, root in (("gold_inputs", GOLD_ROOT / "inputs"), ("logs", LOG_DIR), ("data", DATA_DIR),
+                                    ("train", TRAIN_DIR), *GOLD_RUNS.items(), ("dev_lora", DEV_RUN),
+                                    ("dev_lora_earlier_four_condition_run", SFT_RUN), *EARLIER.items()):
+                    if not root.is_dir():
+                        continue
+                    for p in sorted(root.rglob("*")):
+                        rel = p.relative_to(root)
+                        private = any(part.startswith("_") for part in rel.parts) or rel.parts[0] == "checkpoint"
+                        if p.is_file() and not private and p.suffix != ".safetensors":
+                            z.write(p, f"{label}/{rel.as_posix()}")
+            partial.replace(ARCHIVE)
+            print("결과 ZIP 갱신:", ARCHIVE.name, f"{ARCHIVE.stat().st_size / 1e6:.1f} MB")
+        except Exception as exc:
+            print("결과 ZIP을 갱신하지 못했습니다(채점은 계속하고, 결과 폴더는 Drive에 그대로 있습니다):", exc)
+    '''
+
 GOLD_CHECK = '''
     # 학습을 시작하기 전에 시험 채점 입력을 끝까지 점검합니다(모델 호출 없음). 여기서 멈추면 학습 시간을 쓰지 않습니다.
     TRAIN_QAS = [DATA_DIR / "sft_train_qa.jsonl"] + ([V1_TRAIN_QA] if V1_TRAIN_QA.is_file() else [])
     GOLD_COMMON = ["--qa-dir", GOLD_QA_DIR, "--loc-qa", LOC_QA, "--refs-csv", GOLD_REFS, "--sup-zip", SUP_ZIP,
                    "--unsup-zip", UNSUP_ZIP, "--train-qa", *TRAIN_QAS, "--max-calls", 3]
     GOLD_RUNNER = [sys.executable, REPO_DIR / "scripts/run_agent_sft_gold_eval.py", *GOLD_COMMON]
-    run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_lora"], "--inputs-only"])
+    # A folder name of its own: this check writes nothing and must not be compared with a saved run.
+    run([*GOLD_RUNNER, "--out-dir", GOLD_ROOT / "agent_sft_gold_eval_input_check", "--inputs-only"])
     '''
 
 GOLD_MAIN = '''
     #@title 4. 시험(gold) 채점 — 2차 모델 (주 결과)
     verify_code()
-    EXIT_CODES = globals().get("EXIT_CODES", {})
-    EXIT_CODES["gold_lora"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_lora"],
-                                   "--adapter-dir", TRAIN_DIR / "adapter"], check=False)
+    EXIT_CODES["gold_lora"] = gold_run("gold_lora", ["--adapter-dir", TRAIN_DIR / "adapter"])
     print(EXIT_CODES)
+    save_zip()
     '''
 
 GOLD_BASE = '''
     #@title 5. 시험(gold) 채점 — 학습 전 모델
     verify_code()
     if RUN_GOLD_BASE:
-        EXIT_CODES["gold_base"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_base"]], check=False)
+        EXIT_CODES["gold_base"] = gold_run("gold_base")
     else:
         print("학습 전 모델 시험 채점은 건너뜁니다.")
     print(EXIT_CODES)
+    save_zip()
     '''
 
 GOLD_DEV = '''
@@ -274,90 +406,88 @@ GOLD_DEV = '''
     else:
         print("dev240 평가는 건너뜁니다.")
     print(EXIT_CODES)
+    save_zip()
     '''
 
 GOLD_V1 = '''
     #@title 7. 시험(gold) 채점 — 1차 모델 (Drive에 있을 때만)
     verify_code()
     if RUN_GOLD_SFT_V1 and HAS_V1:
-        EXIT_CODES["gold_v1"] = run([*GOLD_RUNNER, "--out-dir", GOLD_RUNS["gold_v1"], "--adapter-dir", V1_ADAPTER],
-                                    check=False)
+        EXIT_CODES["gold_v1"] = gold_run("gold_v1", ["--adapter-dir", V1_ADAPTER])
     else:
         print("1차 모델 시험 채점은 건너뜁니다.")
     print(EXIT_CODES)
+    save_zip()
+    '''
+
+GOLD_CONTROLS = '''
+    #@title 8. 시험(gold) 채점 — 2차 모델의 대조 조건 (가운데 고정 확대, 같은 횟수 다시 묻기)
+    # 4번에서 저장한 답은 그대로 다시 쓰고, 대조 조건 두 개만 새로 묻습니다. 4번의 표는 폴더 안에 따로 보존됩니다.
+    verify_code()
+    if RUN_GOLD_CONTROLS and EXIT_CODES.get("gold_lora") == 0:
+        EXIT_CODES["gold_controls"] = gold_run("gold_lora", ["--adapter-dir", TRAIN_DIR / "adapter", "--controls"])
+    else:
+        print("대조 조건은 건너뜁니다(스위치를 껐거나 4번 채점이 끝나지 않았습니다).")
+    print(EXIT_CODES)
+    save_zip()
     '''
 
 GOLD_REPORT = '''
-    #@title 8. 표와 결과 ZIP
-    import pandas as pd
-    from google.colab import files
-    def receipt(root, name):
-        p = root / name
-        return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
-    RUN_DIRS = {**GOLD_RUNS, "dev_lora": DEV_RUN}
-    TRAINED = {"gold_lora": True, "gold_base": False, "gold_v1": True, "dev_lora": True}
-    VERIFIED = {}
-    for key, root in RUN_DIRS.items():
+    #@title 9. 표와 결과 ZIP
+    save_zip()                                           # the ZIP comes first and never depends on the tables below
+    VERIFIED = verified_runs()
+    for key in ("gold_lora", "gold_base", "dev_lora", "gold_v1", "gold_controls"):
         if key not in EXIT_CODES:
             print(key, "건너뜀")
             continue
-        status, meta = receipt(root, "run_status.json"), receipt(root, "run_metadata.json")
-        VERIFIED[key] = bool(EXIT_CODES[key] == 0 and status.get("complete") and meta.get("execution") == "real_hf"
-                             and status.get("run_id") == meta.get("run_id")
-                             and meta.get("benchmark_commit") == EXECUTION_COMMIT and meta.get("training") is TRAINED[key])
-        print(key, "완료 확인" if VERIFIED[key] else "실행 오류 또는 완료 미확인", json.dumps(status, ensure_ascii=False))
-    def boards(pairs):
-        found = []
-        for label, root in pairs:
-            board = root / "leaderboard.csv"
-            if board.is_file() and board.stat().st_size:
-                found.append(pd.read_csv(board).assign(model=label))
-        return pd.concat(found) if found else None
-    NAMES = {"gold_lora": f"lora {RUN_TAG} (사람 박스)", "gold_base": "학습 전", "gold_v1": "lora sft_v1 (자동 박스)"}
-    table = boards((NAMES[key], root) for key, root in GOLD_RUNS.items())
-    if table is not None:
-        cols = ["model", "subset", "policy", "images", "q1_anomaly_f1", "q1_balanced_accuracy", "q2_defect_macro_f1",
-                "joint_accuracy", "q3_presence_balanced_accuracy", "q3_position_hit", "q3_anomalous_location_labels",
-                "q3_always_center_hit", "q1_q2_q3_location_joint", "q3_crop_covers_defect", "q3_crops_on_located",
-                "center60_covers_defect", "crop_distinct_boxes", "invalid_episodes", "calls"]
-        print("시험(gold) 결과. 주 결과는 subset=frame_disjoint(학습 사진과 같은 드론 사진을 뺀 사진), 2차 모델, direct_reference 행입니다.")
-        display(table[[c for c in cols if c in table]])
-    table = boards(((NAMES["gold_lora"], DEV_RUN), *PREVIOUS.items()))
-    if table is not None:
-        cols = ["model", "policy", "q1_balanced_accuracy", "q2_defect_macro_f1", "q2_invalid_rate", "joint_accuracy",
-                "false_defect_rate", "q3_presence_balanced_accuracy", "q3_normal_false_region_rate", "invalid_episodes", "calls"]
-        print("dev240 결과. 지난 실행의 행은 Drive에 남은 결과를 읽은 것입니다(이번에 다시 돌리지 않음).")
-        display(table[[c for c in cols if c in table]])
+        root = {**GOLD_RUNS, "dev_lora": DEV_RUN, "gold_controls": GOLD_RUNS["gold_lora"]}[key]
+        print(key, "완료 확인" if VERIFIED.get(key) else "실행 오류 또는 완료 미확인",
+              json.dumps(receipt(root, "run_status.json"), ensure_ascii=False))
+    try:
+        import pandas as pd
+        def boards(pairs):
+            found = []
+            for label, root in pairs:
+                board = root / "leaderboard.csv"
+                if board.is_file() and board.stat().st_size:
+                    found.append(pd.read_csv(board).assign(model=label))
+            return pd.concat(found) if found else None
+        NAMES = {"gold_lora": f"lora {RUN_TAG} (사람 박스)", "gold_base": "학습 전", "gold_v1": "lora sft_v1 (자동 박스)"}
+        table = boards((NAMES[key], root) for key, root in GOLD_RUNS.items())
+        if table is not None:
+            cols = ["model", "subset", "policy", "images", "q1_anomaly_f1", "q1_balanced_accuracy", "q2_defect_macro_f1",
+                    "joint_accuracy", "q3_presence_balanced_accuracy", "q3_position_hit", "q3_anomalous_location_labels",
+                    "q3_always_center_hit", "q1_q2_q3_location_joint", "q3_crop_covers_defect", "q3_crops_on_located",
+                    "center60_covers_defect", "crop_distinct_boxes", "invalid_episodes", "calls"]
+            print("시험(gold) 결과. 주 결과는 subset=frame_disjoint(학습 사진과 같은 드론 사진을 뺀 사진), 2차 모델, direct_reference 행입니다.")
+            print("fixed_evidence와 matched_reask는 대조 조건입니다(2차 모델만).")
+            display(table[[c for c in cols if c in table]])
+        table = boards(((NAMES["gold_lora"], DEV_RUN), *PREVIOUS.items()))
+        if table is not None:
+            cols = ["model", "policy", "q1_balanced_accuracy", "q2_defect_macro_f1", "q2_invalid_rate", "joint_accuracy",
+                    "false_defect_rate", "q3_presence_balanced_accuracy", "q3_normal_false_region_rate", "invalid_episodes", "calls"]
+            print("dev240 결과. 지난 실행의 행은 Drive에 남은 결과를 읽은 것입니다(이번에 다시 돌리지 않음).")
+            display(table[[c for c in cols if c in table]])
+    except Exception as exc:
+        print("표를 그리지 못했습니다(결과 ZIP에는 영향 없음):", exc)
     train_meta = receipt(TRAIN_DIR, "train_metadata.json")
     print("학습:", {k: train_meta.get(k) for k in ("optimizer_steps", "val_loss_before", "val_loss_after")})
     if train_meta.get("benchmark_commit") != EXECUTION_COMMIT:
         print("학습은 이전 실행(소스", str(train_meta.get("benchmark_commit"))[:7] + ")이 Drive에 남긴 어댑터를 그대로 썼습니다.")
-    summary = RESULTS / f"agent_sft_{RUN_TAG}_gold_execution.json"
-    summary.write_text(json.dumps(dict(
-        exit_codes=EXIT_CODES, verified=VERIFIED, execution_commit=EXECUTION_COMMIT, gold_refs=str(GOLD_REFS),
-        train_qa=[str(p) for p in TRAIN_QAS], sft_v1_adapter_found=HAS_V1,
-        training_source_commit=train_meta.get("benchmark_commit"),
-        earlier_dev240_run_found=SFT_RUN.is_dir()), indent=2, ensure_ascii=False), encoding="utf-8")
-    archive = RESULTS / f"agent_sft_{RUN_TAG}_gold_results.zip"
-    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
-        z.write(summary, "notebook_execution.json")
-        z.write(GOLD_REFS, "gold_inputs/retrieved_refs.csv")
-        for folder in LABEL_DIRS:                      # the exact label files this run trained on
-            for name in ("manifest.json", "annotations.json"):
-                z.write(folder / name, f"labels/{folder.name}/{name}")
-        # SFT_RUN: the four-condition dev240 run of 2026-11-17 that stopped midway; its saved answers are kept.
-        for label, root in (("data", DATA_DIR), ("train", TRAIN_DIR), *RUN_DIRS.items(),
-                            ("dev_lora_earlier_four_condition_run", SFT_RUN)):
-            if not root.is_dir():
-                continue
-            for p in sorted(root.rglob("*")):
-                rel = p.relative_to(root)
-                private = any(part.startswith("_") for part in rel.parts) or rel.parts[0] == "checkpoint"
-                if p.is_file() and not private and p.suffix != ".safetensors":
-                    z.write(p, f"{label}/{rel.as_posix()}")
-    print("결과 ZIP은 Drive에 저장됐습니다:", archive)
+    print("결과 ZIP은 Drive에 저장됐습니다:", ARCHIVE)
     print("모두 완료" if VERIFIED and all(VERIFIED.values()) else "일부 미완료 또는 건너뜀(위 목록 확인)")
-    files.download(str(archive))
+    try:
+        from google.colab import files
+        local = Path("/content") / ARCHIVE.name             # a local copy, so the download does not depend on Drive
+        shutil.copyfile(ARCHIVE, local)
+        files.download(str(local))
+    except Exception as exc:
+        print("브라우저 다운로드는 건너뜁니다. Drive에 있는 ZIP을 쓰세요:", exc)
+    try:
+        drive.flush_and_unmount()                           # push everything to Drive before the runtime can go away
+        print("Drive 저장을 마쳤습니다. 이제 런타임을 끊어도 됩니다.")
+    except Exception as exc:
+        print("Drive 마무리 저장을 확인하지 못했습니다. 몇 분 뒤에 런타임을 끊으세요:", exc)
     '''
 
 
@@ -383,6 +513,9 @@ def build(execution_commit, variant="sft_v1"):
         if "scripts/run_agent_sft_gold_eval.py" not in names or b'"--policies"' not in subprocess.check_output(
                 ["git", "show", f"{execution_commit}:scripts/run_agent_tool_pilot.py"], cwd=ROOT):
             raise ValueError("source commit lacks the gold runner or the pilot runner's --policies option")
+        if b'"--controls"' not in subprocess.check_output(
+                ["git", "show", f"{execution_commit}:scripts/run_agent_sft_gold_eval.py"], cwd=ROOT):
+            raise ValueError("source commit lacks the gold runner's --controls step")
         loc = subprocess.check_output(["git", "show", f"{execution_commit}:{LOC_QA}"], cwd=ROOT)
         gap = "\n        "                              # the settings cell is indented eight spaces before dedent
         labels += gap + gap.join((
@@ -391,7 +524,8 @@ def build(execution_commit, variant="sft_v1"):
             f'LOC_QA_B64 = "{base64.b64encode(zlib.compress(loc, 9)).decode("ascii")}"',
             "RUN_GOLD_BASE = True      # 학습 전 모델의 시험 채점",
             "RUN_DEV240 = True         # 2차 모델의 dev240 평가",
-            "RUN_GOLD_SFT_V1 = True    # Drive에 1차 어댑터가 있으면 1차 모델의 시험 채점"))
+            "RUN_GOLD_SFT_V1 = True    # Drive에 1차 어댑터가 있으면 1차 모델의 시험 채점",
+            "RUN_GOLD_CONTROLS = True  # 2차 모델 시험 채점의 대조 조건(가운데 고정 확대, 같은 횟수 다시 묻기)"))
     encoded = base64.b64encode(bundle).decode("ascii")
     cells = [cell("markdown", """
         # 도구 선택 에이전트 LoRA SFT — 한 번에 실행
@@ -427,14 +561,20 @@ def build(execution_commit, variant="sft_v1"):
         def run(command, cwd=None, check=True):
             command = [str(x) for x in command]
             print("+", " ".join(command[:10]), flush=True)
+            keep_log("+ " + " ".join(command) + "\\n")
             process = subprocess.Popen(command, cwd=cwd, stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT, text=True, bufsize=1)
             for line in process.stdout:
                 print(line, end="", flush=True)
+                keep_log(line)
             result = process.wait()
+            keep_log(f"[exit {result}]\\n")
             if result and check:
                 raise RuntimeError("명령 실패: 위 오류를 확인하세요. 결과를 성공으로 처리하지 않습니다.")
             return result
+
+        def keep_log(text):
+            pass                     # the one-run gold notebook replaces this with a log file on Drive
 
         if N_IMAGES != 240 or not re.fullmatch(r"[A-Za-z0-9_-]+", RUN_TAG):
             raise ValueError("240장 평가 설정을 유지하세요.")
@@ -498,7 +638,7 @@ def build(execution_commit, variant="sft_v1"):
         SFT_RUN = RESULTS / f"agent_tool_pilot_dev{N_IMAGES}_qwen3_5_4b_lora_{RUN_TAG}"
         print("학습 데이터:", DATA_DIR, "\\n어댑터:", TRAIN_DIR, "\\n평가:", BASE_RUN, SFT_RUN)
         ''') + (textwrap.dedent(HUMAN_CHECK) if human else "")
-            + (textwrap.dedent(GOLD_PREP) if gold else "")), cell("code", '''
+            + (textwrap.dedent(GOLD_PREP) + textwrap.dedent(GOLD_TOOLS) if gold else "")), cell("code", '''
         #@title 2. 학습 데이터 만들기 (자동 박스·궤적)
         verify_code()
         run([sys.executable, REPO_DIR / "scripts/build_agent_sft_data.py", "--dev-qa", DEV_QA,
@@ -567,7 +707,7 @@ def build(execution_commit, variant="sft_v1"):
         print("비교 완료" if all(verdicts.values()) else "일부 미완료(진단용)", "ZIP:", archive)
         ''')]
     if human:
-        tail = (GOLD_MAIN, GOLD_BASE, GOLD_DEV, GOLD_V1, GOLD_REPORT) if gold else (HUMAN_EVAL, HUMAN_REPORT)
+        tail = (GOLD_MAIN, GOLD_BASE, GOLD_DEV, GOLD_V1, GOLD_CONTROLS, GOLD_REPORT) if gold else (HUMAN_EVAL, HUMAN_REPORT)
         cells = [cell("markdown", GOLD_INTRO if gold else HUMAN_INTRO), cells[1], cells[2],
                  cell("code", textwrap.dedent(HUMAN_DATA) + (textwrap.dedent(GOLD_CHECK) if gold else "")), cells[4],
                  *(cell("code", source) for source in tail)]

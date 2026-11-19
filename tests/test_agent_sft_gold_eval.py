@@ -159,6 +159,57 @@ def test_scores_both_scopes_position_crops_and_resumes(tmp_path):
     assert json.loads((out / "run_status.json").read_text(encoding="utf-8"))["reused_calls"] == N * 3 * 4
 
 
+def test_controls_run_as_a_later_step_reuse_the_main_calls_and_keep_the_main_result(tmp_path):
+    args, out = inputs(tmp_path)
+    calls = []
+    assert run(args, calls) == 0
+    first = {name: (out / name).read_bytes() for name in gold.TABLES}
+    calls.clear()
+    assert run(args + ["--controls"], calls) == 0
+    assert len(calls) == N * 3 * (1 + 3)                       # one fixed-crop call and three re-asks; nothing is repeated
+    assert all("Optional tools:" not in prompt for prompt in calls)
+    board = {(r["subset"], r["policy"]): r for r in table(out, "leaderboard.csv")}
+    assert set(board) == {(s, p) for s in gold.SUBSETS for p in gold.POLICIES + gold.CONTROLS}
+    assert board["all", "matched_reask"]["calls"] == board["all", "adaptive_tools"]["calls"] == str(N * 3 * 3)
+    assert (board["all", "fixed_evidence"]["calls"], board["all", "fixed_evidence"]["crop_requests"]) == (str(N * 3), "0")
+    assert board["all", "matched_reask"]["q3_position_hit"] == board["all", "direct_reference"]["q3_position_hit"] == "2"
+    meta = json.loads((out / "run_metadata.json").read_text(encoding="utf-8"))
+    assert meta["signature"] == json.loads(first["run_metadata.json"])["signature"]      # still the same run
+    assert meta["controls"] is True and meta["policies"] == [*gold.POLICIES, *gold.CONTROLS]
+    status = json.loads((out / "run_status.json").read_text(encoding="utf-8"))
+    assert status["complete"] and (status["reused_calls"], status["calls_this_run"]) == (N * 3 * 4, N * 3 * 4)
+    assert status["eligible_policies"] == [*gold.POLICIES, *gold.CONTROLS]
+    compared = {(r["baseline"], r["condition"]) for r in table(out, "significance.csv")}
+    assert compared == {("always_center", p) for p in gold.POLICIES + gold.CONTROLS} | {
+        (c, "adaptive_tools") for c in ("direct_reference", *gold.CONTROLS)}
+    assert {"matched_reask_q3_cell", "fixed_evidence_q1_correct"} <= set(table(out, "per_image.csv")[0])
+    # The two-condition result is kept exactly as the main step left it.
+    assert {p.name: p.read_bytes() for p in (out / gold.KEPT).iterdir()} == first
+    calls.clear()
+    assert run(args, calls) == 0 and calls == []                # a later "Run all" without the flag keeps the controls
+    assert len(table(out, "leaderboard.csv")) == 8
+    assert {p.name: p.read_bytes() for p in (out / gold.KEPT).iterdir()} == first
+
+
+def test_inputs_only_tells_a_folder_of_another_run_apart_without_writing(tmp_path, capsys):
+    args, out = inputs(tmp_path)
+
+    def check(extra=()):
+        capsys.readouterr()
+        code = run([*args, *extra, "--inputs-only"])
+        return code, json.loads(capsys.readouterr().out.strip().splitlines()[-1])["saved_run"]
+    assert check() == (0, "none") and not out.exists()
+    assert run(args) == 0
+    before = sorted(p for p in out.rglob("*"))
+    assert check() == (0, "same") and check(["--controls"]) == (0, "same")
+    adapter = tmp_path / "adapter"
+    adapter.mkdir()
+    (adapter / "adapter_config.json").write_text("{}", encoding="utf-8")
+    (adapter / "adapter_model.safetensors").write_bytes(b"weights")
+    code, saved = check(["--adapter-dir", str(adapter)])        # the folder holds the base model's run
+    assert code == gold.STALE == 3 and saved.startswith("other") and sorted(out.rglob("*")) == before
+
+
 def test_wrong_cell_no_region_and_invalid_answers_are_not_hits(tmp_path):
     for name, kw, reported in (("corner", dict(q3_text="Upper-left region."), 3), ("none", dict(q3_text=pilot.support.NONE), 0),
                                ("prose", dict(q3_text="prose"), 0)):
@@ -265,6 +316,7 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
     import hashlib
     import shutil
     import textwrap
+    from types import SimpleNamespace
     import zlib
     import build_agent_sft_notebook as builder
 
@@ -300,14 +352,21 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
         assert script == "run_agent_sft_gold_eval.py"
         return gold.main(command[2:], loader=lambda spec: {}, infer=backend([]))
 
+    label_dirs = [results / "labels_a", results / "labels_b"]
+    for folder in label_dirs:
+        folder.mkdir()
+        for name in ("manifest.json", "annotations.json"):
+            (folder / name).write_text("{}", encoding="utf-8")
+    snapshot = SimpleNamespace(run=lambda *a, **k: SimpleNamespace(stdout="package==1.0\n", returncode=0))
     scope = dict(DRIVE=drive, RESULTS=results, RUN_TAG="sft_v2_human", PER_CLASS=60, N_IMAGES=240,
                  GOLD_QA_FOLDER="lvlm_insplad_qa/gold_v2_final", LOC_QA_SHA256=hashlib.sha256(loc).hexdigest(),
                  LOC_QA_B64=base64.b64encode(zlib.compress(loc, 9)).decode("ascii"),
                  REPO_DIR=ROOT, SUP_ZIP=work / "sup.zip", UNSUP_ZIP=work / "unsup.zip", DATA_DIR=data_dir,
                  TRAIN_DIR=train_dir, SFT_RUN=results / "agent_tool_pilot_dev240_qwen3_5_4b_lora_sft_v2_human",
                  DEV_QA=work / "dev.jsonl", REFS_CSV=work / "dev_refs.csv", RUN_GOLD_BASE=True, RUN_DEV240=True,
-                 RUN_GOLD_SFT_V1=True, run=run_command, verify_code=lambda: None,
-                 sys=sys, json=json, csv=csv, hashlib=hashlib)
+                 RUN_GOLD_SFT_V1=True, RUN_GOLD_CONTROLS=True, run=run_command, verify_code=lambda: None,
+                 EXECUTION_COMMIT="c" * 40, GPU_NOW="NVIDIA L4, 23034 MiB", LABEL_DIRS=label_dirs, subprocess=snapshot,
+                 sys=sys, json=json, csv=csv, hashlib=hashlib, zipfile=zipfile)
     exec(textwrap.dedent(builder.GOLD_PREP), scope)
     assert scope["LOC_QA"].read_bytes() == loc and not scope["HAS_V1"]
     assert Path(commands[0][1]).name == "build_retrieved_refs.py"          # the old CSV lacks gold photos: not reused
@@ -316,22 +375,68 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
     # dev240 never reuses SFT_RUN: an interrupted run made by other source may sit there and cannot be resumed.
     assert scope["DEV_RUN"] == results / "agent_tool_pilot_dev240_qwen3_5_4b_lora_sft_v2_human_two_conditions"
     assert scope["DEV_RUN"] != scope["SFT_RUN"] and "이미 끝난 학습: 있음" in capsys.readouterr().out
+    exec(textwrap.dedent(builder.GOLD_TOOLS), scope)
+    gold_root = results / "agent_sft_gold_sft_v2_human"
+    assert (gold_root / "logs/pip_freeze.txt").read_text(encoding="utf-8") == "package==1.0\n"
+    assert scope["EXECUTION_COMMIT"] in scope["RUN_LOG"].read_text(encoding="utf-8") and scope["EXIT_CODES"] == {}
     exec(textwrap.dedent(builder.GOLD_CHECK), scope)                        # runs the real runner with --inputs-only
-    assert commands[-1][-1] == "--inputs-only" and not scope["GOLD_RUNS"]["gold_lora"].exists()
+    assert commands[-1][-2:] == [str(gold_root / "agent_sft_gold_eval_input_check"), "--inputs-only"]
+    assert not (gold_root / "agent_sft_gold_eval_input_check").exists()
     report = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert (report["images"], report["frame_disjoint"], report["located"]) == (8, 6, dict(frame_disjoint=2, all=3))
-    for source in (builder.GOLD_MAIN, builder.GOLD_BASE, builder.GOLD_DEV, builder.GOLD_V1):
+    for source in (builder.GOLD_MAIN, builder.GOLD_BASE, builder.GOLD_DEV, builder.GOLD_V1, builder.GOLD_CONTROLS):
         exec(textwrap.dedent(source), scope)
-    assert scope["EXIT_CODES"] == dict(gold_lora=0, gold_base=0, dev_lora=0)   # no first-run adapter on this Drive
-    ran = [(Path(c[1]).name, "--adapter-dir" in c) for c in commands[2:]]
-    assert ran == [("run_agent_sft_gold_eval.py", True), ("run_agent_sft_gold_eval.py", False), ("run_agent_tool_pilot.py", True)]
-    dev = commands[-1]
+    # No first-run adapter on this Drive, so that step is absent; the controls run last, in the main model's folder.
+    assert scope["EXIT_CODES"] == dict(gold_lora=0, gold_base=0, dev_lora=0, gold_controls=0)
+    ran = [(Path(c[1]).name, "--adapter-dir" in c, "--controls" in c) for c in commands[2:] if "--inputs-only" not in c]
+    assert ran == [("run_agent_sft_gold_eval.py", True, False), ("run_agent_sft_gold_eval.py", False, False),
+                   ("run_agent_tool_pilot.py", True, False), ("run_agent_sft_gold_eval.py", True, True)]
+    checks = [c for c in commands[2:] if "--inputs-only" in c]
+    real = [c for c in commands[2:] if "--inputs-only" not in c and Path(c[1]).name == "run_agent_sft_gold_eval.py"]
+    assert len(checks) == 3 and [c[:-1] for c in checks] == real              # each gold step first asks: resumable?
+    dev = next(c for c in commands if Path(c[1]).name == "run_agent_tool_pilot.py")
     assert dev[dev.index("--policies") + 1:dev.index("--policies") + 3] == ["direct_reference", "adaptive_tools"]
     assert dev[dev.index("--out-dir") + 1] == str(scope["DEV_RUN"])
     trained =json.loads((scope["GOLD_RUNS"]["gold_lora"] / "run_metadata.json").read_text(encoding="utf-8"))
     untrained = json.loads((scope["GOLD_RUNS"]["gold_base"] / "run_metadata.json").read_text(encoding="utf-8"))
     assert trained["training"] is True and untrained["training"] is False
+    assert trained["controls"] is True and untrained["controls"] is False
     assert trained["frame_overlap"] == untrained["frame_overlap"]              # every model is scored on the same photos
+    # The ZIP is rewritten after every step. It holds the raw calls, the two-condition tables as the main step left
+    # them, the log, the environment, the references and small copies of the gold photos.
+    with zipfile.ZipFile(scope["ARCHIVE"]) as z:
+        names = set(z.namelist())
+        execution = json.loads(z.read("notebook_execution.json"))
+        index = list(csv.DictReader(z.read("gold_inputs/preview/index.csv").decode("utf-8").splitlines()))
+    assert {"gold_lora/leaderboard.csv", "gold_lora/main_conditions_before_controls/leaderboard.csv",
+            "gold_lora/per_image.csv", "gold_base/answers.jsonl", "logs/pip_freeze.txt", "logs/nvidia_smi.txt",
+            "logs/" + scope["RUN_LOG"].name, "gold_inputs/retrieved_refs.csv", "gold_inputs/refs_gold/retrieved_refs.csv",
+            "gold_inputs/localization_mmad_qa_133.jsonl", "labels/labels_a/annotations.json",
+            "data/sft_train_qa.jsonl"} <= names
+    for policy in gold.POLICIES + gold.CONTROLS:
+        assert sum(n.startswith(f"gold_lora/episodes/{policy}/") for n in names) == N * 3
+    assert not any("/_" in n or n.endswith(".safetensors") for n in names) and not scope["ARCHIVE"].with_name(
+        scope["ARCHIVE"].name + ".partial").exists()
+    assert execution["exit_codes"] == scope["EXIT_CODES"] and execution["earlier_runs"] == {}
+    assert len(index) == N and {r["image"] for r in index} == {image(i) for i in range(N)}
+    assert all(f"gold_inputs/preview/{r['file']}" in names and int(r["width"]) > 0 for r in index)
+    # A gold folder started by other source cannot be resumed: it is kept as it is, zipped, and a new folder is used.
+    first_base = scope["GOLD_RUNS"]["gold_base"]
+    meta = json.loads((first_base / "run_metadata.json").read_text(encoding="utf-8"))
+    (first_base / "run_metadata.json").write_text(json.dumps(dict(meta, signature="another-version")), encoding="utf-8")
+    kept = {p.relative_to(first_base).as_posix(): p.read_bytes() for p in first_base.rglob("*") if p.is_file()}
+    exec(textwrap.dedent(builder.GOLD_BASE), scope)
+    assert scope["GOLD_RUNS"]["gold_base"] == first_base.with_name(first_base.name + "_ccccccc")
+    assert scope["EXIT_CODES"]["gold_base"] == 0 and scope["EARLIER"] == {"gold_base_earlier_run": first_base}
+    assert (scope["GOLD_RUNS"]["gold_base"] / "leaderboard.csv").is_file()
+    assert kept == {p.relative_to(first_base).as_posix(): p.read_bytes() for p in first_base.rglob("*") if p.is_file()}
+    with zipfile.ZipFile(scope["ARCHIVE"]) as z:
+        assert {"gold_base/leaderboard.csv", "gold_base_earlier_run/leaderboard.csv"} <= set(z.namelist())
+    scope["RUN_GOLD_CONTROLS"] = False                                          # a switched-off step leaves no row
+    scope["EXIT_CODES"].pop("gold_controls")
+    exec(textwrap.dedent(builder.GOLD_CONTROLS), scope)
+    assert "gold_controls" not in scope["EXIT_CODES"]
+    scope["RUN_GOLD_CONTROLS"] = True
     # A reused reference file must cover every gold photo; a first-run adapter on Drive switches its scoring on.
     shutil.copy(work / "refs.csv", old_refs)
     shutil.copytree(train_dir / "adapter", results / "agent_sft_lora_qwen3_5_4b_sft_v1/adapter")
@@ -351,32 +456,42 @@ def test_gold_notebook_builds_with_the_runner_the_location_set_and_an_l4_runtime
     import build_agent_sft_notebook as builder
 
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    if subprocess.run(["git", "cat-file", "-e", f"{commit}:scripts/run_agent_sft_gold_eval.py"], cwd=ROOT).returncode:
+    committed = subprocess.run(["git", "show", f"{commit}:scripts/run_agent_sft_gold_eval.py"], cwd=ROOT, capture_output=True)
+    if committed.returncode or b'"--controls"' not in committed.stdout:
         with pytest.raises(ValueError, match="lacks the gold runner"):
             builder.build(commit, builder.GOLD)
-        pytest.skip("HEAD predates the gold runner; commit before building the notebook")
+        pytest.skip("HEAD predates the gold runner or its controls step; commit before building the notebook")
     notebook = builder.build(commit, builder.GOLD)
     code = [c["source"] for c in notebook["cells"] if c["cell_type"] == "code"]
-    assert len(code) == 9 and "시험(gold) 채점" in notebook["cells"][0]["source"]
+    assert len(code) == 10 and "시험(gold) 채점" in notebook["cells"][0]["source"]
     assert notebook["metadata"]["colab"]["gpuType"] == "L4" and notebook["metadata"]["accelerator"] == "GPU"
     config = {}
     exec(code[0], config)
     assert config["RUN_TAG"] == "sft_v2_human" and config["RUN_GOLD_BASE"] and config["RUN_DEV240"] and config["RUN_GOLD_SFT_V1"]
+    assert config["RUN_GOLD_CONTROLS"] is True
+    for source in code:
+        compile(source, "cell", "exec")                        # every cell is valid Python as written into the notebook
     loc = subprocess.check_output(["git", "show", f"{commit}:{builder.LOC_QA}"], cwd=ROOT)
     assert zlib.decompress(base64.b64decode(config["LOC_QA_B64"])) == loc
     assert config["LOC_QA_SHA256"] == hashlib.sha256(loc).hexdigest() and loc.count(b"\n") == 133
     assert code[1].index("지금 연결된 GPU") < code[1].index("drive.mount") < code[1].index('"pip", "install"')
     assert code[1].index("LABEL_DIRS = ") < code[1].index("GOLD_QA_DIR = ")
     assert '"--inputs-only"' in code[2] and "train_agent_sft_lora.py" in code[3]      # inputs are checked before training
-    order = [("gold_lora", 4), ("gold_base", 5), ("dev_lora", 6), ("gold_v1", 7)]
+    order = [("gold_lora", 4), ("gold_base", 5), ("dev_lora", 6), ("gold_v1", 7), ("gold_controls", 8)]
     assert all(f'EXIT_CODES["{key}"]' in code[index] for key, index in order)
+    assert all("save_zip()" in code[index] for index in range(4, 10))      # the ZIP is rewritten after every step
     assert '"--policies", "direct_reference", "adaptive_tools"' in code[6] and "load_in_4bit" not in "".join(code)
-    assert "frame_disjoint" in code[8] and 'f"labels/{folder.name}/{name}"' in code[8]
+    assert '"--controls"' in code[8] and 'EXIT_CODES.get("gold_lora") == 0' in code[8]
+    assert "frame_disjoint" in code[9] and 'f"labels/{folder.name}/{name}"' in code[1]
+    assert code[9].index("save_zip()") < code[9].index("import pandas") < code[9].index("flush_and_unmount")
     assert '"--out-dir", DEV_RUN' in code[6] and "SFT_RUN" not in code[6]           # a fresh dev240 folder
-    assert '("dev_lora_earlier_four_condition_run", SFT_RUN)' in code[8] and '"dev_lora": DEV_RUN' in code[8]
+    assert '("dev_lora_earlier_four_condition_run", SFT_RUN)' in code[1] and '("dev_lora", DEV_RUN)' in code[1]
+    # The log hook must exist before the first command runs, and the Drive log replaces it once Drive is mounted.
+    assert code[1].index("def run(command") < code[1].index("def keep_log(text):\n    pass") < code[1].index("drive.mount")
+    assert code[1].count("def keep_log(text):") == 2 and code[1].index("drive.mount") < code[1].index("RUN_LOG = ")
     receipt = builder.pilot_nb.extract_source_bundle(config["SOURCE_ZIP_B64"], config["SOURCE_ZIP_SHA256"], tmp_path / "src", commit)
     assert {"scripts/run_agent_sft_gold_eval.py", "scripts/score_gold_v2_q3_position.py", "scripts/q3_multiregion.py"} <= set(receipt["files"])
-    for script, flag in (("run_agent_sft_gold_eval.py", "--inputs-only"), ("run_agent_tool_pilot.py", "--policies")):
+    for script, flag in (("run_agent_sft_gold_eval.py", "--controls"), ("run_agent_tool_pilot.py", "--policies")):
         result = subprocess.run([sys.executable, tmp_path / "src/scripts" / script, "--help"], capture_output=True, text=True)
         assert result.returncode == 0 and flag in result.stdout, result.stderr
     human = builder.build(commit, "sft_v2_human")              # the earlier notebooks keep their own cells
