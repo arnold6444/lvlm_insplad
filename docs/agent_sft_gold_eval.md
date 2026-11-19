@@ -1,9 +1,25 @@
 # Gold scoring of the fine-tuned agent (protocol fixed 2026-11-17, not run yet)
 
 Notebook: `notebooks/lvlm_agent_sft_lora_human_boxes_gold_colab.ipynb`. Pick an L4 or A100 runtime, then **Run all**
-once. It trains the second LoRA run ([agent_sft_lora.md](agent_sft_lora.md), `sft_v2_human`) and then scores gold v2
-in the same execution. The user can run Colab only once more, so nothing is chosen between the steps: every row
+once. It trains the second LoRA run ([agent_sft_lora.md](agent_sft_lora.md), `sft_v2_human`), or reuses it when it
+is already on Drive, and then scores gold v2 in the same execution. The user can run Colab only once more, so nothing is chosen between the steps: every row
 below is fixed here, before any gold call, and every row that runs is reported.
+
+## State on Drive (read on 2026-11-19, read-only)
+
+- The second run is already trained. The earlier notebook (source `fb5b9be`) ran on an L4 on 2026-11-17:
+  4,791 training and 249 validation samples, 599 optimizer steps, validation loss .779 to .143. Its data folder and
+  adapter are on Drive.
+- Its dev240 evaluation (four conditions) stopped midway on 2026-11-17 and has no leaderboard.
+- No gold scoring exists, and no gold reference file was found (`gold_v2_matched_call_v1` has no `refs_gold`), so
+  the notebook builds the references itself with `build_retrieved_refs.py`. Rehearsed locally on the real gold photo
+  names and both real ZIP manifests with fake embeddings: 246 rows, every reference a different-date train normal
+  of the same asset, accepted by the runner.
+- Present and as the notebook expects: frozen gold QA (`master_qa_492.jsonl`, `FROZEN`, 246), both source ZIPs at the
+  top of My Drive, the first run's adapter and training list.
+- So this notebook skips data building and training: both scripts compare settings and data hashes, not source
+  commits (checked with the new source on the real first-run folders: "already built", "already trained").
+  What remains is scoring, about 5 to 6 hours on an L4.
 
 ## Why
 
@@ -34,8 +50,11 @@ Runner: `scripts/run_agent_sft_gold_eval.py` (protocol `agent_sft_gold_eval_v1`)
 |---|---|---|
 | 1 | LoRA `sft_v2_human` (human boxes, polymer added) | **primary** |
 | 2 | Qwen3.5-4B before training | same prompts, no training |
-| 3 | dev240, LoRA `sft_v2_human`, the same two conditions | the dev row the paper's dev table lacks |
+| 3 | dev240, LoRA `sft_v2_human`, the same two conditions, in a new folder | the dev row the paper's dev table lacks |
 | 4 | LoRA `sft_v1` (automatic boxes), only if its adapter is on Drive | what the human boxes and polymer photos add |
+
+The interrupted four-condition dev240 run cannot be resumed by this runner (a run is bound to its source), so it
+is left untouched and its saved answers go into the result ZIP as `dev_lora_earlier_four_condition_run/`.
 
 ## Scopes
 
@@ -98,8 +117,8 @@ the paper says the dev240 scores reflected photos close to the training set.
   each other and with dev240, not with the baseline tables.
 - No small supervised classifier is trained on the same labels, so nothing here shows that an LVLM is the better
   use of the labels.
-- Estimated time on an L4 (from the first run's speed, not measured): training 6-7 h, gold about 4 h in total,
-  dev240 1.5 h.
+- Estimated time on an L4 (from the first run's speed, not measured): gold about 4 h in total, dev240 1.5 h,
+  and 6-7 h more only if training has to run.
 
 ## Safeguards for a single execution
 

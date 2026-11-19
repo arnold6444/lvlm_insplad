@@ -313,7 +313,9 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
     assert Path(commands[0][1]).name == "build_retrieved_refs.py"          # the old CSV lacks gold photos: not reused
     assert scope["GOLD_REFS"] == results / "agent_sft_gold_sft_v2_human/inputs/refs_gold/retrieved_refs.csv"
     assert all(p.name.startswith("agent_sft_gold_eval") for p in scope["GOLD_RUNS"].values())
-    capsys.readouterr()
+    # dev240 never reuses SFT_RUN: an interrupted run made by other source may sit there and cannot be resumed.
+    assert scope["DEV_RUN"] == results / "agent_tool_pilot_dev240_qwen3_5_4b_lora_sft_v2_human_two_conditions"
+    assert scope["DEV_RUN"] != scope["SFT_RUN"] and "이미 끝난 학습: 있음" in capsys.readouterr().out
     exec(textwrap.dedent(builder.GOLD_CHECK), scope)                        # runs the real runner with --inputs-only
     assert commands[-1][-1] == "--inputs-only" and not scope["GOLD_RUNS"]["gold_lora"].exists()
     report = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
@@ -325,7 +327,8 @@ def test_notebook_cells_check_gold_inputs_before_training_and_run_the_runner_in_
     assert ran == [("run_agent_sft_gold_eval.py", True), ("run_agent_sft_gold_eval.py", False), ("run_agent_tool_pilot.py", True)]
     dev = commands[-1]
     assert dev[dev.index("--policies") + 1:dev.index("--policies") + 3] == ["direct_reference", "adaptive_tools"]
-    trained = json.loads((scope["GOLD_RUNS"]["gold_lora"] / "run_metadata.json").read_text(encoding="utf-8"))
+    assert dev[dev.index("--out-dir") + 1] == str(scope["DEV_RUN"])
+    trained =json.loads((scope["GOLD_RUNS"]["gold_lora"] / "run_metadata.json").read_text(encoding="utf-8"))
     untrained = json.loads((scope["GOLD_RUNS"]["gold_base"] / "run_metadata.json").read_text(encoding="utf-8"))
     assert trained["training"] is True and untrained["training"] is False
     assert trained["frame_overlap"] == untrained["frame_overlap"]              # every model is scored on the same photos
@@ -369,6 +372,8 @@ def test_gold_notebook_builds_with_the_runner_the_location_set_and_an_l4_runtime
     assert all(f'EXIT_CODES["{key}"]' in code[index] for key, index in order)
     assert '"--policies", "direct_reference", "adaptive_tools"' in code[6] and "load_in_4bit" not in "".join(code)
     assert "frame_disjoint" in code[8] and 'f"labels/{folder.name}/{name}"' in code[8]
+    assert '"--out-dir", DEV_RUN' in code[6] and "SFT_RUN" not in code[6]           # a fresh dev240 folder
+    assert '("dev_lora_earlier_four_condition_run", SFT_RUN)' in code[8] and '"dev_lora": DEV_RUN' in code[8]
     receipt = builder.pilot_nb.extract_source_bundle(config["SOURCE_ZIP_B64"], config["SOURCE_ZIP_SHA256"], tmp_path / "src", commit)
     assert {"scripts/run_agent_sft_gold_eval.py", "scripts/score_gold_v2_q3_position.py", "scripts/q3_multiregion.py"} <= set(receipt["files"])
     for script, flag in (("run_agent_sft_gold_eval.py", "--inputs-only"), ("run_agent_tool_pilot.py", "--policies")):
