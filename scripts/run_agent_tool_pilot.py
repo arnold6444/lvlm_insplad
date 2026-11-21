@@ -245,7 +245,12 @@ def main(argv=None, *, loader=None, infer=None):
     parser.add_argument("--n-boot", type=int, default=2000)
     parser.add_argument("--adapter-dir", type=Path, default=None,
                         help="LoRA adapter from train_agent_sft_lora.py (qwen3_5_4b only); omit for the base model")
+    parser.add_argument("--policies", nargs="+", choices=POLICIES, default=list(POLICIES),
+                        help="conditions to run, in the fixed order; matched_reask needs adaptive_tools")
     args = parser.parse_args(argv)
+    policies = tuple(p for p in POLICIES if p in args.policies)
+    if "matched_reask" in policies and "adaptive_tools" not in policies:
+        raise ValueError("matched_reask copies the call count of adaptive_tools; run both")
     adapter_files = None
     if args.adapter_dir is not None:
         if args.model != "qwen3_5_4b":
@@ -277,6 +282,8 @@ def main(argv=None, *, loader=None, infer=None):
                            seed=args.seed, refs=refs, sources={p.name: file_sha(p) for p in source_files})
     if adapter_files is not None:
         identity_inputs["lora_adapter"] = adapter_files
+    if policies != POLICIES:
+        identity_inputs["policies"] = policies
     signature = digest(identity_inputs)
     meta_path = args.out_dir / "run_metadata.json"
     old_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
@@ -301,7 +308,7 @@ def main(argv=None, *, loader=None, infer=None):
     meta = dict(protocol=PROTOCOL, signature=signature, identity=identity, model=spec, run_id=run_id, software=software,
                 resolved_model_revision=(old_meta or {}).get("resolved_model_revision"),
                 benchmark_commit=source_commit(), images=args.n_images, max_calls=args.max_calls,
-                training=adapter_files is not None, lora_adapter=adapter_files, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
+                policies=list(policies), training=adapter_files is not None, lora_adapter=adapter_files, gpu=(agent.gpu_info() or (old_meta or {}).get("gpu")) if loader is None else None,
                 execution="real_hf" if loader is None and infer is None else "injected_test_backend",
                 spatial_gt="absent; no Q3 location or location-joint claim", tile_budget=spec.get("max_total_tiles"),
                 limitations="Prompt and available images differ across controls; extra images share visual budget. Dev is repeatedly explored.")
@@ -331,7 +338,7 @@ def main(argv=None, *, loader=None, infer=None):
         return infer(adapter, images, prompt)
     records, boards = [], []
     try:
-        for policy in POLICIES:
+        for policy in policies:
             for index, row in enumerate(rows+q3):
                 matching = next((r["calls"] for r in records if r["policy"] == "adaptive_tools" and r["id"] == row["id"]), None)
                 result = episode(row, policy, targets[row["image"]], normals[refs[row["image"]]],
@@ -373,7 +380,7 @@ def main(argv=None, *, loader=None, infer=None):
     base.write_csv(args.out_dir / "metrics_by_asset.csv", by_asset)
     base.write_csv(args.out_dir / "q2_by_defect.csv", by_defect)
     found = {(args.model, b["policy"]): {r["id"]: r["predicted_choice"] for r in records if r["policy"] == b["policy"]} for b in boards}
-    comparisons = [(p, "adaptive_tools") for p in POLICIES if p != "adaptive_tools"]
+    comparisons = [(p, "adaptive_tools") for p in policies if p != "adaptive_tools"]
     significance = []
     for control, policy in comparisons:
         if (args.model, control) not in found or (args.model, policy) not in found:
@@ -392,9 +399,9 @@ def main(argv=None, *, loader=None, infer=None):
     support.atomic_json(args.out_dir / "run_status.json", dict(complete=errors == 0, status="inference_complete" if errors == 0 else "has_errors", run_id=run_id,
                         row_errors=errors, invalid_episodes=invalid,
                         calls_this_run=sum(r["calls_this_run"] for r in records), reused_calls=sum(r["reused_calls"] for r in records),
-                        adaptive_valid_rate=1-sum(bool(r["invalid"] or r["error"]) for r in adaptive)/len(adaptive),
+                        adaptive_valid_rate=1-sum(bool(r["invalid"] or r["error"]) for r in adaptive)/len(adaptive) if adaptive else None,
                         eligible_policies=[r["policy"] for r in boards],
-                        pilot_format_gate=errors == 0 and sum(bool(r["invalid"]) for r in adaptive)/len(adaptive) <= .1,
+                        pilot_format_gate=bool(adaptive) and errors == 0 and sum(bool(r["invalid"]) for r in adaptive)/len(adaptive) <= .1,
                         location_evaluation_complete=False, scope="dev pilot only; not experiment effectiveness or publication"))
     print(json.dumps(boards, indent=2))
     return int(errors > 0)
