@@ -4,6 +4,8 @@ InsPLAD 데이터로 LVLM 이상탐지 · 구조화 결함 이해 QA 벤치마�
 
 **현재 상태(2026-10-24): 최종.** 2026-10-23 범위 동결 이후 계획한 실험은 모두 끝났다. 새 실험은 논문 표나 문장을 바꿀 때만, 사용자가 요청할 때만 한다. 남은 일은 논문 마무리(Overleaf 컴파일, 제목·저자)뿐이다.
 
+**2026-11-17 범위 일부 재개(사용자 결정).** LoRA 미세조정 후속 결과를 이 논문에 "소량 미세조정" 절로 넣는다. 2026-11-21에 사람 박스 2차 학습과 gold 채점을 마치고 절에 반영했다(`plan.md`, 결과 `results/latest/agent_sft_gold_eval/`). gold 채점은 프로토콜을 미리 고정하고 한 번 했다. 이 결과로 설정을 고르거나 다시 채점하지 않는다. 그 밖의 범위는 그대로 동결이다.
+
 ## 변경 금지 계약
 - Track A: unsupervised 17개 자산, 공식 `test` 6,481장. Track B: supervised 5개 자산, 공식 `val` 6,417장(test split 없음). Joint Accuracy 는 Track B 안에서만 계산
 - Aligned Core = unsup test ∩ sup val ∩ SHA256 일치 ∩ binary GT 일치 = **1,378장**. binary GT 가 충돌하는 6장은 트랙 간 비교에 쓰지 않는다
