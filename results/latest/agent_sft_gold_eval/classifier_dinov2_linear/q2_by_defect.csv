@@ -1,0 +1,13 @@
+eval_set,subset,policy,defect_gt,images,q2_correct,q2_accuracy
+gold,all,dinov2_linear,bird-nest,23,19,0.8260869565217391
+gold,all,dinov2_linear,missing-cap,27,3,0.1111111111111111
+gold,all,dinov2_linear,normal,107,106,0.9906542056074766
+gold,all,dinov2_linear,rust,89,77,0.8651685393258427
+gold,frame_disjoint,dinov2_linear,bird-nest,19,16,0.8421052631578947
+gold,frame_disjoint,dinov2_linear,missing-cap,23,3,0.13043478260869565
+gold,frame_disjoint,dinov2_linear,normal,101,100,0.9900990099009901
+gold,frame_disjoint,dinov2_linear,rust,83,72,0.8674698795180723
+dev240,all,dinov2_linear,bird-nest,20,18,0.9
+dev240,all,dinov2_linear,missing-cap,25,25,1.0
+dev240,all,dinov2_linear,normal,125,122,0.976
+dev240,all,dinov2_linear,rust,70,64,0.9142857142857143

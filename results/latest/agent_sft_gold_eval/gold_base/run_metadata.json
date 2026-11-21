@@ -1,0 +1,64 @@
+{
+  "protocol": "agent_sft_gold_eval_v1",
+  "signature": "abb87fbd3b33aa396a119e4370ba32dc05cf360c372db9ea4ea09db4328db2c2",
+  "identity": "125f69e32129d314fcf5a17a8c9c72b5abe36104e5eb80b14474f73d8243e6b7",
+  "model": {
+    "backend": "hf",
+    "provider": "huggingface",
+    "model_id": "Qwen/Qwen3.5-4B",
+    "trust_remote_code": false,
+    "adapter": "pipeline",
+    "role": "qwen_family"
+  },
+  "run_id": "d3ba241f-2a3e-4d4b-9cda-9aef00cf5212",
+  "software": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.14.0",
+    "accelerate": "1.14.0",
+    "peft": "0.21.2",
+    "numpy": "2.4.6",
+    "Pillow": "11.3.0"
+  },
+  "resolved_model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "benchmark_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "images": 246,
+  "max_calls": 3,
+  "policies": [
+    "direct_reference",
+    "adaptive_tools"
+  ],
+  "controls": false,
+  "training": false,
+  "lora_adapter": null,
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "execution": "real_hf",
+  "primary_scope": "frame_disjoint",
+  "post_hoc_rules": null,
+  "frame_overlap": {
+    "training_photos": 660,
+    "training_files": [
+      "sft_train_qa.jsonl",
+      "sft_train_qa.jsonl"
+    ],
+    "same_frame": 20,
+    "same_bytes": 0,
+    "frame_disjoint_images": 226,
+    "located_images": {
+      "frame_disjoint": 119,
+      "all": 133
+    }
+  },
+  "inputs": {
+    "loc_qa": "f5a6b5c1e0b9d7061da729b4b5186882e10dca00fb94a4de998b798e9cf1e5a5",
+    "train_qa": [
+      "7edf598fbc5e51cf92edb7bef4fca533206a07fd8b301fac11065c53f5d0bd52",
+      "08485091288e4aedf659230f9e235716a8963925738847b2ed81754dbe7cd06b"
+    ]
+  },
+  "cell_rule": "each box centre mapped to a 3x3 cell; hit = the single reported cell is one of those cells",
+  "invalid_policy": "invalid output: anomalous rows count as FN, normal rows as FP; an invalid Q3 answer is no hit",
+  "limitations": "One model, one training run, greedy decoding. Gold has prior exploratory use by other methods. The reference is retrieved, not the fixed benchmark reference. Prompts differ from the paper's gold tables, so only rows of this protocol are comparable with each other."
+}

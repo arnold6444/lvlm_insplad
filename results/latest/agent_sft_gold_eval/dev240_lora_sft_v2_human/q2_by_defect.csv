@@ -1,0 +1,9 @@
+policy,defect_gt,images,q2_correct,q2_accuracy
+direct_reference,bird-nest,20,20,1.0
+direct_reference,missing-cap,25,25,1.0
+direct_reference,normal,125,122,0.976
+direct_reference,rust,70,68,0.9714285714285714
+adaptive_tools,bird-nest,20,20,1.0
+adaptive_tools,missing-cap,25,25,1.0
+adaptive_tools,normal,125,124,0.992
+adaptive_tools,rust,70,67,0.9571428571428572

@@ -1,0 +1,37 @@
+{
+  "exit_codes": {
+    "gold_lora": 0,
+    "classifier": 0,
+    "gold_base": 0,
+    "dev_lora": 0,
+    "gold_v1": 0,
+    "gold_controls": 0
+  },
+  "verified": {
+    "gold_lora": true,
+    "gold_base": true,
+    "gold_v1": true,
+    "dev_lora": true,
+    "classifier": true,
+    "gold_controls": true
+  },
+  "execution_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "gpu": "NVIDIA L4, 23034 MiB",
+  "written": "2026-11-20 18:19:01",
+  "gold_refs": "/content/drive/MyDrive/lvlm_insplad_results/agent_sft_gold_sft_v2_human/inputs/refs_gold/retrieved_refs.csv",
+  "train_qa": [
+    "/content/drive/MyDrive/lvlm_insplad_results/agent_sft_data_pc60_sft_v2_human/sft_train_qa.jsonl",
+    "/content/drive/MyDrive/lvlm_insplad_results/agent_sft_data_pc60_sft_v1/sft_train_qa.jsonl"
+  ],
+  "sft_v1_adapter_found": true,
+  "training_source_commit": "fb5b9be9212592de6a66eb617be3f34bc53412d2",
+  "run_folders": {
+    "gold_lora": "agent_sft_gold_eval_lora_sft_v2_human",
+    "gold_base": "agent_sft_gold_eval_base",
+    "gold_v1": "agent_sft_gold_eval_lora_sft_v1",
+    "dev_lora": "agent_tool_pilot_dev240_qwen3_5_4b_lora_sft_v2_human_two_conditions",
+    "classifier": "sft_label_classifier_baseline"
+  },
+  "earlier_runs": {},
+  "earlier_dev240_run_found": true
+}

@@ -1,0 +1,17 @@
+{
+  "complete": true,
+  "status": "inference_complete",
+  "run_id": "6a46275e-e388-4857-82a5-8fcd18178a16",
+  "row_errors": 0,
+  "invalid_episodes": 0,
+  "calls_this_run": 0,
+  "reused_calls": 2498,
+  "adaptive_valid_rate": 1.0,
+  "eligible_policies": [
+    "direct_reference",
+    "adaptive_tools"
+  ],
+  "pilot_format_gate": true,
+  "location_evaluation_complete": false,
+  "scope": "dev pilot only; not experiment effectiveness or publication"
+}

@@ -1,0 +1,17 @@
+{
+  "complete": true,
+  "status": "inference_complete",
+  "run_id": "62865a3d-42d9-455c-bd49-6a33dc755bf6",
+  "row_errors": 0,
+  "invalid_episodes": 0,
+  "calls_this_run": 0,
+  "reused_calls": 5120,
+  "eligible_policies": [
+    "direct_reference",
+    "adaptive_tools",
+    "fixed_evidence",
+    "matched_reask"
+  ],
+  "location_evaluation_complete": true,
+  "scope": "gold v2, scored once under agent_sft_gold_eval_v1; never used to choose a setting"
+}

@@ -1,0 +1,43 @@
+{
+  "protocol": "sft_label_classifier_baseline_v1",
+  "signature": "05c3b2327e65abb113163cf452e1bd203932d38a0e9967c96b47fb96df3726b1",
+  "run_id": "5ce88e10-85dc-4b24-bbc0-82450131e54b",
+  "benchmark_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "features": {
+    "model_id": "facebook/dinov2-base",
+    "model_revision": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+    "embedding": "last_hidden_state_cls_l2"
+  },
+  "classifier": "StandardScaler + LogisticRegression(max_iter=5000), scikit-learn defaults otherwise",
+  "classes": [
+    "Bird nest / foreign nesting material.",
+    "Missing cap / missing insulator component.",
+    "Normal / no defect.",
+    "Rust / corrosion."
+  ],
+  "software": {
+    "scikit-learn": "1.6.1",
+    "numpy": "2.4.6",
+    "torch": "2.14.1+cu130",
+    "transformers": "5.14.0"
+  },
+  "training_photos": 660,
+  "training_classes": {
+    "Bird nest / foreign nesting material.": 60,
+    "Missing cap / missing insulator component.": 60,
+    "Normal / no defect.": 300,
+    "Rust / corrosion.": 240
+  },
+  "training_accuracy": 1.0,
+  "training_file": "7edf598fbc5e51cf92edb7bef4fca533206a07fd8b301fac11065c53f5d0bd52",
+  "cohorts": {
+    "gold/all": 246,
+    "gold/frame_disjoint": 226,
+    "dev240/all": 240
+  },
+  "gold_photos_sharing_a_frame_or_bytes": 20,
+  "primary_scope": "frame_disjoint",
+  "execution": "real_dinov2",
+  "gpu": null,
+  "limitations": "Target photo only: no reference photo, no asset name, no location. One feature model, one classifier, no tuning and no second seed. Gold has prior exploratory use by other methods."
+}
