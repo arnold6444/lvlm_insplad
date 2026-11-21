@@ -12,16 +12,16 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 
 - **2026-11-17 (user): the scope is reopened for one addition.** The LoRA fine-tuning follow-up goes into this paper as a
   "few hundred labelled images" section. Everything else stays frozen. Code and notebooks for it are on `main`
-  (`docs/agent_sft_lora.md`); the paper text is on `paper/explainability-motivation`, uncommitted.
+  (`docs/agent_sft_lora.md`); the paper text is on `paper/explainability-motivation`, committed locally on 2026-11-21, not pushed.
 
-## Fine-tuning section (written 2026-11-21, uncommitted)
+## Fine-tuning section (written and committed 2026-11-21, not pushed)
 - Status 2026-11-21: items 1-4 below are done. The section now has the second run on dev240, the gold protocol,
   table `tab:sftgold` (`tables/sft_gold_rows.tex`), the classifier comparison, position, crops and the limits; the
   abstract, introduction (fourth contribution), Section 6 item, discussion item, conclusion and reproducibility
   appendix were revised in both languages. Result tables: `results/latest/agent_sft_gold_eval/` (manifest with the
   ZIP hash); model differences: `compute_sft_gold_differences.py` -> `model_differences.csv`.
   Checked: 12 table rows and 26 text items recomputed from the result CSVs (all equal), static checks pass, both
-  Word files rebuilt (14 tables). Not done: LaTeX compile, commit, PR, merge of `feat/sft-gold-eval` (the protocol
+  Word files rebuilt (14 tables). Not done: LaTeX compile, push, PR, merge of `feat/sft-gold-eval` (the protocol
   document the paper cites lives on that branch).
 - Supported: fine-tuning raises presence and type on frame-disjoint gold (64 -> 196 of 226); not clearly above a
   small classifier on the same labels (191; Q2 alone is above); tool choice locates more often than the single
@@ -84,6 +84,6 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 - Confirm the InsPLAD volume/pages in `refs.bib` (the DOI is confirmed).
 
 ## Next action
-The gold result is in the paper (2026-11-21, on the user's request "논문에 반영"), uncommitted. Next, when the user
+The gold result is in the paper (2026-11-21, on the user's request "논문에 반영") and committed locally the same day (four commits, 6458e26..a4bc530 plus this note), not pushed. Next, when the user
 asks: read the new section and confirm its wording, commit and open PRs (paper branch, and `feat/sft-gold-eval`
 for the code and protocol), compile on Overleaf, fix title and authors.
