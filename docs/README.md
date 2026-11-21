@@ -2,6 +2,11 @@
 
 Each file describes one Colab experiment: its inputs, fixed settings, pass/failure gates and outputs. All experiments are finished; the results are in [`reports/paper_tables/latest_results.md`](../reports/paper_tables/latest_results.md) and the paper.
 
+## Separate follow-up, not a completed paper experiment
+- [agent_tool_pilot.md](agent_tool_pilot.md): training-free model-selected crops/references, one self-contained dev240 run; run 2026-11-09 on L4 (no gain over direct reference), no Q3 spatial GT.
+- [agent_sft_lora.md](agent_sft_lora.md): Qwen3.5-4B LoRA SFT on automatic-box tool trajectories (dev240 photos held out), base vs LoRA on dev240 in one Colab run; run 2026-11-16 on L4 (LoRA Joint .97, tools add nothing, crop box collapsed to one corner).
+- [sft_train_location_annotation.md](sft_train_location_annotation.md): manual defect boxes for the 300 anomalous SFT training photos (done 2026-11-16) and for 60 added polymer corrosion photos (CPU Colab, 40 of 60 done on 2026-11-16).
+
 ## Vision-expert cues (paper §4)
 - [vision_expert_smoke.md](vision_expert_smoke.md): detector screening smoke; its artifacts feed the gold v2 selection notebook
 
