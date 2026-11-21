@@ -1,4 +1,6 @@
-# Gold scoring of the fine-tuned agent (protocol fixed 2026-11-17, controls added 2026-11-19, not run yet)
+# Gold scoring of the fine-tuned agent (protocol fixed 2026-11-17, controls added 2026-11-19, run once on 2026-11-20)
+
+Everything in this file except the "Result" section at the end was written before the run and is unchanged.
 
 Notebook: `notebooks/lvlm_agent_sft_lora_human_boxes_gold_colab.ipynb`. Pick an L4 or A100 runtime, then **Run all**
 once. It trains the second LoRA run ([agent_sft_lora.md](agent_sft_lora.md), `sft_v2_human`), or reuses it when it
@@ -197,3 +199,43 @@ Everything is also in `agent_sft_sft_v2_human_gold_results.zip` on Drive.
 
 Not in the ZIP and not recoverable without a GPU: conditions or models that were not run, token probabilities
 (the paper uses no score-based metric), and a second training seed.
+
+## Result (2026-11-20, L4, source `e548776`)
+
+The notebook ran in four sessions (three disconnects, each resumed from the saved calls). All six steps ended with
+exit code 0, and the main rows did not change when the controls were added. Tables, per-image results and answers
+are in `results/latest/agent_sft_gold_eval/`, which the paper branch `paper/explainability-motivation` adds together
+with the paper section (archive `agent_sft_sft_v2_human_gold_results.zip`, sha256 `507ee879bbe1...`).
+
+Primary scope, 226 photos (119 located):
+
+| Row | Q1 F1 | Q2 macro-F1 | Joint | Missing cap, Q2 (of 23) | Position (of 119) |
+|---|---|---|---|---|---|
+| base, `direct_reference` | .415 | .499 | .283 | 0 | 0 |
+| `sft_v1`, `direct_reference` | .909 | .848 | .885 | 11 | 50 |
+| `sft_v1`, `adaptive_tools` | .909 | .838 | .881 | 12 | 7 |
+| **`sft_v2_human`, `direct_reference` (primary)** | .883 | .849 | .867 | 10 | 60 |
+| `sft_v2_human`, `adaptive_tools` | .882 | .824 | .867 | 9 | 73 |
+| `sft_v2_human`, `fixed_evidence` | .793 | .873 | .721 | 16 | 54 |
+| `sft_v2_human`, `matched_reask` | .888 | .849 | .872 | 10 | 59 |
+| `dinov2_linear` | .844 | .729 | .845 | 3 | no position answer |
+| constant "center" | | | | | 62 |
+
+Dev240, `sft_v2_human`: joint .979 with `direct_reference` and .975 with `adaptive_tools`; `dinov2_linear` .954.
+
+Verdicts under "What each outcome lets the paper say":
+
+| Claim | Verdict |
+|---|---|
+| Fine-tuning carries over to gold | joint .867 against .283 before training; the same row is .979 on dev240 |
+| The model locates defects | no: 60 hits against 62 for constant "center", CI of the difference [-.118, +.084] |
+| Tool use helps | for position only: +.109 over `direct_reference` [+.025, +.193] and +.118 over `matched_reask` [+.034, +.193]; Q1, Q2 and joint do not differ |
+| Choosing the crop helps | yes against `fixed_evidence`: position +.160 [+.059, +.261], joint +.146 [+.075, +.212] |
+| The crop points at the defect | not met: the Q3 crop contains a box centre on 84 photos (of the 96 with a crop); the fixed box covers 90 of 119 |
+| Human boxes and polymer photos help | position 60 against 50 (single call) and 73 against 7 (tool choice); joint 196 against 200 photos, CI includes zero |
+| LVLM above the small classifier (Q1/Q2) | the row is above (.867 against .845), but the difference is five photos and its CI includes zero [-.022, +.066]; Q2 alone is above [+.009, +.097] |
+
+Missing caps stay unsolved on gold: 10 of 23 named and none located, although all 25 are named on dev240. With the
+fixed crop the model calls 53 of 101 normal photos anomalous. The between-model intervals are computed after the
+run from `per_image.csv` (paired bootstrap, 2,000 resamples, seed 42) by `compute_sft_gold_differences.py` in the
+paper folder of the paper branch.

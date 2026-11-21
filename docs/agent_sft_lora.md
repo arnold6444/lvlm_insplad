@@ -68,7 +68,7 @@ AgentIAD reports the same pattern: tools help only after SFT/RL. This step teach
 - **Caveats:**
   - dev240 has been explored repeatedly. It has no spatial GT, so Q3 is scored on presence only.
   - A gain here is a dev result, not a generalisation claim.
-- **Not done:** GRPO and a new holdout. Gold scoring is prepared but not run: [agent_sft_gold_eval.md](agent_sft_gold_eval.md).
+- **Not done:** GRPO and a new holdout. Gold scoring was run once on 2026-11-20: [agent_sft_gold_eval.md](agent_sft_gold_eval.md).
 
 ## Result (2026-11-16, L4, dev240, run `sft_v1`)
 
@@ -93,7 +93,7 @@ Training finished 587/587 steps; validation loss went from .826 to .134. Both ev
 - **Known logging bug:** `sec_per_sample` in `train_log.jsonl` is cumulative time over the last 80 samples. Real speed was about 4.5 s per sample. Results are unaffected.
 - **Next:** manual boxes for the 300 anomalous training photos, [sft_train_location_annotation.md](sft_train_location_annotation.md).
 
-## Second run: human boxes (`sft_v2_human`, prepared 2026-11-16, not run yet)
+## Second run: human boxes (`sft_v2_human`, prepared 2026-11-16, trained 2026-11-17)
 
 `sft_v1` learned no location: its crop box was a by-product of an automatic difference map, and 341 of 365 dev240
 crops were the same corner. The second run changes the training data only. Model, LoRA settings, prompts, parser and
@@ -127,3 +127,7 @@ the dev240 evaluation are the same.
 - One execution for everything (2026-11-17): `notebooks/lvlm_agent_sft_lora_human_boxes_gold_colab.ipynb` trains
   this run and then scores gold v2 and dev240 under [agent_sft_gold_eval.md](agent_sft_gold_eval.md). Its dev240
   step runs `direct_reference` and `adaptive_tools` only (`--policies`), not the four conditions of `sft_v1`.
+- Result. Trained on an L4 on 2026-11-17 (599 optimizer steps, validation loss .779 to .143). Dev240, scored on
+  2026-11-20: joint .979 with `direct_reference` (235 of 240 photos, all 25 missing caps named) and .975 with
+  `adaptive_tools`. The gold result, including where the crops point, is in
+  [agent_sft_gold_eval.md](agent_sft_gold_eval.md).
