@@ -14,15 +14,15 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
   "few hundred labelled images" section. Everything else stays frozen. Code and notebooks for it are on `main`
   (`docs/agent_sft_lora.md`); the paper text is on `paper/explainability-motivation`, committed and pushed on 2026-11-21 (PR91).
 
-## Fine-tuning section (written 2026-11-21, PR91 open)
+## Fine-tuning section (written 2026-11-21, PR91)
 - Status 2026-11-21: items 1-4 below are done. The section now has the second run on dev240, the gold protocol,
   table `tab:sftgold` (`tables/sft_gold_rows.tex`), the classifier comparison, position, crops and the limits; the
   abstract, introduction (fourth contribution), Section 6 item, discussion item, conclusion and reproducibility
   appendix were revised in both languages. Result tables: `results/latest/agent_sft_gold_eval/` (manifest with the
   ZIP hash); model differences: `compute_sft_gold_differences.py` -> `model_differences.csv`.
   Checked: 12 table rows and 26 text items recomputed from the result CSVs (all equal), static checks pass, both
-  Word files rebuilt (14 tables). Not done: LaTeX compile, merge of PR91, a pull request for `feat/sft-gold-eval` (the protocol
-  document the paper cites lives on that branch).
+  Word files rebuilt (14 tables). Not done: LaTeX compile. The runner and the protocol
+  document the paper cites are on main since PR92 (merged 2026-11-22).
 - Supported: fine-tuning raises presence and type on frame-disjoint gold (64 -> 196 of 226); not clearly above a
   small classifier on the same labels (191; Q2 alone is above); tool choice locates more often than the single
   call and both controls (73 vs 60, 59, 54 of 119). Not supported: position above constant "center" (62),
@@ -84,11 +84,10 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 - Confirm the InsPLAD volume/pages in `refs.bib` (the DOI is confirmed).
 
 ## Next action
-The gold result is in the paper (2026-11-21, on the user's request "논문에 반영"). It was committed and pushed the same
-day, and PR91 is open against main; main was merged into the branch to resolve a conflict in this file. Next, when
-the user asks: read the new section and confirm its wording, merge PR91, open a pull request for
-`feat/sft-gold-eval` (the runner and the protocol the paper cites), compile both versions on Overleaf, fix the
-title and authors.
+The gold result is in the paper (2026-11-21, on the user's request "논문에 반영"). The runner, the notebook and the
+protocol are on main (PR92, merged 2026-11-22); the paper section and the result tables come with PR91, into
+which main was merged once to resolve a conflict in this file. Next, when the user asks: confirm the wording of
+the new section, compile both versions on Overleaf, fix the title and authors.
 
 ## Requirement delta — tool-choice pilot (2026-11-04)
 
@@ -139,6 +138,6 @@ title and authors.
 - Verified locally: real ZIPs + the 300 real boxes give 660 photos / 5,040 samples / 360 crops; unfinished labels are refused. Not verified: any GPU step, a real Colab run of the new notebook.
 - Next action (user): finish the 20 polymer photos, then Run all in the new notebook on L4 (about 6-7 h training + 2 h dev240 evaluation, estimated from `sft_v1`).
 - Then: check on dev240 that Q1/Q2 hold and that crop boxes are no longer one constant box. Gold evaluation of the two adapters is still one later step and needs the frame-overlap filter and the 9-cell Q3 format first. Not built.
-- 2026-11-21: the gold step is built and was run once (branch `feat/sft-gold-eval`, protocol
-  `docs/agent_sft_gold_eval.md` there). Its results and the paper section are described under
+- 2026-11-21: the gold step is built and was run once (PR92, protocol
+  `docs/agent_sft_gold_eval.md`). Its results and the paper section are described under
   "Fine-tuning section" above.

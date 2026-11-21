@@ -11,7 +11,7 @@
   "code_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
   "training_source_commit": "fb5b9be9212592de6a66eb617be3f34bc53412d2",
   "gpu": "NVIDIA L4, 23034 MiB",
-  "protocol": "docs/agent_sft_gold_eval.md on branch feat/sft-gold-eval (agent_sft_gold_eval_v1, sft_label_classifier_baseline_v1)",
+  "protocol": "docs/agent_sft_gold_eval.md (agent_sft_gold_eval_v1, sft_label_classifier_baseline_v1)",
   "runs": {
     "gold_lora_sft_v2_human": "gold v2, LoRA second run (human boxes, 660 photos), four conditions",
     "gold_base": "gold v2, Qwen3.5-4B before training, two conditions",

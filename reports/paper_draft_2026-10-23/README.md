@@ -18,7 +18,7 @@
 아래 11/17 초안의 **[작성 예정]** 부분을 채웠다. 11/17 항목 중 "gold는 쓰지 않았다", "초록·서론·논의·결론은 고치지 않았다", "Word 파일은 반영하지 않았다"는 이제 맞지 않는다.
 - 넣은 것: 사람 박스 2차 학습(660장)의 dev240 결과(표 `tab:sft` 아래 두 행), gold 채점 절차, gold 표 `tab:sftgold`(`tables/sft_gold_rows.tex`), 결함 유무·종류, 작은 분류기 비교, 결함 위치, 확대 영역, 말할 수 있는 것과 없는 것.
 - 같이 고친 곳: 초록(후속 실험 두 문장), 서론(기여 넷째 항목), 6절의 "라벨이 달린 예시" 항목, 논의의 "부재형 결함" 항목, 결론 끝, 재현성 부록.
-- 수치 출처: `results/latest/agent_sft_gold_eval/`(Colab 결과 ZIP `agent_sft_sft_v2_human_gold_results.zip`, sha256 `507ee879bbe1…`, L4, 소스 `e548776`). 주 범위는 학습 사진과 같은 드론 사진 20장을 뺀 gold 226장이다. 채점 절차는 실행 전에 고정했다(`docs/agent_sft_gold_eval.md`, 브랜치 `feat/sft-gold-eval`, 아직 main에 없음).
+- 수치 출처: `results/latest/agent_sft_gold_eval/`(Colab 결과 ZIP `agent_sft_sft_v2_human_gold_results.zip`, sha256 `507ee879bbe1…`, L4, 소스 `e548776`). 주 범위는 학습 사진과 같은 드론 사진 20장을 뺀 gold 226장이다. 채점 절차는 실행 전에 고정했다(`docs/agent_sft_gold_eval.md`, 러너·노트북과 함께 PR92로 main에 들어감).
 - 모델 사이의 차이(2차 대 학습 전·1차·분류기)의 CI: `compute_sft_gold_differences.py`가 이미지별 결과에서 계산해 `results/latest/agent_sft_gold_eval/model_differences.csv`에 쓴다. 모델 호출은 없다.
 - 검사: 표 두 개의 새 행과 본문 숫자 38개를 결과 CSV에서 다시 계산해 대조했고 모두 일치했다. 괄호·환경 짝, `\ref`/`\label`, `\cite`, `\input`, 표 열 개수 정적 검사도 통과했다. 컴파일은 하지 않았다.
 - Word 파일 두 개를 다시 만들었다(표 14개, 그림 4개, 인용 28개).
