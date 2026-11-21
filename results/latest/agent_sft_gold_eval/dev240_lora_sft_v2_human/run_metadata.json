@@ -1,0 +1,42 @@
+{
+  "protocol": "agent_tool_pilot_dev_v1",
+  "signature": "177ca5dda6c067fbc6687d4543696bfc9824b6be310c9967bded7b4b4183a3a7",
+  "identity": "467e6c299a53e2768072fefb4b6d971d50d68df926029d58936bbca65de26a91",
+  "model": {
+    "backend": "hf",
+    "provider": "huggingface",
+    "model_id": "Qwen/Qwen3.5-4B",
+    "trust_remote_code": false,
+    "adapter": "pipeline",
+    "role": "qwen_family"
+  },
+  "run_id": "6a46275e-e388-4857-82a5-8fcd18178a16",
+  "software": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.14.0",
+    "accelerate": "1.14.0",
+    "numpy": "2.4.6",
+    "Pillow": "11.3.0"
+  },
+  "resolved_model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "benchmark_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "images": 240,
+  "max_calls": 3,
+  "policies": [
+    "direct_reference",
+    "adaptive_tools"
+  ],
+  "training": true,
+  "lora_adapter": {
+    "adapter_config.json": "faab0b4c6d9ba1f55049ff81cf8a65d128ec43edf49ad5b0682dd6e9744eeb86",
+    "adapter_model.safetensors": "bfce3a1b30966ad7ab1aad218c043ba556e7b505f57e538e81442fac81f090ef"
+  },
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "execution": "real_hf",
+  "spatial_gt": "absent; no Q3 location or location-joint claim",
+  "tile_budget": null,
+  "limitations": "Prompt and available images differ across controls; extra images share visual budget. Dev is repeatedly explored."
+}

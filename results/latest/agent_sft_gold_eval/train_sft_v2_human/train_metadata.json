@@ -1,0 +1,38 @@
+{
+  "model_id": "Qwen/Qwen3.5-4B",
+  "resolved_model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "dtype": "bfloat16",
+  "quantization": null,
+  "lora_targets": 248,
+  "trainable_parameters": 32464896,
+  "train_samples": 4791,
+  "val_samples": 249,
+  "optimizer_steps": 599,
+  "val_loss_before": 0.7792931633242163,
+  "val_loss_after": 0.14298414696306927,
+  "software": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.14.0",
+    "peft": "0.21.2",
+    "accelerate": "1.14.0"
+  },
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "benchmark_commit": "fb5b9be9212592de6a66eb617be3f34bc53412d2",
+  "settings": {
+    "model": "Qwen/Qwen3.5-4B",
+    "data": "b612058a1c2ac0efa1975668757f659dd30f19579f7d30140bb8a7f080c53221",
+    "epochs": 1,
+    "lr": 0.0001,
+    "grad_accum": 8,
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "seed": 42,
+    "max_steps": 0,
+    "n": 5040
+  },
+  "loss_mask": "action JSON + end-of-turn token only"
+}

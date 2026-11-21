@@ -1,0 +1,20 @@
+{
+  "signature": "fa763caffd599e1dd858612cd2e639a9423a7005097fbd5a7e8a49aa9f2130b5",
+  "settings": {
+    "model": "Qwen/Qwen3.5-4B",
+    "data": "b612058a1c2ac0efa1975668757f659dd30f19579f7d30140bb8a7f080c53221",
+    "epochs": 1,
+    "lr": 0.0001,
+    "grad_accum": 8,
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "seed": 42,
+    "max_steps": 0,
+    "n": 5040
+  },
+  "complete": true,
+  "status": "trained",
+  "step": 599,
+  "total_steps": 599
+}

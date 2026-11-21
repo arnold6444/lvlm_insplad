@@ -20,6 +20,8 @@ The scope was frozen on 2026-10-23 and every planned experiment is finished. Del
 
 Remaining (paper only): compile in Overleaf, fix the title and author list, and confirm the InsPLAD volume/pages in `refs.bib`.
 
+**2026-11-17: reopened for one addition (user decision).** A LoRA fine-tuning follow-up is added to the paper as its own section. Since 2026-11-21 the section has both training runs on dev240 and the gold scoring, which was done once under a protocol fixed before the run (`plan.md`, `results/latest/agent_sft_gold_eval/`).
+
 ## Verified source facts
 
 - `unsupervised_anomaly_detection.zip`: 17 assets, `train/test`, 27,620 JPGs.
@@ -44,4 +46,4 @@ Remaining (paper only): compile in Overleaf, fix the title and author list, and 
 
 ## Not done (out of scope)
 
-Full Track A/B inference for every model (the runners exist but were not run for the paper), GPT/Gemini baselines, natural-language defect descriptions, Q3 location accuracy (no positive location GT), LVLM fine-tuning and LVLM judges.
+Full Track A/B inference for every model (the runners exist but were not run for the paper), GPT/Gemini baselines, natural-language defect descriptions, Q3 location accuracy (no positive location GT) and LVLM judges. LVLM fine-tuning was out of scope until 2026-11-17 and is now a follow-up scored on dev240 and once on gold (see Status).

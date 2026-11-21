@@ -1,0 +1,16 @@
+eval_set,subset,policy,asset_category,images,q1_anomaly_f1,q2_defect_macro_f1,consistency_error,contradictions,valid_pairs,joint_accuracy,false_defect_rate,q1_invalid_rate,q2_invalid_rate,q1_balanced_accuracy,q1_precision,q1_recall,q1_tp,q1_fp,q1_tn,q1_fn
+gold,all,dinov2_linear,glass-insulator,32,0.2,0.247059,0.0,0,32,0.25,0.0,0.0,0.0,0.5555555555555556,1.0,0.1111111111111111,3,0,5,24
+gold,all,dinov2_linear,lightning-rod-suspension,53,0.974359,0.979717,0.0,0,53,0.981132,0.0,0.0,0.0,0.975,1.0,0.95,19,0,33,1
+gold,all,dinov2_linear,polymer-insulator-upper-shackle,32,0.945455,0.806061,0.0,0,32,0.90625,0.0,0.0,0.0,0.9482758620689655,1.0,0.896551724137931,26,0,3,3
+gold,all,dinov2_linear,vari-grip,76,0.95122,0.93254,0.0,0,76,0.934211,0.0,0.0,0.0,0.9534883720930232,1.0,0.9069767441860465,39,0,33,4
+gold,all,dinov2_linear,yoke-suspension,53,0.764706,0.826797,0.0,0,53,0.849057,0.030303,0.0,0.0,0.8098484848484848,0.9285714285714286,0.65,13,1,32,7
+gold,frame_disjoint,dinov2_linear,glass-insulator,28,0.230769,0.282051,0.0,0,28,0.285714,0.0,0.0,0.0,0.5652173913043478,1.0,0.13043478260869565,3,0,5,20
+gold,frame_disjoint,dinov2_linear,lightning-rod-suspension,52,0.974359,0.979487,0.0,0,52,0.980769,0.0,0.0,0.0,0.975,1.0,0.95,19,0,32,1
+gold,frame_disjoint,dinov2_linear,polymer-insulator-upper-shackle,32,0.945455,0.806061,0.0,0,32,0.90625,0.0,0.0,0.0,0.9482758620689655,1.0,0.896551724137931,26,0,3,3
+gold,frame_disjoint,dinov2_linear,vari-grip,64,0.969697,0.949923,0.0,0,64,0.953125,0.0,0.0,0.0,0.9705882352941176,1.0,0.9411764705882353,32,0,30,2
+gold,frame_disjoint,dinov2_linear,yoke-suspension,50,0.75,0.816176,0.0,0,50,0.84,0.032258,0.0,0.0,0.799660441426146,0.9230769230769231,0.631578947368421,12,1,30,7
+dev240,all,dinov2_linear,glass-insulator,50,1.0,1.0,0.0,0,50,1.0,0.0,0.0,0.0,1.0,1.0,1.0,25,0,25,0
+dev240,all,dinov2_linear,lightning-rod-suspension,50,0.93617,0.939783,0.0,0,50,0.94,0.0,0.0,0.0,0.94,1.0,0.88,22,0,25,3
+dev240,all,dinov2_linear,polymer-insulator-upper-shackle,25,0.0,0.979592,0.0,0,25,0.96,0.04,0.0,0.0,0.96,0.0,0.0,0,1,24,0
+dev240,all,dinov2_linear,vari-grip,65,0.974359,0.952969,0.0,0,65,0.953846,0.0,0.0,0.0,0.975,1.0,0.95,38,0,25,2
+dev240,all,dinov2_linear,yoke-suspension,50,0.92,0.92,0.0,0,50,0.92,0.08,0.0,0.0,0.92,0.92,0.92,23,2,23,2

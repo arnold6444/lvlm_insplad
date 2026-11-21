@@ -1,0 +1,17 @@
+subset,policy,defect_gt,images,q2_correct,q2_accuracy
+frame_disjoint,direct_reference,bird-nest,19,16,0.8421052631578947
+frame_disjoint,direct_reference,missing-cap,23,11,0.4782608695652174
+frame_disjoint,direct_reference,normal,101,96,0.9504950495049505
+frame_disjoint,direct_reference,rust,83,81,0.9759036144578314
+frame_disjoint,adaptive_tools,bird-nest,19,15,0.7894736842105263
+frame_disjoint,adaptive_tools,missing-cap,23,12,0.5217391304347826
+frame_disjoint,adaptive_tools,normal,101,94,0.9306930693069307
+frame_disjoint,adaptive_tools,rust,83,80,0.963855421686747
+all,direct_reference,bird-nest,23,18,0.782608695652174
+all,direct_reference,missing-cap,27,13,0.48148148148148145
+all,direct_reference,normal,107,102,0.9532710280373832
+all,direct_reference,rust,89,87,0.9775280898876404
+all,adaptive_tools,bird-nest,23,18,0.782608695652174
+all,adaptive_tools,missing-cap,27,14,0.5185185185185185
+all,adaptive_tools,normal,107,100,0.9345794392523364
+all,adaptive_tools,rust,89,86,0.9662921348314607
