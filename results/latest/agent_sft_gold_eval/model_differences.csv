@@ -1,0 +1,21 @@
+subset,metric,condition,baseline,images,new_correct,base_correct,delta,ci_low,ci_high,significant,resamples,seed,scope
+frame_disjoint,q1_q2_both_correct,lora2 single call,dinov2_linear,226,196,191,0.022124,-0.022124,0.066372,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q1_correct,lora2 single call,dinov2_linear,226,199,192,0.030973,-0.013274,0.075221,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q2_correct,lora2 single call,dinov2_linear,226,203,191,0.053097,0.00885,0.097345,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q1_q2_both_correct,lora1 single call,dinov2_linear,226,200,191,0.039823,-0.004425,0.088496,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q1_q2_both_correct,lora2 single call,base single call,226,196,64,0.584071,0.517699,0.646018,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q1_q2_both_correct,lora2 single call,lora1 single call,226,196,200,-0.017699,-0.053097,0.013274,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q1_q2_both_correct,lora2 tool choice,lora1 tool choice,226,196,199,-0.013274,-0.048673,0.022124,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q3_position_hit,lora2 single call,lora1 single call,119,60,50,0.084034,0.008403,0.159664,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q3_position_hit,lora2 tool choice,lora1 tool choice,119,73,7,0.554622,0.453782,0.647059,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+frame_disjoint,q3_position_hit,lora2 tool choice,lora1 single call,119,73,50,0.193277,0.084034,0.294118,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora2 single call,dinov2_linear,246,211,205,0.02439,-0.01626,0.065041,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_correct,lora2 single call,dinov2_linear,246,214,206,0.03252,-0.00813,0.073171,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q2_correct,lora2 single call,dinov2_linear,246,221,205,0.065041,0.02439,0.109756,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora1 single call,dinov2_linear,246,216,205,0.044715,0.0,0.089431,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora2 single call,base single call,246,211,68,0.581301,0.51626,0.642276,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora2 single call,lora1 single call,246,211,216,-0.020325,-0.052846,0.012195,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora2 tool choice,lora1 tool choice,246,210,216,-0.02439,-0.060976,0.012195,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q3_position_hit,lora2 single call,lora1 single call,133,68,56,0.090226,0.015038,0.165414,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q3_position_hit,lora2 tool choice,lora1 tool choice,133,80,8,0.541353,0.443609,0.631579,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q3_position_hit,lora2 tool choice,lora1 single call,133,80,56,0.180451,0.082707,0.278195,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap

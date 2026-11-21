@@ -1,0 +1,26 @@
+{
+  "post_hoc": true,
+  "new_lvlm_inference": false,
+  "model": "OpenGVLab/InternVL3_5-8B",
+  "baseline": "Direct questions with retrieved different-date normal reference; not image-only",
+  "rule": "Q1 correct AND Q2 correct AND Q3 reported cell contains at least one GT box center; normal requires no region",
+  "scope": "107 normal + 133 locatable defective images; six defects without position GT excluded",
+  "limitation": "Single-cell any-box hit, not exact multiple-region or box overlap scoring; historical gold reuse",
+  "excluded_ids": [
+    "core-722a6b810e50366b",
+    "core-7c8ff6a171b3d3d9",
+    "core-87e50084a092ae08",
+    "core-8a9cec5de5f5c23c",
+    "core-8eb6ff6f0382e60e",
+    "core-94e82079a8901a84"
+  ],
+  "verification": "Reproduced all four existing Q1/Q2 joint, presence joint and position-hit totals",
+  "scorer_sha256": "d4a8e98b873c1f0fae358e616e8fe47e026a9e47cfb5e08b0ece47adefe3945f",
+  "inputs": {
+    "answers": "c3aed38dd3be403b71364a7a3a77003dc9d50db38158499df3d24a454f0f8290",
+    "labels": "600698e97426e2212247dd0d2191bec0a668cb80531d0b7309eb7790c9608d1b",
+    "positions": "8d1bc6b5503cb71f3effa58ce45b6f8e84a2b8df9a7bf2fd1feb0a9a2d2f7acf",
+    "existing_metrics": "5c2870d1f1a730eac5c1283828efe25eb839be60cff1575ca2114d675a33708c",
+    "existing_positions": "09946f424e0c2ce20e2c6a2c48dbf07975579e0d9b00826c3935e6ba42a2f37d"
+  }
+}

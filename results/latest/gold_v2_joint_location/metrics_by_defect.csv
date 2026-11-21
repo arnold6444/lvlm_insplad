@@ -1,0 +1,17 @@
+policy,defect_gt,images,all_correct,joint_accuracy
+baseline,bird-nest,23,1,0.043478260869565216
+baseline,missing-cap,27,0,0.0
+baseline,normal,107,10,0.09345794392523364
+baseline,rust,83,17,0.20481927710843373
+matched_reask,bird-nest,23,1,0.043478260869565216
+matched_reask,missing-cap,27,0,0.0
+matched_reask,normal,107,30,0.2803738317757009
+matched_reask,rust,83,12,0.14457831325301204
+previous_agent,bird-nest,23,2,0.08695652173913043
+previous_agent,missing-cap,27,0,0.0
+previous_agent,normal,107,71,0.6635514018691588
+previous_agent,rust,83,18,0.21686746987951808
+candidate,bird-nest,23,2,0.08695652173913043
+candidate,missing-cap,27,0,0.0
+candidate,normal,107,75,0.7009345794392523
+candidate,rust,83,17,0.20481927710843373

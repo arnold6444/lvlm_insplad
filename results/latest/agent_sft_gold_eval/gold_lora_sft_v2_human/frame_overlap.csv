@@ -1,0 +1,247 @@
+image,same_frame,same_bytes,scored_in_primary
+defect_supervised/glass-insulator/val/good/Fotos 03-12-2020_DJI_0404_cadeia_isolador_vidro_793.jpg,False,False,True
+defect_supervised/glass-insulator/val/good/Fotos 26-11-2020_DJI_0054_cadeia_isolador_vidro_2253.jpg,False,False,True
+defect_supervised/glass-insulator/val/good/Fotos 26-11-2020_DJI_0305_cadeia_isolador_vidro_2063.jpg,False,False,True
+defect_supervised/glass-insulator/val/good/Fotos 27-11-2020_DJI_0345_cadeia_isolador_vidro_2404.jpg,False,False,True
+defect_supervised/glass-insulator/val/good/Fotos 27-11-2020_DJI_0588_cadeia_isolador_vidro_2298.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0326_cadeia_isolador_vidro_878.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0334_cadeia_isolador_vidro_885.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0361_cadeia_isolador_vidro_911.jpg,True,False,False
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0363_cadeia_isolador_vidro_914.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0364_cadeia_isolador_vidro_915.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 03-12-2020_DJI_0365_cadeia_isolador_vidro_916.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 07-12-2020_DJI_0134_cadeia_isolador_vidro_1338.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 07-12-2020_DJI_0181_cadeia_isolador_vidro_1320.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 08-12-2020_DJI_0377_cadeia_isolador_vidro_1421.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 08-12-2020_DJI_0378_cadeia_isolador_vidro_1422.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 16-11-2020_DJI_0007_cadeia_isolador_vidro_1491.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0062_cadeia_isolador_vidro_2.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0072_cadeia_isolador_vidro_23.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 19-10-2020_DJI_0074_cadeia_isolador_vidro_25.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0435_cadeia_isolador_vidro_1573.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0518_cadeia_isolador_vidro_1609.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0531_cadeia_isolador_vidro_1611.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0537_cadeia_isolador_vidro_1615.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0538_cadeia_isolador_vidro_1616.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0539_cadeia_isolador_vidro_1618.jpg,True,False,False
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0555_cadeia_isolador_vidro_1625.jpg,True,False,False
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0557_cadeia_isolador_vidro_1629.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0561_cadeia_isolador_vidro_1633.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 21-10-2020_DJI_0630_cadeia_isolador_vidro_1547.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 25-11-2020_DJI_0449_cadeia_isolador_vidro_1776.jpg,True,False,False
+defect_supervised/glass-insulator/val/missing-cap/Fotos 25-11-2020_DJI_0450_cadeia_isolador_vidro_1778.jpg,False,False,True
+defect_supervised/glass-insulator/val/missing-cap/Fotos 30-11-2020_DJI_0144_cadeia_isolador_vidro_2921.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 01-12-2020_DJI_0181_suspensao_para_raio_23.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 04-12-2020_DJI_0936_suspensao_para_raio_78.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 04-12-2020_DJI_1000 (12)_suspensao_para_raio_77.jpg,True,False,False
+defect_supervised/lightning-rod-suspension/val/good/Fotos 08-12-2020_DJI_0440_suspensao_para_raio_127.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 08-12-2020_DJI_0586_suspensao_para_raio_122.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 09-12-2020_DJI_0193_suspensao_para_raio_140.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 10-12-2020_DJI_0285_suspensao_para_raio_149.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 14-12-2020_DJI_0003_suspensao_para_raio_205.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 16-11-2020_DJI_0134_suspensao_para_raio_231.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 16-11-2020_DJI_0180_suspensao_para_raio_221.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 16-11-2020_DJI_0203_suspensao_para_raio_217.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 17-11-2020_DJI_0265_suspensao_para_raio_265.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 18-11-2020_DJI_0105_suspensao_para_raio_361.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 18-11-2020_DJI_0171_suspensao_para_raio_348.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 18-11-2020_DJI_0201_suspensao_para_raio_338.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 18-11-2020_DJI_0253_suspensao_para_raio_323.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 19-11-2020_DJI_0049_suspensao_para_raio_429.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 19-11-2020_DJI_0132_suspensao_para_raio_409.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 19-11-2020_DJI_0160_suspensao_para_raio_404.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-10-2020_DJI_0114_suspensao_para_raio_448.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-10-2020_DJI_0118_suspensao_para_raio_452.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-11-2020_DJI_0126_suspensao_para_raio_522.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-11-2020_DJI_0231_suspensao_para_raio_501.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-11-2020_DJI_0254_suspensao_para_raio_496.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 20-11-2020_DJI_0302_suspensao_para_raio_491.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 21-10-2020_DJI_0398_suspensao_para_raio_547.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 24-11-2020_DJI_0356_suspensao_para_raio_620.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 24-11-2020_DJI_0562_suspensao_para_raio_613.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 25-11-2020_DJI_0240_suspensao_para_raio_638.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 27-11-2020_DJI_0097_suspensao_para_raio_685.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 27-11-2020_DJI_0379_suspensao_para_raio_677.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 30-11-2020_DJI_0177_suspensao_para_raio_702.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/good/Fotos 30-11-2020_DJI_0278_suspensao_para_raio_701.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/01-06-2021_DJI_0093_21.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/01-06-2021_DJI_0190_57.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/01-06-2021_DJI_0510_148.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/02-06-2021_DJI_0005_180.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/02-06-2021_DJI_0006_181.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/02-06-2021_DJI_0045_193.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/02-06-2021_DJI_0440_271.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/02-06-2021_DJI_0639_292.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/08-06-2021_DJI_0270_377.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/08-06-2021_DJI_0320_396.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/09-06-2021_DJI_0058_456.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/09-06-2021_DJI_0081_462.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/09-06-2021_DJI_0182_474.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/09-06-2021_DJI_0427_552.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/09-06-2021_DJI_0454_559.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/10-06-2021_DJI_0076_629.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/10-06-2021_DJI_0327_669.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/10-06-2021_DJI_0419_688.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/15-06-2021_DJI_0149_742.jpg,False,False,True
+defect_supervised/lightning-rod-suspension/val/rust/15-06-2021_DJI_0243_777.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/good/Fotos 07-12-2020_DJI_0320_manilha_isolador_superior_468.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/good/Fotos 10-12-2020_DJI_0355_manilha_isolador_superior_761.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/good/Fotos 27-11-2020_DJI_0545_manilha_isolador_superior_1563.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0007_4.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0036_8.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0072_12.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0101_23.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0102_24.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0248_73.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0272_84.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0273_85.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0294_95.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0335_100.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0336_101.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0454_140.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0547_159.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0548_160.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/01-06-2021_DJI_0587_166.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0294_249.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0335_256.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/02-06-2021_DJI_0568_277.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0081_320.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0244_349.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/08-06-2021_DJI_0274_380.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0210_489.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0275_510.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0302_528.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0404_540.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/09-06-2021_DJI_0456_560.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/10-06-2021_DJI_0034_619.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/Fotos 19-10-2020_DJI_0090_manilha_isolador_superior_21.jpg,False,False,True
+defect_supervised/polymer-insulator-upper-shackle/val/rust/Fotos 23-10-2020_DJI_0118_manilha_isolador_superior_1401.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/08-06-2021_DJI_0067_315.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/08-06-2021_DJI_0285_391.jpg,True,False,False
+defect_supervised/vari-grip/val/bird-nest/10-06-2021_DJI_0245_651.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/11-06-2021_DJI_0096_3.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/11-06-2021_DJI_0122_5.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/15-06-2021_DJI_0017_720.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/15-06-2021_DJI_0043_724.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 17-11-2020_DJI_0289_vari_grip_478.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 17-11-2020_DJI_0304_vari_grip_480.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0140_vari_grip_570.jpg,True,False,False
+defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0149_vari_grip_572.jpg,True,False,False
+defect_supervised/vari-grip/val/bird-nest/Fotos 19-11-2020_DJI_0151_vari_grip_576.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 23-11-2020_DJI_0279_vari_grip_767.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 25-11-2020_DJI_0207_vari_grip_860.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 25-11-2020_DJI_0563_vari_grip_842.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0162_vari_grip_915.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0214_vari_grip_907.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0215_vari_grip_909.jpg,True,False,False
+defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0262_vari_grip_910.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 26-11-2020_DJI_0262_vari_grip_911.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0291_vari_grip_946.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0291_vari_grip_947.jpg,False,False,True
+defect_supervised/vari-grip/val/bird-nest/Fotos 27-11-2020_DJI_0567_vari_grip_926.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 01-12-2020_DJI_0139_vari_grip_45.jpg,True,False,False
+defect_supervised/vari-grip/val/good/Fotos 01-12-2020_DJI_0512_vari_grip_22.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 02-12-2020_DJI_0428_vari_grip_62.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 03-12-2020_DJI_0085_vari_grip_129.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 03-12-2020_DJI_0469_vari_grip_116.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 04-12-2020_DJI_0761_vari_grip_161.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 04-12-2020_DJI_0761_vari_grip_162.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 08-12-2020_DJI_0452_vari_grip_226.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 08-12-2020_DJI_0538_vari_grip_218.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 09-12-2020_DJI_0060_vari_grip_267.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 10-12-2020_DJI_0019_vari_grip_326.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 10-12-2020_DJI_0140_vari_grip_300.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 10-12-2020_DJI_0143_vari_grip_307.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 16-11-2020_DJI_0157_vari_grip_438.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 16-12-2020_DJI_0257_vari_grip_459.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 18-11-2020_DJI_0051_vari_grip_551.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 19-10-2020_DJI_0046_vari_grip_7.jpg,True,False,False
+defect_supervised/vari-grip/val/good/Fotos 19-10-2020_DJI_0086_vari_grip_18.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 19-10-2020_DJI_0087_vari_grip_19.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 19-11-2020_DJI_0060_vari_grip_582.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-10-2020_DJI_0208_vari_grip_626.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-10-2020_DJI_0254_vari_grip_656.jpg,True,False,False
+defect_supervised/vari-grip/val/good/Fotos 20-10-2020_DJI_0336_vari_grip_600.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-10-2020_DJI_0337_vari_grip_601.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-11-2020_DJI_0014_vari_grip_716.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-11-2020_DJI_0114_vari_grip_704.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 20-11-2020_DJI_0170_vari_grip_684.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 22-10-2020_DJI_0880_vari_grip_734.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 22-10-2020_DJI_0880_vari_grip_735.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 23-11-2020_DJI_0176_vari_grip_779.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 24-11-2020_DJI_0169_vari_grip_833.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 24-11-2020_DJI_0244_vari_grip_830.jpg,False,False,True
+defect_supervised/vari-grip/val/good/Fotos 26-11-2020_DJI_0288_vari_grip_901.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/01-06-2021_DJI_0162_45.jpg,True,False,False
+defect_supervised/vari-grip/val/rust/09-06-2021_DJI_0466_569.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/09-06-2021_DJI_0467_571.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/10-06-2021_DJI_0018_610.jpg,True,False,False
+defect_supervised/vari-grip/val/rust/10-06-2021_DJI_0019_612.jpg,True,False,False
+defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0117_739.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0118_740.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/15-06-2021_DJI_0118_741.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0029_vari_grip_746.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0032_vari_grip_749.jpg,True,False,False
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0035_vari_grip_754.jpg,True,False,False
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0038_vari_grip_755.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0041_vari_grip_757.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0041_vari_grip_758.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0043_vari_grip_759.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0045_vari_grip_761.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0045_vari_grip_762.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0048_vari_grip_765.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0048_vari_grip_766.jpg,False,False,True
+defect_supervised/vari-grip/val/rust/Fotos 23-10-2020_DJI_0075_vari_grip_740.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 01-12-2020_DJI_0353_amarra_balancim_190.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 02-12-2020_DJI_0445_amarra_balancim_424.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 03-12-2020_DJI_0056_amarra_balancim_934.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 04-12-2020_DJI_0960_amarra_balancim_986.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 08-12-2020_DJI_0450_amarra_balancim_1619.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 11-12-2020_DJI_0098_amarra_balancim_2336.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 11-12-2020_DJI_0305_amarra_balancim_2187.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 14-12-2020_DJI_0142_amarra_balancim_2633.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 14-12-2020_DJI_0453_amarra_balancim_2544.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 16-11-2020_DJI_0006_amarra_balancim_2888.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 17-11-2020_DJI_0093_amarra_balancim_3322.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 17-11-2020_DJI_0137_amarra_balancim_3289.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 17-12-2020_DJI_0053_amarra_balancim_3572.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 18-11-2020_DJI_0233_amarra_balancim_3589.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 19-10-2020_DJI_0007_amarra_balancim_6.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 19-10-2020_DJI_0026_amarra_balancim_82.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 20-10-2020_DJI_0176_amarra_balancim_4074.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 21-10-2020_DJI_0345_amarra_balancim_4484.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 21-10-2020_DJI_0429_amarra_balancim_4519.jpg,True,False,False
+defect_supervised/yoke-suspension/val/good/Fotos 21-10-2020_DJI_0437_amarra_balancim_4526.jpg,True,False,False
+defect_supervised/yoke-suspension/val/good/Fotos 21-10-2020_DJI_0469_amarra_balancim_4543.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 21-10-2020_DJI_0615_amarra_balancim_4474.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 22-10-2020_DJI_0689_amarra_balancim_4588.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 22-10-2020_DJI_0717_amarra_balancim_4608.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 22-10-2020_DJI_0759_amarra_balancim_4643.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 22-10-2020_DJI_0828_amarra_balancim_4713.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 23-10-2020_DJI_0003_amarra_balancim_4805.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 23-10-2020_DJI_0150_amarra_balancim_4854.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 23-11-2020_DJI_0139_amarra_balancim_5076.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 23-11-2020_DJI_0248_amarra_balancim_4965.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 25-11-2020_DJI_0566_amarra_balancim_5505.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 27-11-2020_DJI_0207_amarra_balancim_6139.jpg,False,False,True
+defect_supervised/yoke-suspension/val/good/Fotos 30-11-2020_DJI_0333_amarra_balancim_6417.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0144_37.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0144_38.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0183_56.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0210_65.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0262_75.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0351_106.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0352_107.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0352_108.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0355_110.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0355_111.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0385_114.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0444_131.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0622_172.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/01-06-2021_DJI_0626_178.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/02-06-2021_DJI_0092_204.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/09-06-2021_DJI_0474_581.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/09-06-2021_DJI_0475_583.jpg,True,False,False
+defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0160_748.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0172_757.jpg,False,False,True
+defect_supervised/yoke-suspension/val/rust/15-06-2021_DJI_0217_771.jpg,False,False,True

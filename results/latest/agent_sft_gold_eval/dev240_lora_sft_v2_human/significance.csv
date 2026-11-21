@@ -1,0 +1,10 @@
+baseline,condition,metric,base,new,delta,ci_low,ci_high,significant,scope
+direct_reference,adaptive_tools,q1_anomaly_f1,0.987012987012987,0.9779735682819384,-0.009039418731048632,-0.028043593710200716,0.007987900110548216,False,"exploratory dev, unadjusted"
+direct_reference,adaptive_tools,q2_defect_macro_f1,0.982935101751544,0.9887853692201518,0.005850267468607839,-0.005742943556880317,0.022520782417882395,False,"exploratory dev, unadjusted"
+direct_reference,adaptive_tools,joint_accuracy,0.9791666666666666,0.975,-0.004166666666666652,-0.02499999999999991,0.012500000000000067,False,"exploratory dev, unadjusted"
+direct_reference,adaptive_tools,false_defect_rate,0.024,0.008,-0.016,-0.04132231404958678,0.0,False,"exploratory dev, unadjusted"
+direct_reference,adaptive_tools,consistency_error,0.008333333333333333,0.0125,0.0041666666666666675,-0.0125,0.025,False,"exploratory dev, unadjusted"
+direct_reference,adaptive_tools,q3_presence_balanced_accuracy,0.9746086956521739,0.9829565217391305,0.008347826086956611,0.0,0.021159057744423615,False,"dev presence only, no localization claim"
+direct_reference,adaptive_tools,q3_normal_false_region_rate,0.016,0.008,-0.008,-0.026791747104247105,0.0,False,"dev presence only, no localization claim"
+direct_reference,adaptive_tools,q3_anomaly_false_none_rate,0.034782608695652174,0.02608695652173913,-0.008695652173913045,-0.02857142857142857,0.0,False,"dev presence only, no localization claim"
+direct_reference,adaptive_tools,q1_q2_q3_presence_joint,0.9708333333333333,0.975,0.004166666666666652,-0.012500000000000067,0.02083333333333337,False,"dev presence only, no localization claim"

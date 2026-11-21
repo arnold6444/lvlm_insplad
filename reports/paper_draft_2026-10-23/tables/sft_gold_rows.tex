@@ -1,0 +1,21 @@
+% Source: results/latest/agent_sft_gold_eval/{gold_base,gold_lora_sft_v1,gold_lora_sft_v2_human,classifier_dinov2_linear}/
+% leaderboard.csv, q2_by_defect.csv, position_by_defect.csv, rows with subset=frame_disjoint
+% (archive agent_sft_sft_v2_human_gold_results.zip sha256 507ee879bbe1..., Qwen/Qwen3.5-4B, NVIDIA L4, benchmark e548776,
+% protocol agent_sft_gold_eval_v1 fixed before the run, max 3 calls; runs d3ba241f, 68d53ab2, 62865a3d, classifier 5ce88e10).
+% Scope: the 226 gold v2 images that share no drone photo with a fine-tuning image (101 normal, 125 defective; 119 located).
+% Columns: condition, Q1 F1, Q1 BAcc, Q2 macro-F1, joint accuracy, missing-cap Q2 correct (/23), Q3 presence BAcc,
+% Q3 position hits (/119), invalid question episodes (/678), LVLM calls.
+% Invalid outputs count as errors (anomalous rows as FN, normal rows as FP; an invalid Q3 answer is no hit).
+Base, single call          & .415 & .343 & .499 & .283 &  0 & .000 &  0 & 356 &   678 \\
+Base, tool choice          & .298 & .245 & .474 & .199 &  0 & .139 &  5 & 344 &   678 \\
+\midrule
+LoRA-1, single call        & .909 & .905 & .848 & .885 & 11 & .906 & 50 &   0 &   678 \\
+LoRA-1, tool choice        & .909 & .905 & .838 & .881 & 12 & .912 &  7 &   2 & 1,757 \\
+\midrule
+LoRA-2, single call        & .883 & .888 & .849 & .867 & 10 & .859 & 60 &   0 &   678 \\
+LoRA-2, fixed crop         & .793 & .706 & .873 & .721 & 16 & .512 & 54 &   0 &   678 \\
+LoRA-2, tool choice        & .882 & .889 & .824 & .867 &  9 & .893 & 73 &   0 & 1,675 \\
+LoRA-2, matched re-ask     & .888 & .892 & .849 & .872 & 10 & .859 & 59 &   0 & 1,675 \\
+\midrule
+DINOv2 + linear classifier & .844 & .863 & .729 & .845 &  3 & --   & -- &   0 & --    \\
+Constant ``center''        & --   & --   & --   & --   & -- & --   & 62 &  -- & --    \\

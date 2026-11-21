@@ -1,0 +1,4 @@
+eval_set,subset,policy,images,q1_anomaly_f1,q2_defect_macro_f1,consistency_error,contradictions,valid_pairs,joint_accuracy,false_defect_rate,q1_invalid_rate,q2_invalid_rate,q1_balanced_accuracy,q1_precision,q1_recall,q1_tp,q1_fp,q1_tn,q1_fn,calls,scope
+gold,all,dinov2_linear,246,0.833333,0.715675,0.0,0,246,0.833333,0.009346,0.0,0.0,0.8550393330195656,0.9900990099009901,0.7194244604316546,100,1,106,39,0,Q1 and Q2 only; this baseline gives no location
+gold,frame_disjoint,dinov2_linear,226,0.844037,0.729238,0.0,0,226,0.845133,0.009901,0.0,0.0,0.863049504950495,0.989247311827957,0.736,92,1,100,33,0,Q1 and Q2 only; this baseline gives no location
+dev240,all,dinov2_linear,240,0.955752,0.958884,0.0,0,240,0.954167,0.024,0.0,0.0,0.9575652173913043,0.972972972972973,0.9391304347826087,108,3,122,7,0,Q1 and Q2 only; this baseline gives no location

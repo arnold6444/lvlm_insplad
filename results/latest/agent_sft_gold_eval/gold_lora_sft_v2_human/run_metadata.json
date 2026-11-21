@@ -1,0 +1,69 @@
+{
+  "protocol": "agent_sft_gold_eval_v1",
+  "signature": "8355132901a213de845c4dd4eaa16e39e4f4f1ced82cf05d072341d9b134bed5",
+  "identity": "d078b527f97738dee8655f40b1799948872a47cca05eab634fc1fef68cfe1c0b",
+  "model": {
+    "backend": "hf",
+    "provider": "huggingface",
+    "model_id": "Qwen/Qwen3.5-4B",
+    "trust_remote_code": false,
+    "adapter": "pipeline",
+    "role": "qwen_family"
+  },
+  "run_id": "62865a3d-42d9-455c-bd49-6a33dc755bf6",
+  "software": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.14.0",
+    "accelerate": "1.14.0",
+    "peft": "0.21.2",
+    "numpy": "2.4.6",
+    "Pillow": "11.3.0"
+  },
+  "resolved_model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "benchmark_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "images": 246,
+  "max_calls": 3,
+  "policies": [
+    "direct_reference",
+    "adaptive_tools",
+    "fixed_evidence",
+    "matched_reask"
+  ],
+  "controls": true,
+  "training": true,
+  "lora_adapter": {
+    "adapter_config.json": "faab0b4c6d9ba1f55049ff81cf8a65d128ec43edf49ad5b0682dd6e9744eeb86",
+    "adapter_model.safetensors": "bfce3a1b30966ad7ab1aad218c043ba556e7b505f57e538e81442fac81f090ef"
+  },
+  "gpu": {
+    "name": "NVIDIA L4",
+    "vram_gb": 22.0
+  },
+  "execution": "real_hf",
+  "primary_scope": "frame_disjoint",
+  "post_hoc_rules": null,
+  "frame_overlap": {
+    "training_photos": 660,
+    "training_files": [
+      "sft_train_qa.jsonl",
+      "sft_train_qa.jsonl"
+    ],
+    "same_frame": 20,
+    "same_bytes": 0,
+    "frame_disjoint_images": 226,
+    "located_images": {
+      "frame_disjoint": 119,
+      "all": 133
+    }
+  },
+  "inputs": {
+    "loc_qa": "f5a6b5c1e0b9d7061da729b4b5186882e10dca00fb94a4de998b798e9cf1e5a5",
+    "train_qa": [
+      "7edf598fbc5e51cf92edb7bef4fca533206a07fd8b301fac11065c53f5d0bd52",
+      "08485091288e4aedf659230f9e235716a8963925738847b2ed81754dbe7cd06b"
+    ]
+  },
+  "cell_rule": "each box centre mapped to a 3x3 cell; hit = the single reported cell is one of those cells",
+  "invalid_policy": "invalid output: anomalous rows count as FN, normal rows as FP; an invalid Q3 answer is no hit",
+  "limitations": "One model, one training run, greedy decoding. Gold has prior exploratory use by other methods. The reference is retrieved, not the fixed benchmark reference. Prompts differ from the paper's gold tables, so only rows of this protocol are comparable with each other."
+}

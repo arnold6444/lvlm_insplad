@@ -12,6 +12,26 @@
 | `VERIFICATION_2026-10-24.md` | 독립 검증 4개로 논문 주장 약 186개를 원본 결과와 대조한 보고서 |
 | `tex2docx.js` | LaTeX → docx 변환기 |
 | `compute_agent_vs_direct_ci.py` | "에이전트 − 직접" CI 재계산 스크립트(인자: 코드 폴더, gold 실행 원시 폴더) |
+| `compute_sft_gold_differences.py` | 소량 미세조정 절의 모델 간 차이 CI 계산 스크립트(입력: `results/latest/agent_sft_gold_eval`의 이미지별 결과) |
+
+## 2026-11-21: 소량 미세조정 절에 gold 결과 반영
+아래 11/17 초안의 **[작성 예정]** 부분을 채웠다. 11/17 항목 중 "gold는 쓰지 않았다", "초록·서론·논의·결론은 고치지 않았다", "Word 파일은 반영하지 않았다"는 이제 맞지 않는다.
+- 넣은 것: 사람 박스 2차 학습(660장)의 dev240 결과(표 `tab:sft` 아래 두 행), gold 채점 절차, gold 표 `tab:sftgold`(`tables/sft_gold_rows.tex`), 결함 유무·종류, 작은 분류기 비교, 결함 위치, 확대 영역, 말할 수 있는 것과 없는 것.
+- 같이 고친 곳: 초록(후속 실험 두 문장), 서론(기여 넷째 항목), 6절의 "라벨이 달린 예시" 항목, 논의의 "부재형 결함" 항목, 결론 끝, 재현성 부록.
+- 수치 출처: `results/latest/agent_sft_gold_eval/`(Colab 결과 ZIP `agent_sft_sft_v2_human_gold_results.zip`, sha256 `507ee879bbe1…`, L4, 소스 `e548776`). 주 범위는 학습 사진과 같은 드론 사진 20장을 뺀 gold 226장이다. 채점 절차는 실행 전에 고정했다(`docs/agent_sft_gold_eval.md`, 브랜치 `feat/sft-gold-eval`, 아직 main에 없음).
+- 모델 사이의 차이(2차 대 학습 전·1차·분류기)의 CI: `compute_sft_gold_differences.py`가 이미지별 결과에서 계산해 `results/latest/agent_sft_gold_eval/model_differences.csv`에 쓴다. 모델 호출은 없다.
+- 검사: 표 두 개의 새 행과 본문 숫자 38개를 결과 CSV에서 다시 계산해 대조했고 모두 일치했다. 괄호·환경 짝, `\ref`/`\label`, `\cite`, `\input`, 표 열 개수 정적 검사도 통과했다. 컴파일은 하지 않았다.
+- Word 파일 두 개를 다시 만들었다(표 14개, 그림 4개, 인용 28개).
+
+## 2026-11-17 추가: 소량 미세조정 절 (초안, 위 11/21 항목으로 갱신됨)
+사용자 결정으로 LoRA 미세조정 결과를 이 논문에 넣기로 했다. `main_ko.tex`, `main_en.tex`의 "부품 누락" 절 뒤에 새 절(`sec:sft`, 표 `tab:sft`)을 넣었다.
+- 지금 들어 있는 것: Qwen3.5-4B LoRA 1차 학습(600장, 자동 박스)의 dev240 결과뿐이다. gold는 쓰지 않았다.
+- 표 숫자: `tables/sft_dev_rows.tex`. 출처는 Colab 결과 ZIP `agent_sft_sft_v1_results.zip`(sha256 `bf2ddefc0352…`)의 두 실행 `leaderboard.csv`, `q2_by_defect.csv`, `significance.csv`이고 요약은 main의 `docs/agent_sft_lora.md`다. 이 결과 파일은 아직 `results/latest/`에 없다.
+- 절 끝의 **[작성 예정]** 표시가 남은 일이다: 사람 박스 2차 학습(660장)의 dev240 결과와 gold 채점. gold 246장 중 2차 학습 사진과 같은 드론 사진(촬영일 + DJI 번호)에서 나온 20장(정상 6, 결함 14)을 빼면 226장이 남는다(위치 박스가 있는 133장 중 119장).
+- 초록, 서론, 논의, 결론은 고치지 않았다. gold 결과가 나온 뒤 함께 고친다.
+- Word 파일 두 개는 이 절을 반영하지 않았다(다시 만들지 않음).
+- 참고문헌 2건 추가: LoRA, AgentIAD. arXiv API로 제목과 저자를 확인했다. LoRA의 학회판은 확인하지 못해 arXiv로 인용했다.
+- 검사: 괄호·환경 짝, `\ref`/`\label`, `\cite`/`refs.bib`, `\input` 파일, 표 열 개수를 정적 검사했다. 컴파일은 하지 않았다.
 
 ## 그림 다시 그리기
 답과 참조는 `results/latest/` 결과 파일에서 읽고, 이미지는 원본 ZIP에서 꺼낸다(Python + matplotlib, Pillow). InsPLAD 이미지는 CC BY-NC 3.0이라 그림 캡션에 출처를 적었다.

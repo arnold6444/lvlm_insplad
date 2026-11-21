@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "published_via": "copied from the Colab result archive on 2026-11-21 for a pull request (not the API publish script)",
+  "source_archive": "agent_sft_sft_v2_human_gold_results.zip",
+  "source_archive_sha256": "507ee879bbe11e6b1c82958b96768855a9f2bc8851aa39fd867a60fb3661d9ec",
+  "source_archive_size_bytes": 24574846,
+  "source_dir": "/content/drive/MyDrive/lvlm_insplad_results",
+  "repo": "arnold6444/lvlm_insplad",
+  "prefix": "agent_sft_gold_eval",
+  "target_root": "results/latest",
+  "code_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+  "training_source_commit": "fb5b9be9212592de6a66eb617be3f34bc53412d2",
+  "gpu": "NVIDIA L4, 23034 MiB",
+  "protocol": "docs/agent_sft_gold_eval.md on branch feat/sft-gold-eval (agent_sft_gold_eval_v1, sft_label_classifier_baseline_v1)",
+  "runs": {
+    "gold_lora_sft_v2_human": "gold v2, LoRA second run (human boxes, 660 photos), four conditions",
+    "gold_base": "gold v2, Qwen3.5-4B before training, two conditions",
+    "gold_lora_sft_v1": "gold v2, LoRA first run (automatic boxes, 600 photos), two conditions",
+    "dev240_lora_sft_v2_human": "dev240, LoRA second run, two conditions",
+    "classifier_dinov2_linear": "frozen DINOv2 features + logistic regression on the same 660 labels",
+    "train_sft_v2_human": "training record of the second run"
+  },
+  "merged_tables": "leaderboard.csv and metrics_by_asset.csv at this level stack the per-run files with a run and eval_set column",
+  "post_hoc": "model_differences.csv is written by reports/paper_draft_2026-10-23/compute_sft_gold_differences.py from the per_image.csv files; no model call",
+  "not_published": "raw per-call episodes (prompts, outputs, latencies), qa snapshots, image manifests, the gold photo previews, the classifier feature matrix, the training samples and labels, the adapter weights, the logs, the interrupted four-condition dev240 run and the two-condition copy kept before the controls stay in the archive",
+  "checksums": "size_bytes and sha256 describe the file as committed (text files are stored with LF line endings); archive_size_bytes and archive_sha256 describe the same file inside the source archive, where CSV files have CRLF",
+  "files": [
+    {
+      "name": "gold_lora_sft_v2_human/leaderboard.csv",
+      "size_bytes": 4609,
+      "sha256": "d03e17599558c4f263b651feb33546301c46837cea9dd812774158c9f42b4753",
+      "archive_path": "gold_lora/leaderboard.csv",
+      "archive_size_bytes": 4618,
+      "archive_sha256": "9a4069135652d0b6188b590560e1e42f83ee4b5ccf991747c733820d4b37da64"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/metrics_by_asset.csv",
+      "size_bytes": 17539,
+      "sha256": "9ba1d7033948c6603aa013e5e686f123153fb032e8d45859ab640614988515e5",
+      "archive_path": "gold_lora/metrics_by_asset.csv",
+      "archive_size_bytes": 17580,
+      "archive_sha256": "c98d0e5ba96db516350652b9615eb9c87f77db06a5f0a3d11eda9afeb0e32ecb"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/q2_by_defect.csv",
+      "size_bytes": 1898,
+      "sha256": "fd0e50bc6f5230daf9cdf7279449f86bd96699d61c22aaade7ff3a6eb13d99ee",
+      "archive_path": "gold_lora/q2_by_defect.csv",
+      "archive_size_bytes": 1931,
+      "archive_sha256": "493bc25b6eb94c95bb3c83de313657a4bd2519d449aba1554e8f689c0441bc4a"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/position_by_defect.csv",
+      "size_bytes": 2037,
+      "sha256": "28ef1373db983eb38ea26f5e297a06c92d68e73f8de4b64ee4c0ca4788203d0a",
+      "archive_path": "gold_lora/position_by_defect.csv",
+      "archive_size_bytes": 2062,
+      "archive_sha256": "c9627f7471d5f11f0483aadc05efaab3e36caff479cdf743187ecbfba05fc714"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/significance.csv",
+      "size_bytes": 7023,
+      "sha256": "d6b6ed3bf3c74acbfee753222f8ab4c29c5807c5eaaeea6460f65835fcd9c91d",
+      "archive_path": "gold_lora/significance.csv",
+      "archive_size_bytes": 7068,
+      "archive_sha256": "d2019f2b8c6df5a4307b5a4b4f1dd9b4a6863760898e44b42cfe1fd00fe10c42"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/per_image.csv",
+      "size_bytes": 36745,
+      "sha256": "7584cbeeb7bce01695d1dc77197dd583bf10799141d17bea8e091c48a8e92845",
+      "archive_path": "gold_lora/per_image.csv",
+      "archive_size_bytes": 36992,
+      "archive_sha256": "e19b1dee36db766a1f225313ee9183345a099c4d5b13b6384e0f196f1ed60ed0"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/frame_overlap.csv",
+      "size_bytes": 26162,
+      "sha256": "c5333c791f91858fb8677511d0eb5424f671f16ec00c6d136625bd0b689ae56e",
+      "archive_path": "gold_lora/frame_overlap.csv",
+      "archive_size_bytes": 26409,
+      "archive_sha256": "c47d59562a4342c08abb8ab4007bb4a955499adc3b5e689121e47b89bedb9edb"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/answers.jsonl",
+      "size_bytes": 1103169,
+      "sha256": "bc3a2eaeaf1654903cd99352596f2d8878c862620c275f7bd61eb846126f92a1",
+      "archive_path": "gold_lora/answers.jsonl",
+      "archive_size_bytes": 1103169,
+      "archive_sha256": "bc3a2eaeaf1654903cd99352596f2d8878c862620c275f7bd61eb846126f92a1"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/run_metadata.json",
+      "size_bytes": 2394,
+      "sha256": "5eeea7be8c32bfcdaf64809bef32e86fa2f88518a743dc87d9340c2397ac1c42",
+      "archive_path": "gold_lora/run_metadata.json",
+      "archive_size_bytes": 2394,
+      "archive_sha256": "5eeea7be8c32bfcdaf64809bef32e86fa2f88518a743dc87d9340c2397ac1c42"
+    },
+    {
+      "name": "gold_lora_sft_v2_human/run_status.json",
+      "size_bytes": 454,
+      "sha256": "93f5080a8218cf274f728d063c5c1615c1491a2f6f82b7f75df3cd899c7943c4",
+      "archive_path": "gold_lora/run_status.json",
+      "archive_size_bytes": 454,
+      "archive_sha256": "93f5080a8218cf274f728d063c5c1615c1491a2f6f82b7f75df3cd899c7943c4"
+    },
+    {
+      "name": "gold_base/leaderboard.csv",
+      "size_bytes": 2486,
+      "sha256": "60fcb8ddccf1856065ada479af035ebb4c40f26761e83ef706b8aecd1ab7a060",
+      "archive_path": "gold_base/leaderboard.csv",
+      "archive_size_bytes": 2491,
+      "archive_sha256": "0f5eb1da42720a148d52b7ebfe4cfdecfef7a1e772f0014593c34e5169ebad5e"
+    },
+    {
+      "name": "gold_base/metrics_by_asset.csv",
+      "size_bytes": 8294,
+      "sha256": "39d85e3b551dec30dc3f988436b4f395e2cdb99bbf4adde288cf31ae09db94e7",
+      "archive_path": "gold_base/metrics_by_asset.csv",
+      "archive_size_bytes": 8315,
+      "archive_sha256": "a9d99fcae3a0ca26927a3bf9acab6a5d13c328fef6a9c561c512a6ab8bc18ca2"
+    },
+    {
+      "name": "gold_base/q2_by_defect.csv",
+      "size_bytes": 935,
+      "sha256": "7ef8d1afcbf1136f870d8afada4827099e8b8fb7e1bf544df85b1a797ba18c9b",
+      "archive_path": "gold_base/q2_by_defect.csv",
+      "archive_size_bytes": 952,
+      "archive_sha256": "c8985617ceed53525f16f4fcbb29a37c9277d4fbd844404a01688f21fee57b1e"
+    },
+    {
+      "name": "gold_base/position_by_defect.csv",
+      "size_bytes": 821,
+      "sha256": "be1f98cd597a4618fc7102b4f6fa282b9af15c50b6e57cb8fe5b500a52d23499",
+      "archive_path": "gold_base/position_by_defect.csv",
+      "archive_size_bytes": 834,
+      "archive_sha256": "0421bbbd9fd361cb32568a3e5eacf2496375c50c68b674f6016f51f51c0b5778"
+    },
+    {
+      "name": "gold_base/significance.csv",
+      "size_bytes": 2621,
+      "sha256": "7479a54e2a24b329dd578fceadabdcad51c07aad0146a4bb45e565f3f7c2d6ac",
+      "archive_path": "gold_base/significance.csv",
+      "archive_size_bytes": 2638,
+      "archive_sha256": "21901e3c772dd0c6fc5e565ac7cc9d2498a0fd617198a99f5a2f96378723b0db"
+    },
+    {
+      "name": "gold_base/per_image.csv",
+      "size_bytes": 25170,
+      "sha256": "b9feb6c5315c2891b2e59901db6aafa045df01599f3de4ecc770ce5cd44b36b9",
+      "archive_path": "gold_base/per_image.csv",
+      "archive_size_bytes": 25417,
+      "archive_sha256": "7d19ebe0ef500d9af740aea5197f18735bb99ba2206944aba6ec3a67616c6f4d"
+    },
+    {
+      "name": "gold_base/answers.jsonl",
+      "size_bytes": 476650,
+      "sha256": "69a54353e9093ff42dd58ebaa96313b96adab7ef9f22f63c440424ff46c77c92",
+      "archive_path": "gold_base/answers.jsonl",
+      "archive_size_bytes": 476650,
+      "archive_sha256": "69a54353e9093ff42dd58ebaa96313b96adab7ef9f22f63c440424ff46c77c92"
+    },
+    {
+      "name": "gold_base/run_metadata.json",
+      "size_bytes": 2157,
+      "sha256": "5085cd0103d6146c4ffe1438dcf52289302d495b48c75f1326cf1cb6a4aad8ab",
+      "archive_path": "gold_base/run_metadata.json",
+      "archive_size_bytes": 2157,
+      "archive_sha256": "5085cd0103d6146c4ffe1438dcf52289302d495b48c75f1326cf1cb6a4aad8ab"
+    },
+    {
+      "name": "gold_base/run_status.json",
+      "size_bytes": 413,
+      "sha256": "833b9b737901360bfee7d520e35b0da7f8042c2a6926d7e8b2d35771b7880256",
+      "archive_path": "gold_base/run_status.json",
+      "archive_size_bytes": 413,
+      "archive_sha256": "833b9b737901360bfee7d520e35b0da7f8042c2a6926d7e8b2d35771b7880256"
+    },
+    {
+      "name": "gold_lora_sft_v1/leaderboard.csv",
+      "size_bytes": 2733,
+      "sha256": "5296f795151f3beec1ee2f8ecad25a2aa139d433a29150ba58b83a8cd80ddca6",
+      "archive_path": "gold_v1/leaderboard.csv",
+      "archive_size_bytes": 2738,
+      "archive_sha256": "7a26928053f5f2f95d73554f5eb2e21758c2e2d6226a38ac1beb0cd29bf7a760"
+    },
+    {
+      "name": "gold_lora_sft_v1/metrics_by_asset.csv",
+      "size_bytes": 9256,
+      "sha256": "916137c58a7343d6de1f972332c675ea7693071cbc695ae0fa76e676599b2e4c",
+      "archive_path": "gold_v1/metrics_by_asset.csv",
+      "archive_size_bytes": 9277,
+      "archive_sha256": "79a64ea7cd11fe23bcfde683d1fec2282b3a7f9ae8bdb87b44c2b708416c11dd"
+    },
+    {
+      "name": "gold_lora_sft_v1/q2_by_defect.csv",
+      "size_bytes": 1002,
+      "sha256": "abdbcfa059ddbb09907f9e5203efa5bfd82a1187f68508592862cdbbba6aa189",
+      "archive_path": "gold_v1/q2_by_defect.csv",
+      "archive_size_bytes": 1019,
+      "archive_sha256": "3f46a270487c5092c337d6e77a1c01e79cfd4fe9d04e84966a93a655881b37e4"
+    },
+    {
+      "name": "gold_lora_sft_v1/position_by_defect.csv",
+      "size_bytes": 1143,
+      "sha256": "c45732de4af28da179840b301e55ab2d9c962d7ddf2233a31e463ad7b7e98b58",
+      "archive_path": "gold_v1/position_by_defect.csv",
+      "archive_size_bytes": 1156,
+      "archive_sha256": "6c2dd2a6033f5c61b5bf17b560fbb010bc70c7c045ebb9147f7f1c6158b05310"
+    },
+    {
+      "name": "gold_lora_sft_v1/significance.csv",
+      "size_bytes": 2607,
+      "sha256": "3fc94812c9668cefd0605a98e96b0f9a6735a67079e4779915fbe7cfd98167fb",
+      "archive_path": "gold_v1/significance.csv",
+      "archive_size_bytes": 2624,
+      "archive_sha256": "40596fdc65113bd5da59d809c3c5f4e45f1c7cdd13c2feaf941479864c48acb0"
+    },
+    {
+      "name": "gold_lora_sft_v1/per_image.csv",
+      "size_bytes": 28494,
+      "sha256": "4f78ed6094cb44f941aed6dfa9029da60e501e11c2402cd5ecc4a5e86e7a32de",
+      "archive_path": "gold_v1/per_image.csv",
+      "archive_size_bytes": 28741,
+      "archive_sha256": "94a371eced022dc40157a5cb8684de54dcc289b5daa1e35efc239b571695ee80"
+    },
+    {
+      "name": "gold_lora_sft_v1/answers.jsonl",
+      "size_bytes": 559272,
+      "sha256": "cbb066cad4df2e12724d0ce5409b60c119862e8701218c1195ab08d42f3ff6c3",
+      "archive_path": "gold_v1/answers.jsonl",
+      "archive_size_bytes": 559272,
+      "archive_sha256": "cbb066cad4df2e12724d0ce5409b60c119862e8701218c1195ab08d42f3ff6c3"
+    },
+    {
+      "name": "gold_lora_sft_v1/run_metadata.json",
+      "size_bytes": 2352,
+      "sha256": "6e69e558ccbb76244d941b7b1c699c93e018d0cb87f2098fa260c38652f50dd2",
+      "archive_path": "gold_v1/run_metadata.json",
+      "archive_size_bytes": 2352,
+      "archive_sha256": "6e69e558ccbb76244d941b7b1c699c93e018d0cb87f2098fa260c38652f50dd2"
+    },
+    {
+      "name": "gold_lora_sft_v1/run_status.json",
+      "size_bytes": 411,
+      "sha256": "78e4819d92bb917e12841db7ce1bf099f4c5c87c3d0bd25aba44e72e992f39b8",
+      "archive_path": "gold_v1/run_status.json",
+      "archive_size_bytes": 411,
+      "archive_sha256": "78e4819d92bb917e12841db7ce1bf099f4c5c87c3d0bd25aba44e72e992f39b8"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/leaderboard.csv",
+      "size_bytes": 1162,
+      "sha256": "8418c695895448430b6ea33281255872c6022871464e86a5359cbed8a3d4d724",
+      "archive_path": "dev_lora/leaderboard.csv",
+      "archive_size_bytes": 1165,
+      "archive_sha256": "fd0ca7f1f782854da01aae6ea8cb172f972e044bb137128524ad711ada21d6be"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/metrics_by_asset.csv",
+      "size_bytes": 2584,
+      "sha256": "50c1df963ad1177fc63db90902d622ad3955bd71c4b84808373da60238e4563e",
+      "archive_path": "dev_lora/metrics_by_asset.csv",
+      "archive_size_bytes": 2595,
+      "archive_sha256": "d810c417e5f7565b3df525d71085d7ca2b7ca84bbea95daab6cd2b52b6bc5de9"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/q2_by_defect.csv",
+      "size_bytes": 361,
+      "sha256": "5c873df5c4d40e2c8eed964f80961032568232983d52995069d6fb8852f59313",
+      "archive_path": "dev_lora/q2_by_defect.csv",
+      "archive_size_bytes": 370,
+      "archive_sha256": "304fb8643b47391dc93f51459c40e698415cc38754d17bd7265d9d6f5c09d256"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/significance.csv",
+      "size_bytes": 1636,
+      "sha256": "13d06c25b30019fb63e33532f90495a076b88151ca7cf8698acff071f1485ee4",
+      "archive_path": "dev_lora/significance.csv",
+      "archive_size_bytes": 1646,
+      "archive_sha256": "7037bea70850fb0134915122fa3b4d935fd854249b8fa9620694764b6cbc2bd4"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/answers.jsonl",
+      "size_bytes": 532278,
+      "sha256": "3a14a0181719bc5bb8885d6f7bb007c55c3aea2e1dd9158960f51c9d3ccf4950",
+      "archive_path": "dev_lora/answers.jsonl",
+      "archive_size_bytes": 532278,
+      "archive_sha256": "3a14a0181719bc5bb8885d6f7bb007c55c3aea2e1dd9158960f51c9d3ccf4950"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/run_metadata.json",
+      "size_bytes": 1394,
+      "sha256": "ebbfb14fe27d56ab8267a0e1ac6a6f89b1b3f6e0352cfa61f0860026e717b5a3",
+      "archive_path": "dev_lora/run_metadata.json",
+      "archive_size_bytes": 1394,
+      "archive_sha256": "ebbfb14fe27d56ab8267a0e1ac6a6f89b1b3f6e0352cfa61f0860026e717b5a3"
+    },
+    {
+      "name": "dev240_lora_sft_v2_human/run_status.json",
+      "size_bytes": 449,
+      "sha256": "0fd565e3591b5e18e81f51ce954cce5238880ebbf3722b38d45405f8869b0a7d",
+      "archive_path": "dev_lora/run_status.json",
+      "archive_size_bytes": 449,
+      "archive_sha256": "0fd565e3591b5e18e81f51ce954cce5238880ebbf3722b38d45405f8869b0a7d"
+    },
+    {
+      "name": "classifier_dinov2_linear/leaderboard.csv",
+      "size_bytes": 848,
+      "sha256": "e9949cdf130f671df8182e18d6593e692cceb8984a08d3817c1cd830ef5538a9",
+      "archive_path": "classifier/leaderboard.csv",
+      "archive_size_bytes": 852,
+      "archive_sha256": "8a36ded8d61120ea316872e621eff9c6ec0f07cb34ff95b7d6eceff186fad9cf"
+    },
+    {
+      "name": "classifier_dinov2_linear/metrics_by_asset.csv",
+      "size_bytes": 2271,
+      "sha256": "ff0d099646307918906461f48f0a1a06a886693d455c15c4937621292e6e8a5b",
+      "archive_path": "classifier/metrics_by_asset.csv",
+      "archive_size_bytes": 2287,
+      "archive_sha256": "160925b89024dd6ed2b0bd4cfad92d2d1683e0c72912576ce4dbcc12a2c43ca0"
+    },
+    {
+      "name": "classifier_dinov2_linear/q2_by_defect.csv",
+      "size_bytes": 755,
+      "sha256": "d1aba6cb54b07e73335838d35dc98f54cba516bbb3a2f83303f75323f9c989ca",
+      "archive_path": "classifier/q2_by_defect.csv",
+      "archive_size_bytes": 768,
+      "archive_sha256": "c8e8eb2ad4752e9c5d4035318a16a9ede84122dffbc8459c7238b3bd20e32da4"
+    },
+    {
+      "name": "classifier_dinov2_linear/per_image.csv",
+      "size_bytes": 107579,
+      "sha256": "57af3ac66dad12c31b560395fade5e907ab6c630dcbf44b44fef1b39860966ae",
+      "archive_path": "classifier/per_image.csv",
+      "archive_size_bytes": 108066,
+      "archive_sha256": "c4d79cb084fc68586fc351da2f071c5d23c3a8cdde4650b39f4da42d294ebea9"
+    },
+    {
+      "name": "classifier_dinov2_linear/run_metadata.json",
+      "size_bytes": 1582,
+      "sha256": "c902e2b5cc4f2936be2945debf655590bd052c2ec232db91fcf669a897af50dc",
+      "archive_path": "classifier/run_metadata.json",
+      "archive_size_bytes": 1582,
+      "archive_sha256": "c902e2b5cc4f2936be2945debf655590bd052c2ec232db91fcf669a897af50dc"
+    },
+    {
+      "name": "classifier_dinov2_linear/run_status.json",
+      "size_bytes": 185,
+      "sha256": "148189eb125650c252f09bde7212f4aaaa3e68fb19c032fda0a1631f4822302d",
+      "archive_path": "classifier/run_status.json",
+      "archive_size_bytes": 185,
+      "archive_sha256": "148189eb125650c252f09bde7212f4aaaa3e68fb19c032fda0a1631f4822302d"
+    },
+    {
+      "name": "train_sft_v2_human/train_metadata.json",
+      "size_bytes": 970,
+      "sha256": "f128537cf252211fae9fd67cd595bfb2a19db4e5d29711022c3514759c182ed7",
+      "archive_path": "train/train_metadata.json",
+      "archive_size_bytes": 970,
+      "archive_sha256": "f128537cf252211fae9fd67cd595bfb2a19db4e5d29711022c3514759c182ed7"
+    },
+    {
+      "name": "train_sft_v2_human/train_status.json",
+      "size_bytes": 455,
+      "sha256": "ff9534ab589719cc719dd2899cdd62c5baaba4fa1e31a364fd292fd08767581c",
+      "archive_path": "train/train_status.json",
+      "archive_size_bytes": 455,
+      "archive_sha256": "ff9534ab589719cc719dd2899cdd62c5baaba4fa1e31a364fd292fd08767581c"
+    },
+    {
+      "name": "train_sft_v2_human/train_log.jsonl",
+      "size_bytes": 6333,
+      "sha256": "ca3593ecd266b9b2466dd1df21afab57610443a6c3311760590ce56d02d73071",
+      "archive_path": "train/train_log.jsonl",
+      "archive_size_bytes": 6333,
+      "archive_sha256": "ca3593ecd266b9b2466dd1df21afab57610443a6c3311760590ce56d02d73071"
+    },
+    {
+      "name": "train_sft_v2_human/adapter_config.json",
+      "size_bytes": 1257,
+      "sha256": "faab0b4c6d9ba1f55049ff81cf8a65d128ec43edf49ad5b0682dd6e9744eeb86",
+      "archive_path": "train/adapter/adapter_config.json",
+      "archive_size_bytes": 1257,
+      "archive_sha256": "faab0b4c6d9ba1f55049ff81cf8a65d128ec43edf49ad5b0682dd6e9744eeb86"
+    },
+    {
+      "name": "notebook_execution.json",
+      "size_bytes": 1263,
+      "sha256": "0d8bc42f9a613284da6b691adc842331f1704805d5385f1123a1aa5aa03ad3b6",
+      "archive_path": "notebook_execution.json",
+      "archive_size_bytes": 1263,
+      "archive_sha256": "0d8bc42f9a613284da6b691adc842331f1704805d5385f1123a1aa5aa03ad3b6"
+    }
+  ]
+}
