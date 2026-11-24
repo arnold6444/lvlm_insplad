@@ -1,0 +1,32 @@
+{
+  "protocol": "agent_sft_gold_lenient_rescore_v1",
+  "policy": "direct_reference",
+  "post_hoc_rules": "json: the strict JSON finish action; letter: the whole output is one option letter, or a letter followed by exactly that option's text; text: the whole output is exactly one option's text; embedded: exactly one finish JSON object inside other text. A letter with another option's text, and prose that picks no option, stay invalid.",
+  "source_run": {
+    "protocol": "agent_sft_gold_eval_v1",
+    "run_id": "d3ba241f-2a3e-4d4b-9cda-9aef00cf5212",
+    "model": {
+      "backend": "hf",
+      "provider": "huggingface",
+      "model_id": "Qwen/Qwen3.5-4B",
+      "trust_remote_code": false,
+      "adapter": "pipeline",
+      "role": "qwen_family"
+    },
+    "benchmark_commit": "e548776dd70386c0e59467535fd46c13d77015ac",
+    "lora_adapter": null,
+    "gpu": {
+      "name": "NVIDIA L4",
+      "vram_gb": 22.0
+    }
+  },
+  "strict_reproduces_the_run": true,
+  "capture_date_overlap": {
+    "training_photos": 660,
+    "training_capture_dates": 35,
+    "primary_gold_capture_dates": 35,
+    "primary_gold_photos_on_a_training_date": 226,
+    "primary_gold_photos": 226
+  },
+  "scope": "post hoc reference computed after the run from the saved raw outputs; no model call"
+}

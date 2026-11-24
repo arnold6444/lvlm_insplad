@@ -55,7 +55,12 @@ def main():
         return value
 
     small_both = lambda i: TRUE(small[i]["q1_correct"]) and TRUE(small[i]["q2_correct"])
+    # The untrained model after forgiving format-only errors (scripts/score_agent_sft_gold_lenient.py).
+    loose = {r["core_id"]: r for r in table(ROOT / "gold_base_lenient" / "per_image.csv")}
+    assert sorted(loose) == every, "the lenient re-score covers different photos"
+    loose_both = lambda i: TRUE(loose[i]["q1_correct"]) and TRUE(loose[i]["q2_correct"])
     plan = [  # metric, new, baseline, new value, baseline value, located photos only
+        ("q1_q2_both_correct", "lora2 single call", "base single call, lenient", both("lora2", SINGLE), loose_both, False),
         ("q1_q2_both_correct", "lora2 single call", "dinov2_linear", both("lora2", SINGLE), small_both, False),
         ("q1_correct", "lora2 single call", "dinov2_linear", one("lora2", SINGLE, "q1"), lambda i: TRUE(small[i]["q1_correct"]), False),
         ("q2_correct", "lora2 single call", "dinov2_linear", one("lora2", SINGLE, "q2"), lambda i: TRUE(small[i]["q2_correct"]), False),
