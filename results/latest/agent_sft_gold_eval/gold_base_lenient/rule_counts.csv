@@ -1,0 +1,11 @@
+question_type,rule,outputs
+anomaly_detection,embedded,15
+anomaly_detection,json,129
+anomaly_detection,letter,57
+anomaly_detection,no parsable answer,45
+defect_classification,json,221
+defect_classification,letter,19
+defect_classification,no parsable answer,6
+defect_localization,embedded,56
+defect_localization,letter,3
+defect_localization,no parsable answer,187

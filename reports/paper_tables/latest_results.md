@@ -135,6 +135,7 @@
 | 조건 | Q1 F1 | Q2 macro-F1 | Q1·Q2 둘 다 정답 | 캡 누락 Q2 (/23) | 위치 적중 (/119) | 호출 |
 |---|---|---|---|---|---|---|
 | 학습 전, 한 번에 답 | .415 | .499 | 64 (.283) | 0 | 0 | 678 |
+| 학습 전, 한 번에 답 (형식 오류를 걷어낸 사후 재채점) | .648 | .523 | 98 (.434) | 0 | 7 | 678 |
 | LoRA 1차(자동 박스 600장), 한 번에 답 | .909 | .848 | 200 (.885) | 11 | 50 | 678 |
 | LoRA 1차, 도구 선택 | .909 | .838 | 199 (.881) | 12 | 7 | 1,757 |
 | **LoRA 2차(사람 박스 660장), 한 번에 답 (주 결과)** | .883 | .849 | 196 (.867) | 10 | 60 | 678 |
@@ -149,6 +150,9 @@
 - 2차 − 분류기: 둘 다 정답 +5장, CI −.022~+.066(0 포함). Q2 정답만 보면 +12장, CI +.009~+.097.
 - 캡 누락은 gold에서 풀리지 않았다(23장 중 10장, 위치 0장). dev240에서는 25장을 모두 맞혔다.
 - 고정 확대 조건은 정상 101장 중 53장을 이상이라고 답했다.
+- 학습 전 점수의 재채점(2026-11-24, 사후): 엄격한 JSON이 아니어서 무효 처리된 답 가운데 답이 분명한 것(글자 하나, 글자 + 그 선택지 문장, 설명 끝의 최종 답 JSON 하나)을 인정하면 둘 다 정답이 64장에서 98장이 된다. 규칙은 점수를 보기 전에 출력의 모양만으로 정했다. 2차 모델과의 차이는 +.434(CI +.367~+.500). 같은 모델의 기존 gold 표 값은 정상 참조 조건에서 .476이다. 학습 효과는 ".43~.48에서 .867"로 읽는다.
+- 촬영일(2026-11-24 확인): 학습 사진 660장이 촬영일 35일을 전부 포함하고, gold 226장 모두 그 촬영일에 찍혔다. 촬영일까지 분리하면 0장이 남는다. 이 표는 같은 날 찍은 다른 드론 사진에 대한 결과다.
+- dev240은 학습 사진과 같은 풀이라 결과표로 쓰지 않는다. 논문에서는 부록으로 옮겼다.
 - 말할 수 없는 것: 미세조정 모델이 위치를 상수 답보다 잘 맞힌다, 도구가 결함 유무·종류를 돕는다, 라벨이 달린 예시가 있으면 캡 누락이 풀린다.
 
 ## 주장할 수 있는 것 / 없는 것
@@ -193,4 +197,4 @@
 - 이전 답 없는 유무 질문: `reports/missing_presence_independent_evaluation_2026-10-22/5d828a071752/analysis.md`
 - 판별기·위치 후보 직접 채택: `reports/missing_expert_direct_evaluation_2026-10-22/bad35ced5b0b/analysis.md`
 - IG 위치 도구와 계산 오차: `reports/missing_ig_location_evaluation_2026-10-23/d9170b124d97/analysis.md`, `reports/missing_ig_numerics_evaluation_2026-10-23/b80756a9c8f0/analysis.md`
-- 소량 미세조정 후속 실험(표 E): `results/latest/agent_sft_gold_eval/`(`github_publish_manifest.json`에 ZIP 해시와 파일 목록), 모델 간 차이 `model_differences.csv`(`reports/paper_draft_2026-10-23/compute_sft_gold_differences.py`)
+- 소량 미세조정 후속 실험(표 E): `results/latest/agent_sft_gold_eval/`(`github_publish_manifest.json`에 ZIP 해시와 파일 목록), 모델 간 차이 `model_differences.csv`(`reports/paper_draft_2026-10-23/compute_sft_gold_differences.py`), 학습 전 재채점 `gold_base_lenient/`(`scripts/score_agent_sft_gold_lenient.py`)

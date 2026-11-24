@@ -21,7 +21,7 @@
     "train_sft_v2_human": "training record of the second run"
   },
   "merged_tables": "leaderboard.csv and metrics_by_asset.csv at this level stack the per-run files with a run and eval_set column",
-  "post_hoc": "model_differences.csv is written by reports/paper_draft_2026-10-23/compute_sft_gold_differences.py from the per_image.csv files; no model call",
+  "post_hoc": "model_differences.csv is written by reports/paper_draft_2026-10-23/compute_sft_gold_differences.py from the per_image.csv files; no model call; gold_base_lenient/ is written by scripts/score_agent_sft_gold_lenient.py from the raw outputs in the archive (post hoc, 2026-11-24)",
   "not_published": "raw per-call episodes (prompts, outputs, latencies), qa snapshots, image manifests, the gold photo previews, the classifier feature matrix, the training samples and labels, the adapter weights, the logs, the interrupted four-condition dev240 run and the two-condition copy kept before the controls stay in the archive",
   "checksums": "size_bytes and sha256 describe the file as committed (text files are stored with LF line endings); archive_size_bytes and archive_sha256 describe the same file inside the source archive, where CSV files have CRLF",
   "files": [

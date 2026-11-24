@@ -239,3 +239,21 @@ Missing caps stay unsolved on gold: 10 of 23 named and none located, although al
 fixed crop the model calls 53 of 101 normal photos anomalous. The between-model intervals are computed after the
 run from `per_image.csv` (paired bootstrap, 2,000 resamples, seed 42) by `compute_sft_gold_differences.py` in the
 paper folder of the paper branch.
+
+## Post-hoc additions (2026-11-24, no model call)
+
+Two points were raised after the paper section was written. Neither changes a protocol row above.
+
+- **The untrained model re-scored without format-only errors.** The strict parser rejected 356 of the 678 single-call
+  answers of the untrained model in the primary scope, and some of them state the answer plainly ("B. Anomalous.").
+  `scripts/score_agent_sft_gold_lenient.py` re-scores the saved raw outputs. It accepts one option letter, a letter
+  followed by exactly that option's text, exactly one option's text, and one finish JSON object inside other text.
+  A letter with another option's text and prose that picks no option stay invalid. The rules were fixed from the
+  shapes of the outputs before any re-scored number was computed. Primary scope: joint .283 to .434 (64 to 98 of 226
+  photos), Q1 F1 .415 to .648, Q2 macro-F1 .499 to .523, position 0 to 7 of 119, invalid 356 to 216. The second run
+  is still far above (196 photos; difference +.434, CI [+.367, +.500]). Tables:
+  `results/latest/agent_sft_gold_eval/gold_base_lenient/`. The strict row stays the reported result.
+- **Capture dates.** The 660 training photos cover all 35 capture dates, and every one of the 226 primary-scope gold
+  photos was taken on one of them. Removing shared dates would leave no photo, so the primary scope means other
+  drone photos of the same days, not another day or site.
+- For the same reason the paper now keeps the dev240 table in an appendix: dev240 comes from the training pool.

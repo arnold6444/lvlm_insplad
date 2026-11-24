@@ -23,7 +23,13 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
   Checked: 12 table rows and 26 text items recomputed from the result CSVs (all equal), static checks pass, both
   Word files rebuilt (14 tables). Not done: LaTeX compile. The runner and the protocol
   document the paper cites are on main since PR92 (merged 2026-11-22).
-- Supported: fine-tuning raises presence and type on frame-disjoint gold (64 -> 196 of 226); not clearly above a
+- 2026-11-24, after two points raised by a reader and confirmed by the user (branch `paper/sft-review-fixes`, from main
+  f932afd): the dev240 table and its details moved to an appendix, because dev240 comes from the training pool; the
+  untrained model was re-scored without format-only errors (`scripts/score_agent_sft_gold_lenient.py`,
+  `results/latest/agent_sft_gold_eval/gold_base_lenient/`: 64 -> 98 of 226 photos both correct, strict row unchanged);
+  and the paper now says that all 226 primary-scope gold photos share a capture date with a training photo (the
+  training photos cover all 35 dates). Abstract and conclusion were reworded accordingly. Word files rebuilt.
+- Supported: fine-tuning raises presence and type on frame-disjoint gold (64 -> 196 of 226; 98 for the untrained model without format errors); not clearly above a
   small classifier on the same labels (191; Q2 alone is above); tool choice locates more often than the single
   call and both controls (73 vs 60, 59, 54 of 119). Not supported: position above constant "center" (62),
   tools helping presence or type, labelled examples solving missing caps (10 of 23 on gold).
@@ -80,7 +86,9 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 
 ## Remaining
 - Compile in Overleaf (`main_en.tex`, `main_ko.tex`; pdfLaTeX, kotex for Korean). LaTeX was only checked statically, never compiled.
-- Fix the title, authors and affiliations.
+- Fix the title, authors and affiliations. The title was reworded on 2026-11-24 after an external review ("Answer
+  Consistency and Re-Verification"); it is a proposal until the authors confirm it. The reproducibility section now
+  links the repository, which must be replaced or removed for a blind submission (the author line says anonymous).
 - Confirm the InsPLAD volume/pages in `refs.bib` (the DOI is confirmed).
 
 ## Next action

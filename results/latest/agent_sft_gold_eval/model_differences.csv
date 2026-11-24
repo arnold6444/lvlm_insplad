@@ -1,4 +1,5 @@
 subset,metric,condition,baseline,images,new_correct,base_correct,delta,ci_low,ci_high,significant,resamples,seed,scope
+frame_disjoint,q1_q2_both_correct,lora2 single call,"base single call, lenient",226,196,98,0.433628,0.367257,0.5,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 frame_disjoint,q1_q2_both_correct,lora2 single call,dinov2_linear,226,196,191,0.022124,-0.022124,0.066372,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 frame_disjoint,q1_correct,lora2 single call,dinov2_linear,226,199,192,0.030973,-0.013274,0.075221,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 frame_disjoint,q2_correct,lora2 single call,dinov2_linear,226,203,191,0.053097,0.00885,0.097345,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
@@ -9,6 +10,7 @@ frame_disjoint,q1_q2_both_correct,lora2 tool choice,lora1 tool choice,226,196,19
 frame_disjoint,q3_position_hit,lora2 single call,lora1 single call,119,60,50,0.084034,0.008403,0.159664,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 frame_disjoint,q3_position_hit,lora2 tool choice,lora1 tool choice,119,73,7,0.554622,0.453782,0.647059,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 frame_disjoint,q3_position_hit,lora2 tool choice,lora1 single call,119,73,50,0.193277,0.084034,0.294118,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
+all,q1_q2_both_correct,lora2 single call,"base single call, lenient",246,211,107,0.422764,0.357724,0.48374,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 all,q1_q2_both_correct,lora2 single call,dinov2_linear,246,211,205,0.02439,-0.01626,0.065041,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 all,q1_correct,lora2 single call,dinov2_linear,246,214,206,0.03252,-0.00813,0.073171,False,2000,42,post hoc from per_image.csv; image-level paired bootstrap
 all,q2_correct,lora2 single call,dinov2_linear,246,221,205,0.065041,0.02439,0.109756,True,2000,42,post hoc from per_image.csv; image-level paired bootstrap

@@ -1,0 +1,9 @@
+subset,parsing,policy,defect_gt,images,q2_correct
+frame_disjoint,lenient,direct_reference,bird-nest,19,7
+frame_disjoint,lenient,direct_reference,missing-cap,23,0
+frame_disjoint,lenient,direct_reference,normal,101,89
+frame_disjoint,lenient,direct_reference,rust,83,68
+all,lenient,direct_reference,bird-nest,23,7
+all,lenient,direct_reference,missing-cap,27,0
+all,lenient,direct_reference,normal,107,94
+all,lenient,direct_reference,rust,89,74
