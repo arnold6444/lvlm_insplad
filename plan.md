@@ -86,7 +86,9 @@ Finish the InsPLAD-QA paper. All experiments are done and the scope is frozen (u
 
 ## Remaining
 - Compile in Overleaf (`main_en.tex`, `main_ko.tex`; pdfLaTeX, kotex for Korean). LaTeX was only checked statically, never compiled.
-- Fix the title, authors and affiliations.
+- Fix the title, authors and affiliations. The title was reworded on 2026-11-24 after an external review ("Answer
+  Consistency and Re-Verification"); it is a proposal until the authors confirm it. The reproducibility section now
+  links the repository, which must be replaced or removed for a blind submission (the author line says anonymous).
 - Confirm the InsPLAD volume/pages in `refs.bib` (the DOI is confirmed).
 
 ## Next action

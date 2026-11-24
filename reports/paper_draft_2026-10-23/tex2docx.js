@@ -112,7 +112,7 @@ const labels = {}, citeOrder = [];
 
 // ---------- inline conversion ----------
 const MATH = [[/\\rightarrow/g, "→"], [/\\times/g, "×"], [/\\le\b/g, "≤"], [/\\ge\b/g, "≥"], [/\\pm/g, "±"],
-  [/\\dagger/g, "†"], [/\\,/g, " "], [/\^/g, ""], [/\\Delta/g, "Δ"], [/(^|[\s\[(,])-/g, "$1−"]];
+  [/\\dagger/g, "†"], [/\\,/g, " "], [/\^/g, ""], [/\\Delta/g, "Δ"], [/\\alpha/g, "α"], [/(^|[\s\[(,])-/g, "$1−"]];
 function mathText(s) { let t = s; for (const [a, b] of MATH) t = t.replace(a, b); return t.replace(/[{}]/g, ""); }
 function plain(s) {
   return s.replace(/\\(['~"])\{?(\w)\}?/g, (_, a, ch) => (ACCENT[a] || {})[ch] || ch)
